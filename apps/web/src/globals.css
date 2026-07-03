@@ -1,0 +1,224 @@
+/* @import statements MUST come before everything else (incl. @tailwind
+   directives) per CSS spec — Vite's PostCSS pipeline enforces this strictly. */
+@import "katex/dist/katex.min.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Omni color tokens ──────────────────────────────────────────────────
+   Raw RGB triplets — required for Tailwind's opacity-modifier syntax
+   (`bg-surface/60`, see tailwind.config.ts). :root is light mode, .dark is
+   dark mode; same token names so every className works in both themes.
+
+   The Omni look: clean neutral surface, deep near-black ink, and an
+   electric indigo/violet accent. Deliberately distinct from Flo101's
+   cream/orange. */
+:root {
+  --color-surface: 250 250 251;   /* page bg — cool near-white */
+  --color-surface2: 255 255 255;  /* panels/cards — pure white */
+  --color-ink: 24 24 27;          /* primary text — zinc-900 */
+  --color-muted: 113 113 122;     /* secondary text — zinc-500 */
+  --color-accent: 79 70 229;      /* electric indigo (indigo-600) */
+  --color-accent2: 139 92 246;    /* violet-500 — gradients + highlights */
+  --color-line: 228 228 231;      /* subtle border — zinc-200 */
+}
+
+.dark {
+  --color-surface: 16 16 20;      /* deep neutral near-black */
+  --color-surface2: 26 26 31;     /* slightly lifted panel surface */
+  --color-ink: 244 244 245;       /* zinc-100 */
+  --color-muted: 161 161 170;     /* zinc-400 */
+  --color-accent: 129 140 248;    /* indigo-400 — brighter for dark contrast */
+  --color-accent2: 167 139 250;   /* violet-400 */
+  --color-line: 41 41 48;         /* dark border */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html,
+body {
+  background: rgb(var(--color-surface));
+  color: rgb(var(--color-ink));
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(var(--color-accent) / 0.25);
+}
+
+/* ── Thin scrollbar — webkit + Firefox. Transparent track, subtle thumb
+   that brightens on hover so the affordance stays discoverable without
+   dominating. ─────────────────────────────────────────────────────── */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-ink) / 0.15) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-ink) / 0.15);
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-ink) / 0.3);
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-ink) / 0.45);
+}
+
+/* Fully hide the native scrollbar (horizontal chip rows etc.). */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Entrance keyframes — tailwindcss-animate is not installed, so the
+   Radix overlays use these tiny custom classes for their mount animation
+   (exit animations are skipped; contents unmount immediately). ──────── */
+@keyframes omni-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes omni-pop-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes omni-dialog-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.anim-fade-in {
+  animation: omni-fade-in 150ms ease-out both;
+}
+.anim-pop-in {
+  animation: omni-pop-in 140ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.anim-dialog-in {
+  animation: omni-dialog-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Streaming caret at the end of the assistant draft bubble. */
+@keyframes omni-caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+.stream-caret {
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  margin-left: 2px;
+  border-radius: 2px;
+  vertical-align: -0.15em;
+  background: rgb(var(--color-accent));
+  animation: omni-caret-blink 1s ease-in-out infinite;
+}
+
+/* ── Markdown prose for chat messages (.omni-prose) — spacing tuned for
+   conversational density, not article density. Code blocks are handled by
+   the CodeBlock component; inline code gets a subtle chip. ───────────── */
+.omni-prose > :first-child {
+  margin-top: 0;
+}
+.omni-prose > :last-child {
+  margin-bottom: 0;
+}
+.omni-prose p {
+  margin: 0.6em 0;
+  line-height: 1.65;
+}
+.omni-prose h1,
+.omni-prose h2,
+.omni-prose h3,
+.omni-prose h4 {
+  font-family: "Sora", "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  color: rgb(var(--color-ink));
+  margin: 1.1em 0 0.45em;
+  line-height: 1.3;
+}
+.omni-prose h1 { font-size: 1.35em; }
+.omni-prose h2 { font-size: 1.2em; }
+.omni-prose h3 { font-size: 1.08em; }
+.omni-prose h4 { font-size: 1em; }
+.omni-prose ul,
+.omni-prose ol {
+  margin: 0.6em 0;
+  padding-left: 1.4em;
+}
+.omni-prose ul { list-style: disc; }
+.omni-prose ol { list-style: decimal; }
+.omni-prose li {
+  margin: 0.25em 0;
+  line-height: 1.6;
+}
+.omni-prose li > ul,
+.omni-prose li > ol {
+  margin: 0.25em 0;
+}
+.omni-prose a {
+  color: rgb(var(--color-accent));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgb(var(--color-accent) / 0.4);
+}
+.omni-prose a:hover {
+  text-decoration-color: rgb(var(--color-accent));
+}
+.omni-prose blockquote {
+  margin: 0.75em 0;
+  padding-left: 0.9em;
+  border-left: 3px solid rgb(var(--color-accent) / 0.35);
+  color: rgb(var(--color-muted));
+  font-style: italic;
+}
+.omni-prose hr {
+  margin: 1.25em 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-line));
+}
+.omni-prose table {
+  width: 100%;
+  margin: 0.75em 0;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+.omni-prose th,
+.omni-prose td {
+  border: 1px solid rgb(var(--color-line));
+  padding: 0.4em 0.6em;
+  text-align: left;
+}
+.omni-prose th {
+  background: rgb(var(--color-ink) / 0.04);
+  font-weight: 600;
+}
+.omni-prose img {
+  max-width: 100%;
+  border-radius: 0.5rem;
+}
+.omni-prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
+}

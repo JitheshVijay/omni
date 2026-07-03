@@ -1,6 +1,7 @@
 {
   "name": "omni",
   "private": true,
+  "type": "module",
   "description": "Omni — an all-in-one local AI workspace: multi-model chat, autonomous Super Agent, project Hubs with memory, AI Drive, and content generators.",
   "workspaces": [
     "apps/*",
