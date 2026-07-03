@@ -259,7 +259,6 @@ export function BlockNoteDoc({
       },
       setBlocks: (next: unknown[]) => replaceAll(next as PartialBlock[]),
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [editor],
   );
 
@@ -274,7 +273,6 @@ export function BlockNoteDoc({
         sourcesRef.current,
       ) as PartialBlock[],
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   // Debounced dirty signal on real user edits.

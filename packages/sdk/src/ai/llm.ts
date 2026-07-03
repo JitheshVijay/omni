@@ -402,6 +402,7 @@ export function parseLLMJSON<T>(raw: string): T {
     } catch (err) {
       throw new Error(
         `Model returned malformed JSON: ${(err as Error).message}`,
+        { cause: err },
       );
     }
   }

@@ -3,7 +3,7 @@
 // initial-message-from-router-state handoff from ChatIndexPage exactly once
 // (the state is cleared via history replace so a refresh doesn't resend).
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FolderKanban, MessageSquareX } from "lucide-react";
 import { useApi, authFetch, invalidateApi, invalidateApiPrefix } from "@/lib/use-api";
@@ -62,7 +62,6 @@ export default function ChatThreadPage() {
       void send(initialMessage, { attachments });
     }, 0);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [threadId, location.state]);
 
   async function changeModel(modelId: string | null) {

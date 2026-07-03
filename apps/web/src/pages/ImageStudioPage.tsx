@@ -93,7 +93,6 @@ export default function ImageStudioPage() {
     if (!openId) return;
     navigate(location.pathname, { replace: true, state: null });
     setPendingOpenId(openId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
   useEffect(() => {
     if (!pendingOpenId || images.length === 0) return;

@@ -72,11 +72,13 @@ async function extractPdfPagesWithPdfParse(buffer: Buffer): Promise<ExtractedPag
   } catch (err) {
     const e = err as { name?: string; message?: string };
     if (e?.name === "PasswordException" || /password/i.test(e?.message ?? "")) {
-      throw new Error("PDF is password-protected; upload an unprotected copy.");
+      throw new Error("PDF is password-protected; upload an unprotected copy.", {
+        cause: err,
+      });
     }
     throw err;
   }
-  let raw: Array<{ text?: string }> = [];
+  let raw: Array<{ text?: string }>;
   try {
     const result = await parser.getText();
     raw = result?.pages ?? [];

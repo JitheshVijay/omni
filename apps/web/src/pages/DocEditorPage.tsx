@@ -159,7 +159,6 @@ export default function DocEditorPage() {
       void runGeneration(state);
     }, 0);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function runGeneration(state: DocGenNavState) {
