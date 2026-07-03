@@ -222,3 +222,135 @@ body {
   overflow-y: hidden;
   padding: 0.25em 0;
 }
+
+/* ── Image Studio: shimmer placeholder while a generation streams. ────── */
+@keyframes omni-shimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+.img-shimmer {
+  background: linear-gradient(
+    110deg,
+    rgb(var(--color-ink) / 0.05) 8%,
+    rgb(var(--color-accent) / 0.12) 18%,
+    rgb(var(--color-ink) / 0.05) 33%
+  );
+  background-size: 200% 100%;
+  animation: omni-shimmer 1.4s linear infinite;
+}
+
+/* ── BlockNote doc editor (.omni-doc-shell) — merge the Mantine editor into
+   the Omni surface instead of a boxed white card, and align typography with
+   the app (Sora display headings, Inter body). Adapted from Flo101's
+   thread-editor-shell overrides. ─────────────────────────────────────── */
+.omni-doc-shell {
+  cursor: text;
+}
+.omni-doc-shell .bn-container,
+.omni-doc-shell .bn-default-styles,
+.omni-doc-shell [data-mantine-color-scheme] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.omni-doc-shell .bn-editor {
+  background: transparent !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.omni-doc-shell .ProseMirror {
+  min-height: 55vh;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  font-family: "Inter", system-ui, sans-serif;
+  /* Set ONCE here so it inherits — putting `color` directly on p/li/h*
+     out-specifies BlockNote's [data-text-color] rule and breaks the text
+     color picker (see Flo101 forensic note). */
+  color: rgb(var(--color-ink));
+}
+.omni-doc-shell .ProseMirror p,
+.omni-doc-shell .ProseMirror li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.omni-doc-shell .ProseMirror h1,
+.omni-doc-shell .ProseMirror h2,
+.omni-doc-shell .ProseMirror h3 {
+  font-family: "Sora", "Inter", system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+.omni-doc-shell .ProseMirror h1 {
+  font-size: 1.875rem;
+}
+.omni-doc-shell .ProseMirror h2 {
+  font-size: 1.5rem;
+}
+.omni-doc-shell .ProseMirror h3 {
+  font-size: 1.25rem;
+}
+/* Slash / suggestion menu — retheme BlockNote's Mantine popover to Omni
+   tokens so it reads correctly in both light and dark modes. */
+.bn-suggestion-menu {
+  background: rgb(var(--color-surface2)) !important;
+  border-color: rgb(var(--color-line)) !important;
+  z-index: 60 !important;
+  max-width: min(20rem, calc(100vw - 2rem));
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.bn-suggestion-menu .mantine-Menu-itemLabel,
+.bn-suggestion-menu [class*="suggestionMenuItemTitle"] {
+  color: rgb(var(--color-ink)) !important;
+}
+.bn-suggestion-menu [class*="suggestionMenuItemSubtitle"],
+.bn-suggestion-menu [class*="suggestionMenuLabel"] {
+  color: rgb(var(--color-muted)) !important;
+}
+.bn-suggestion-menu [class*="mantine-Menu-item"]:hover,
+.bn-suggestion-menu [class*="suggestionMenuItem"][data-hovered="true"] {
+  background: rgb(var(--color-ink) / 0.06) !important;
+}
+
+/* ── Print: a doc editor page (.doc-print-root present) prints ONLY the
+   document, paginated cleanly. App chrome inside the page carries Tailwind
+   `print:hidden`; the shell around it is neutralized here. ───────────── */
+@media print {
+  html:has(.doc-print-root),
+  body:has(.doc-print-root),
+  body:has(.doc-print-root) #root {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+  /* App sidebar + any floating chrome (mobile trigger, mini player). */
+  body:has(.doc-print-root) aside,
+  body:has(.doc-print-root) .fixed {
+    display: none !important;
+  }
+  .doc-print-root {
+    max-width: 100% !important;
+  }
+  .doc-print-root .bn-editor {
+    padding: 0 !important;
+  }
+  .doc-print-root .ProseMirror {
+    min-height: 0 !important;
+  }
+  /* Keep blocks intact across page breaks; let long ones split naturally. */
+  .doc-print-root .bn-block-outer {
+    break-inside: avoid;
+  }
+  .doc-print-root h1,
+  .doc-print-root h2,
+  .doc-print-root h3 {
+    break-after: avoid;
+  }
+  /* Force legible ink on paper even when the app is in dark mode. */
+  .doc-print-root,
+  .doc-print-root .ProseMirror,
+  .doc-print-root .ProseMirror * {
+    color: #18181b !important;
+    background: transparent !important;
+  }
+}

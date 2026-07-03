@@ -26,6 +26,7 @@ import { driveRoutes } from "./routes/drive.js";
 import { settingsRoutes } from "./routes/settings.js";
 import { agentRoutes } from "./routes/agent.js";
 import { voiceRoutes } from "./routes/voice.js";
+import { generateRoutes } from "./routes/generate.js";
 
 // Single pino instance shared between Fastify (request.log) and the SDK.
 const sharedLogger = createLogger("omni-api");
@@ -217,6 +218,7 @@ async function main() {
   await app.register(settingsRoutes);
   await app.register(agentRoutes);
   await app.register(voiceRoutes);
+  await app.register(generateRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);

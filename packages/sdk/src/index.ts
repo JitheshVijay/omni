@@ -11,4 +11,5 @@ export * from "./ai/embed.js";
 export * from "./content/fetch-bounded.js";
 export * from "./content/exa.js";
 export * from "./content/article.js";
+export * from "./content/image-gen.js";
 export * from "./logging/logger.js";

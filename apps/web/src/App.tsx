@@ -16,6 +16,11 @@ const HubsListPage = lazyWithReload(() => import("@/pages/HubsListPage"));
 const HubDetailPage = lazyWithReload(() => import("@/pages/HubDetailPage"));
 const DrivePage = lazyWithReload(() => import("@/pages/DrivePage"));
 const AgentPage = lazyWithReload(() => import("@/pages/AgentPage"));
+const ToolsPage = lazyWithReload(() => import("@/pages/ToolsPage"));
+const ImageStudioPage = lazyWithReload(() => import("@/pages/ImageStudioPage"));
+const DocsListPage = lazyWithReload(() => import("@/pages/DocsListPage"));
+const DocEditorPage = lazyWithReload(() => import("@/pages/DocEditorPage"));
+const LibraryPage = lazyWithReload(() => import("@/pages/LibraryPage"));
 const SettingsPage = lazyWithReload(() => import("@/pages/SettingsPage"));
 
 // Lightweight route-level loading state while a lazy chunk fetches.
@@ -57,6 +62,12 @@ export default function App() {
         <Route path="/hubs/:hubId" element={<HubDetailPage />} />
         <Route path="/drive" element={<DrivePage />} />
         <Route path="/agent" element={<AgentPage />} />
+        <Route path="/tools" element={<ToolsPage />} />
+        <Route path="/tools/images" element={<ImageStudioPage />} />
+        <Route path="/tools/docs" element={<DocsListPage />} />
+        <Route path="/tools/docs/new" element={<DocEditorPage />} />
+        <Route path="/tools/docs/:artifactId" element={<DocEditorPage />} />
+        <Route path="/library" element={<LibraryPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/chat" replace />} />
       </Route>

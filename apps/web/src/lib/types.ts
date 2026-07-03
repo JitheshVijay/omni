@@ -140,6 +140,60 @@ export interface AgentRun {
   finished_at: string | null;
 }
 
+// ── Generators & artifacts (Phase 2) ────────────────────────────────────
+
+export type ArtifactKind = "doc" | "image" | "audio";
+
+// Returned by list endpoints and SSE `artifact` events — never carries
+// `content` (docs can be large; fetch the detail endpoint for it).
+export interface ArtifactSummary {
+  id: string;
+  kind: ArtifactKind | string;
+  title: string;
+  rel_path: string | null;
+  parent_id: string | null;
+  hub_id: string | null;
+  meta: Record<string, unknown> | null;
+  created_at: string;
+}
+
+// One numbered hub-memory source cited by a generated doc. `idx` matches the
+// [[cite:IDX:LABEL]] tokens embedded in the markdown.
+export interface DocSource {
+  idx: number;
+  label: string;
+  file_id: string | null;
+  snippet: string;
+}
+
+// artifacts.content for kind='doc'. `blocks` is null until the editor first
+// saves; `markdown` is ALWAYS kept in sync (it is the export + TTS source).
+export interface DocContent {
+  markdown: string;
+  blocks?: unknown[] | null;
+  sources: DocSource[];
+}
+
+// artifacts.content for kind='audio'.
+export interface AudioContent {
+  voice_id: string;
+  text_chars: number;
+}
+
+// GET /api/artifacts/:id — flat artifact with content/meta JSON-parsed.
+export interface Artifact extends ArtifactSummary {
+  content: DocContent | AudioContent | Record<string, unknown> | null;
+  drive_file_id?: string | null;
+  updated_at?: string;
+}
+
+// GET /api/voice/voices — curated ElevenLabs catalog entry.
+export interface Voice {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 export interface KeyStatus {
   configured: boolean;
   keyTail?: string | null;

@@ -3,6 +3,7 @@ import {
   MessageSquare,
   FolderKanban,
   HardDrive,
+  LibraryBig,
   Bot,
   Wrench,
   Settings as SettingsIcon,
@@ -41,8 +42,9 @@ const NAV: NavEntry[] = [
   { href: "/chat", label: "Chat", icon: MessageSquare },
   { href: "/hubs", label: "Hubs", icon: FolderKanban },
   { href: "/drive", label: "Drive", icon: HardDrive },
+  { href: "/library", label: "Library", icon: LibraryBig },
   { href: "/agent", label: "Agent", icon: Bot, soon: true },
-  { href: "/tools", label: "Tools", icon: Wrench, soon: true, disabled: true },
+  { href: "/tools", label: "Tools", icon: Wrench },
 ];
 
 function SoonBadge() {

@@ -15,12 +15,20 @@ import {
   MessageSquare,
   Paperclip,
   TriangleAlert,
+  Volume2,
 } from "lucide-react";
 import { MarkdownMessage } from "@/components/MarkdownMessage";
 import { CitationPill } from "@/components/chat/CitationPill";
+import {
+  useReadAloud,
+  MiniPlayer,
+  VOICE_UNCONFIGURED_HINT,
+  type ReadAloudControls,
+} from "@/lib/audio-player";
 import type { ChatMessage, Citation, TokenUsage } from "@/lib/types";
 import type { PendingUserMessage } from "@/lib/chat/use-chat-stream";
 import { cn, formatCost, parseMaybeJson, prettyModel } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PIN_THRESHOLD_PX = 120;
 
@@ -46,6 +54,10 @@ export function MessageList({
   // the view glued there. Scrolling up unpins until they come back down.
   const pinnedRef = useRef(true);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+
+  // One read-aloud queue for the whole list — each assistant turn's Listen
+  // button feeds its own text into it; the MiniPlayer docks bottom-right.
+  const readAloud = useReadAloud();
 
   const visible = useMemo(
     () => messages.filter((m) => m.role === "user" || m.role === "assistant"),
@@ -104,7 +116,7 @@ export function MessageList({
                 m.role === "user" ? (
                   <UserBubble key={m.id} message={m} />
                 ) : (
-                  <AssistantTurn key={m.id} message={m} />
+                  <AssistantTurn key={m.id} message={m} readAloud={readAloud} />
                 ),
               )}
 
@@ -148,6 +160,8 @@ export function MessageList({
           Latest
         </button>
       )}
+
+      <MiniPlayer controls={readAloud} label="Assistant reply" />
     </div>
   );
 }
@@ -192,7 +206,13 @@ function UserBubble({
   );
 }
 
-function AssistantTurn({ message }: { message: ChatMessage }) {
+function AssistantTurn({
+  message,
+  readAloud,
+}: {
+  message: ChatMessage;
+  readAloud: ReadAloudControls;
+}) {
   const usage = parseMaybeJson<TokenUsage>(message.usage);
   const citations = parseMaybeJson<Citation[]>(message.citations) ?? [];
   return (
@@ -225,6 +245,7 @@ function AssistantTurn({ message }: { message: ChatMessage }) {
 
       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
         <TurnCopyButton text={message.content} />
+        {message.content && <TurnListenButton text={message.content} readAloud={readAloud} />}
         {(message.model || usage) && (
           <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface2 px-2 py-0.5 text-[11px] text-muted">
             <Cpu className="size-3" />
@@ -287,6 +308,44 @@ function StreamingDraft({
         </div>
       )}
     </motion.div>
+  );
+}
+
+// Reads this reply aloud through the list-level ReadAloud queue. Disabled
+// (with an explanatory tooltip) until ELEVENLABS_API_KEY is configured.
+function TurnListenButton({
+  text,
+  readAloud,
+}: {
+  text: string;
+  readAloud: ReadAloudControls;
+}) {
+  const disabled = readAloud.configured === false;
+  const button = (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => void readAloud.play(text)}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-muted transition hover:bg-ink/5 hover:text-ink",
+        disabled && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted",
+      )}
+      title={disabled ? undefined : "Read this reply aloud"}
+      aria-label="Read this reply aloud"
+    >
+      <Volume2 className="size-3" />
+      Listen
+    </button>
+  );
+  if (!disabled) return button;
+  return (
+    <Tooltip>
+      {/* span wrapper so the tooltip fires on a disabled button */}
+      <TooltipTrigger asChild>
+        <span className="inline-flex">{button}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top">{VOICE_UNCONFIGURED_HINT}</TooltipContent>
+    </Tooltip>
   );
 }
 
