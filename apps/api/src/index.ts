@@ -19,6 +19,8 @@ import {
 } from "@omni/sdk";
 import { authMiddleware } from "./middleware/auth.js";
 import { startDriveIndexLoop } from "./lib/drive-index.js";
+import { startAgentRecoverySweep } from "./agent/recovery.js";
+import { startWorkspaceSweep } from "./agent/workspace.js";
 import { chatRoutes } from "./routes/chat.js";
 import { modelsRoutes } from "./routes/models.js";
 import { hubsRoutes } from "./routes/hubs.js";
@@ -115,7 +117,10 @@ async function main() {
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    // Last-Event-ID: sent by the agent-run SSE client on reconnect so the
+    // server resumes from the last delivered step. Cache-Control: some SSE
+    // clients set it. Both must be allow-listed or the preflight fails.
+    allowedHeaders: ["Content-Type", "Authorization", "Last-Event-ID", "Cache-Control"],
   });
 
   // ── Rate limit: keyed by user when authenticated, IP otherwise ──
@@ -230,6 +235,11 @@ async function main() {
 
   // Background Drive ingestion (extract -> chunk -> embed -> hub memory).
   startDriveIndexLoop();
+
+  // Super Agent: mark runs interrupted by a restart as failed+resumable, and
+  // sweep stale per-run workspaces (run_code scratch dirs).
+  startAgentRecoverySweep();
+  startWorkspaceSweep();
 
   // ── Graceful shutdown ──
   const shutdown = async (signal: string) => {

@@ -6,8 +6,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 export interface SSEChannel {
-  /** Write one `data: {...}` frame. No-op after close. */
-  send(event: object): void;
+  /**
+   * Write one `data: {...}` frame. No-op after close. When `id` is given
+   * an `id: <n>` line precedes the data frame so the browser's EventSource
+   * records it as Last-Event-ID for resume (agent SSE stream).
+   */
+  send(event: object, id?: number): void;
   /** Write one terminal frame; subsequent terminal sends are ignored. */
   sendTerminal(event: object): void;
   /** End the response (idempotent). */
@@ -77,10 +81,11 @@ export function openSSE(request: FastifyRequest, reply: FastifyReply): SSEChanne
     }
   });
 
-  const send = (event: object): void => {
+  const send = (event: object, id?: number): void => {
     if (ended) return;
     try {
-      raw.write(`data: ${JSON.stringify(event)}\n\n`);
+      const prefix = typeof id === "number" ? `id: ${id}\n` : "";
+      raw.write(`${prefix}data: ${JSON.stringify(event)}\n\n`);
     } catch {
       /* socket closed mid-write */
     }

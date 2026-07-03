@@ -43,7 +43,7 @@ const NAV: NavEntry[] = [
   { href: "/hubs", label: "Hubs", icon: FolderKanban },
   { href: "/drive", label: "Drive", icon: HardDrive },
   { href: "/library", label: "Library", icon: LibraryBig },
-  { href: "/agent", label: "Agent", icon: Bot, soon: true },
+  { href: "/agent", label: "Agent", icon: Bot },
   { href: "/tools", label: "Tools", icon: Wrench },
 ];
 

@@ -3,11 +3,13 @@
 import type { GeneratorService } from "./types.js";
 import { docGenerator } from "./doc.js";
 import { imageGenerator } from "./image.js";
+import { slidesGenerator } from "./slides.js";
 import { ttsGenerator } from "./tts.js";
 
 const GENERATORS: Record<string, GeneratorService<any>> = {
   doc: docGenerator,
   image: imageGenerator,
+  slides: slidesGenerator,
   tts: ttsGenerator,
 };
 
@@ -24,6 +26,7 @@ export function listGenerators(): GeneratorService<any>[] {
 const GENERATOR_NAME_BY_KIND: Record<string, string> = {
   doc: "doc",
   image: "image",
+  slides: "slides",
   audio: "tts",
 };
 
