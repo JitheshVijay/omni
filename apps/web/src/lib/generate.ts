@@ -19,7 +19,7 @@ import { getLocalAccessToken } from "@/lib/local-auth";
 import { parseApiError, type ParsedApiError } from "@/lib/api-error";
 import type { ArtifactSummary } from "@/lib/types";
 
-export type GeneratorName = "doc" | "image" | "tts" | "slides";
+export type GeneratorName = "doc" | "image" | "tts" | "slides" | "sheet" | "podcast";
 
 export type GenerateEvent =
   | { type: "status"; label: string }

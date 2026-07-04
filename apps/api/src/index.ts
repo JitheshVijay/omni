@@ -20,6 +20,8 @@ import {
 import { authMiddleware } from "./middleware/auth.js";
 import { startDriveIndexLoop } from "./lib/drive-index.js";
 import { startAgentRecoverySweep } from "./agent/recovery.js";
+import { workflowRoutes } from "./routes/workflows.js";
+import { startWorkflowCron } from "./lib/workflow-cron.js";
 import { startWorkspaceSweep } from "./agent/workspace.js";
 import { chatRoutes } from "./routes/chat.js";
 import { modelsRoutes } from "./routes/models.js";
@@ -224,6 +226,7 @@ async function main() {
   await app.register(agentRoutes);
   await app.register(voiceRoutes);
   await app.register(generateRoutes);
+  await app.register(workflowRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);
@@ -240,6 +243,9 @@ async function main() {
   // sweep stale per-run workspaces (run_code scratch dirs).
   startAgentRecoverySweep();
   startWorkspaceSweep();
+
+  // Workflows: rehydrate cron schedules (missed-while-closed runs are missed).
+  startWorkflowCron();
 
   // ── Graceful shutdown ──
   const shutdown = async (signal: string) => {

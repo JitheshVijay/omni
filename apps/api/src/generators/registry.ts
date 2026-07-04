@@ -3,6 +3,8 @@
 import type { GeneratorService } from "./types.js";
 import { docGenerator } from "./doc.js";
 import { imageGenerator } from "./image.js";
+import { podcastGenerator } from "./podcast.js";
+import { sheetGenerator } from "./sheet.js";
 import { slidesGenerator } from "./slides.js";
 import { ttsGenerator } from "./tts.js";
 
@@ -11,6 +13,8 @@ const GENERATORS: Record<string, GeneratorService<any>> = {
   image: imageGenerator,
   slides: slidesGenerator,
   tts: ttsGenerator,
+  sheet: sheetGenerator,
+  podcast: podcastGenerator,
 };
 
 export function getGenerator(name: string): GeneratorService<any> | undefined {
@@ -28,6 +32,7 @@ const GENERATOR_NAME_BY_KIND: Record<string, string> = {
   image: "image",
   slides: "slides",
   audio: "tts",
+  sheet: "sheet",
 };
 
 export function getGeneratorForKind(kind: string): GeneratorService<any> | undefined {

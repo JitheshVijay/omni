@@ -8,7 +8,10 @@ import {
   AudioLines,
   FileText,
   Images,
+  Podcast,
+  Presentation,
   Sparkles,
+  Table2,
   Wrench,
 } from "lucide-react";
 import { useApi } from "@/lib/use-api";
@@ -30,7 +33,11 @@ export default function ToolsPage() {
     if (a.kind === "doc") navigate(`/tools/docs/${a.id}`);
     else if (a.kind === "image")
       navigate("/tools/images", { state: { openId: a.id } });
-    // audio plays inline on its card — no viewer page.
+    else if (a.kind === "slides") navigate(`/tools/slides/${a.id}`);
+    else if (a.kind === "sheet") navigate(`/tools/sheets/${a.id}`);
+    else if (a.kind === "audio" && a.meta?.subtype === "podcast")
+      navigate("/tools/podcast", { state: { openId: a.id } });
+    // plain TTS audio plays inline on its card — no viewer page.
   }
 
   return (
@@ -78,13 +85,36 @@ export default function ToolsPage() {
           }
           index={2}
         />
+        <ToolCard
+          to="/tools/slides"
+          icon={Presentation}
+          gradient="from-sky-500 to-accent"
+          title="AI Slides"
+          text="Outline-first slide decks across seven layouts — export a real .pptx with editable charts."
+          index={3}
+        />
+        <ToolCard
+          to="/tools/sheets"
+          icon={Table2}
+          gradient="from-emerald-500 to-teal-400"
+          title="AI Sheets"
+          text="Spreadsheets that stream in row by row — edit any cell, export CSV or .xlsx."
+          index={4}
+        />
+        <ToolCard
+          to="/tools/podcast"
+          icon={Podcast}
+          gradient="from-orange-500 to-amber-400"
+          title="Podcast"
+          text="Two hosts discuss any topic or document — narrated with contrasting voices, script-synced playback."
+          index={5}
+        />
         <ExplainerCard
           icon={Sparkles}
-          title="More on the way"
-          text="Slides, sheets, podcasts, and workflows arrive with the Super Agent (Phase 3)."
-          badge={<Badge variant="secondary">soon</Badge>}
-          dashed
-          index={3}
+          title="Workflows"
+          text="Chain the agent, generators, and search into scheduled automations — find them in the sidebar."
+          badge={<Badge variant="success">new</Badge>}
+          index={6}
         />
       </div>
 

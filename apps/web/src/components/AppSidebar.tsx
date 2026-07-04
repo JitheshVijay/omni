@@ -5,6 +5,7 @@ import {
   HardDrive,
   LibraryBig,
   Bot,
+  GitBranch,
   Wrench,
   Settings as SettingsIcon,
   Sun,
@@ -44,6 +45,7 @@ const NAV: NavEntry[] = [
   { href: "/drive", label: "Drive", icon: HardDrive },
   { href: "/library", label: "Library", icon: LibraryBig },
   { href: "/agent", label: "Agent", icon: Bot },
+  { href: "/workflows", label: "Workflows", icon: GitBranch },
   { href: "/tools", label: "Tools", icon: Wrench },
 ];
 
