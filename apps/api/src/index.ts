@@ -22,6 +22,10 @@ import { startDriveIndexLoop } from "./lib/drive-index.js";
 import { startAgentRecoverySweep } from "./agent/recovery.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { startWorkflowCron } from "./lib/workflow-cron.js";
+import { secretaryRoutes } from "./routes/secretary.js";
+import { voiceAgentRoutes } from "./routes/voice-agent.js";
+import { searchRoutes } from "./routes/search.js";
+import { ensureSearchVecIndex, reindexAll } from "./lib/search-index.js";
 import { startWorkspaceSweep } from "./agent/workspace.js";
 import { chatRoutes } from "./routes/chat.js";
 import { modelsRoutes } from "./routes/models.js";
@@ -209,6 +213,7 @@ async function main() {
     `applied ${applied.length} migration(s)`,
   );
   ensureVecIndex();
+  ensureSearchVecIndex();
   if (vecAvailable) {
     app.log.info("sqlite-vec loaded — vector KNN enabled");
   } else {
@@ -227,6 +232,9 @@ async function main() {
   await app.register(voiceRoutes);
   await app.register(generateRoutes);
   await app.register(workflowRoutes);
+  await app.register(secretaryRoutes);
+  await app.register(voiceAgentRoutes);
+  await app.register(searchRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);
@@ -246,6 +254,11 @@ async function main() {
 
   // Workflows: rehydrate cron schedules (missed-while-closed runs are missed).
   startWorkflowCron();
+
+  // Global search: build/refresh the semantic index in the background.
+  void reindexAll(env.LOCAL_USER_ID).catch((err) =>
+    app.log.warn({ err }, "[search] boot reindex failed"),
+  );
 
   // ── Graceful shutdown ──
   const shutdown = async (signal: string) => {

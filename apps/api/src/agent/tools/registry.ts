@@ -7,6 +7,7 @@ import type { ArtifactRow, GenEvent, GeneratorService } from "../../generators/t
 import { toArtifactSummary } from "../../generators/types.js";
 import { BUILTIN_TOOLS } from "./builtin.js";
 import { runCodeTool } from "./run-code.js";
+import { getSecretaryTools } from "./secretary-tools.js";
 import { zodToJsonSchema } from "./zod-to-jsonschema.js";
 import type { AgentTool, AgentToolCtx, ToolResult } from "./types.js";
 
@@ -121,8 +122,34 @@ export function getToolMap(): Map<string, AgentTool> {
 
 /** OpenAI/OpenRouter tool specs derived from the tool set. */
 export function getToolSpecs(): Array<Record<string, unknown>> {
-  return getAgentTools().map((t) => ({
+  return toSpecs(getAgentTools());
+}
+
+function toSpecs(tools: AgentTool[]): Array<Record<string, unknown>> {
+  return tools.map((t) => ({
     type: "function",
     function: { name: t.name, description: t.description, parameters: t.parameters },
   }));
+}
+
+/**
+ * The per-user tool set: the shared tools plus this user's connected Secretary
+ * (Composio Gmail/Calendar) actions. Async because Composio is queried live;
+ * returns just the shared set when the Secretary is unconfigured.
+ */
+export async function getAgentToolsForUser(userId: string): Promise<AgentTool[]> {
+  const secretary = await getSecretaryTools(userId).catch(() => []);
+  return secretary.length ? [...getAgentTools(), ...secretary] : getAgentTools();
+}
+
+export async function getToolMapForUser(userId: string): Promise<Map<string, AgentTool>> {
+  const map = new Map<string, AgentTool>();
+  for (const t of await getAgentToolsForUser(userId)) map.set(t.name, t);
+  return map;
+}
+
+export async function getToolSpecsForUser(
+  userId: string,
+): Promise<Array<Record<string, unknown>>> {
+  return toSpecs(await getAgentToolsForUser(userId));
 }

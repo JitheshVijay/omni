@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge, IndexStatusBadge } from "@/components/ui/badge";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { VoiceCallButton } from "@/components/voice/VoiceCallButton";
 import { ModelPicker } from "@/components/chat/ModelPicker";
 import {
   Dialog,
@@ -120,7 +121,12 @@ export default function HubDetailPage() {
             <p className="mt-1 line-clamp-2 text-sm text-muted">{hub.description}</p>
           )}
         </div>
-        {hubId && <NewHubChatButton hubId={hubId} />}
+        {hubId && (
+          <div className="flex shrink-0 items-center gap-2">
+            <VoiceCallButton hubId={hubId} />
+            <NewHubChatButton hubId={hubId} />
+          </div>
+        )}
       </div>
 
       {/* Tab bar */}

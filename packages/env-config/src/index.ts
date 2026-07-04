@@ -65,6 +65,9 @@ const envSchema = z.object({
   LLAMAPARSE_API_KEY: z.string().optional(),
   // LlamaParse tier: fast / cost_effective / agentic / agentic_plus.
   LLAMAPARSE_TIER: z.string().default("agentic"),
+  // Composio: external-app integrations (Gmail/Calendar Secretary) with
+  // managed OAuth. Whole layer is a no-op until this is set.
+  COMPOSIO_API_KEY: z.string().optional(),
 
   // ── LangSmith tracing (off by default) ─────────────────────────────
   LANGSMITH_TRACING: z.string().optional(),

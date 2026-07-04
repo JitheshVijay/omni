@@ -48,7 +48,7 @@ import {
   startWorkspaceSweep,
   SPILL_THRESHOLD_BYTES,
 } from "./workspace.js";
-import { getToolMap, getToolSpecs } from "./tools/registry.js";
+import { getToolMapForUser, getToolSpecsForUser } from "./tools/registry.js";
 import { normalizePlan } from "./tools/builtin.js";
 import {
   DEFAULT_MAX_RESULT_CHARS,
@@ -129,6 +129,7 @@ async function streamCompletion(
   model: string,
   signal: AbortSignal,
   withTools: boolean,
+  toolSpecs?: Array<Record<string, unknown>>,
 ): Promise<CompletionOut> {
   const wire = toWireMessages(messages);
   // Cache the (stable) system prompt on Claude models.
@@ -143,7 +144,7 @@ async function streamCompletion(
     ...providerRoutingForCache(model),
   };
   if (withTools) {
-    body.tools = getToolSpecs();
+    body.tools = toolSpecs ?? [];
     body.tool_choice = "auto";
   }
 
@@ -344,6 +345,7 @@ interface LoopState {
   signal: AbortSignal;
   baseCtx: AgentToolCtx;
   toolMap: Map<string, AgentTool>;
+  toolSpecs: Array<Record<string, unknown>>;
   messages: ConvMsg[];
   iter: number;
   budgetWarned: boolean;
@@ -454,7 +456,8 @@ async function drive(
     budget: run.budget_usd,
     signal: controller.signal,
     baseCtx,
-    toolMap: getToolMap(),
+    toolMap: await getToolMapForUser(run.user_id),
+    toolSpecs: await getToolSpecsForUser(run.user_id),
     messages,
     iter: startIter,
     budgetWarned: false,
@@ -491,6 +494,7 @@ async function drive(
         state.model,
         state.signal,
         true,
+        state.toolSpecs,
       );
       accumulateUsage(runId, state.model, usage);
 

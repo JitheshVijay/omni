@@ -30,6 +30,7 @@ const WorkflowEditorPage = lazyWithReload(() => import("@/pages/WorkflowEditorPa
 const WorkflowRunPage = lazyWithReload(() => import("@/pages/WorkflowRunPage"));
 const DeckEditorPage = lazyWithReload(() => import("@/pages/DeckEditorPage"));
 const LibraryPage = lazyWithReload(() => import("@/pages/LibraryPage"));
+const SecretaryPage = lazyWithReload(() => import("@/pages/SecretaryPage"));
 const SettingsPage = lazyWithReload(() => import("@/pages/SettingsPage"));
 
 // Lightweight route-level loading state while a lazy chunk fetches.
@@ -86,6 +87,7 @@ export default function App() {
         <Route path="/workflows/:id" element={<WorkflowEditorPage />} />
         <Route path="/workflows/:id/runs/:runId" element={<WorkflowRunPage />} />
         <Route path="/library" element={<LibraryPage />} />
+        <Route path="/secretary" element={<SecretaryPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/chat" replace />} />
       </Route>
