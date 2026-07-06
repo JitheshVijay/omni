@@ -9,6 +9,7 @@ import {
   Code2,
   FileText,
   Images,
+  NotebookPen,
   Podcast,
   Presentation,
   Sparkles,
@@ -118,6 +119,14 @@ export default function ToolsPage() {
           title="Podcast"
           text="Two hosts discuss any topic or document — narrated with contrasting voices, script-synced playback."
           index={5}
+        />
+        <ToolCard
+          to="/tools/notes"
+          icon={NotebookPen}
+          gradient="from-rose-500 to-orange-400"
+          title="Meeting Notes"
+          text="Paste a Zoom/Meet/Teams transcript and get structured notes — summary, key points, decisions, action items with owners, and open questions."
+          index={6}
         />
         <ExplainerCard
           icon={Sparkles}

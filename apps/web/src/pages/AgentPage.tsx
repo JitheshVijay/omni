@@ -14,6 +14,7 @@ import {
   Loader2,
   Search,
   Sparkles,
+  Store,
   Wallet,
   Wrench,
 } from "lucide-react";
@@ -42,6 +43,9 @@ const EXAMPLES = [
   "Find the latest news on the EU AI Act and summarize what changed this quarter.",
   "Turn the notes in my hub into a 10-slide deck with a cover image.",
 ];
+
+// Featured preset chips shown on the store strip; deep-link to /agents.
+const FEATURED_AGENTS = ["Deep research", "Competitor teardown", "Company dossier"];
 
 const CAPABILITIES = [
   { icon: Search, text: "Searches the web & reads pages" },
@@ -201,6 +205,35 @@ export default function AgentPage() {
           ))}
         </div>
       </motion.div>
+
+      {/* Browse the Custom Agents store */}
+      <Link
+        to="/agents"
+        className="group mt-6 flex items-center gap-3 rounded-2xl border border-line bg-surface2 p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+      >
+        <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+          <Store className="size-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-ink group-hover:text-accent">
+            Browse agent presets
+          </p>
+          <p className="text-xs text-muted">
+            Launch a ready-made Super Agent in one click, or save your own.
+          </p>
+        </div>
+        <div className="hidden shrink-0 flex-wrap items-center gap-1.5 sm:flex">
+          {FEATURED_AGENTS.map((f) => (
+            <span
+              key={f}
+              className="rounded-full border border-line bg-surface3/60 px-2.5 py-1 text-[11px] text-muted transition group-hover:border-accent/30"
+            >
+              {f}
+            </span>
+          ))}
+        </div>
+        <ArrowRight className="size-4 shrink-0 text-muted/50 transition group-hover:translate-x-0.5 group-hover:text-accent" />
+      </Link>
 
       {/* Recent runs */}
       <div className="mt-9">

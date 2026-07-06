@@ -3,6 +3,7 @@
 import type { GeneratorService } from "./types.js";
 import { docGenerator } from "./doc.js";
 import { imageGenerator } from "./image.js";
+import { meetingGenerator } from "./meeting.js";
 import { podcastGenerator } from "./podcast.js";
 import { sheetGenerator } from "./sheet.js";
 import { slidesGenerator } from "./slides.js";
@@ -12,6 +13,7 @@ import { webappGenerator } from "./webapp.js";
 const GENERATORS: Record<string, GeneratorService<any>> = {
   doc: docGenerator,
   image: imageGenerator,
+  meeting: meetingGenerator,
   slides: slidesGenerator,
   tts: ttsGenerator,
   sheet: sheetGenerator,

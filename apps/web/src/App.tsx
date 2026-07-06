@@ -36,6 +36,9 @@ const SecretaryPage = lazyWithReload(() => import("@/pages/SecretaryPage"));
 const SkillsPage = lazyWithReload(() => import("@/pages/SkillsPage"));
 const AgentBasePage = lazyWithReload(() => import("@/pages/AgentBasePage"));
 const SystemViewPage = lazyWithReload(() => import("@/pages/SystemViewPage"));
+const ResearchPage = lazyWithReload(() => import("@/pages/ResearchPage"));
+const MeetingNotesPage = lazyWithReload(() => import("@/pages/MeetingNotesPage"));
+const AgentPresetsPage = lazyWithReload(() => import("@/pages/AgentPresetsPage"));
 const SettingsPage = lazyWithReload(() => import("@/pages/SettingsPage"));
 
 // Lightweight route-level loading state while a lazy chunk fetches.
@@ -98,6 +101,9 @@ export default function App() {
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/agentbase" element={<AgentBasePage />} />
         <Route path="/agentbase/:id" element={<SystemViewPage />} />
+        <Route path="/research" element={<ResearchPage />} />
+        <Route path="/agents" element={<AgentPresetsPage />} />
+        <Route path="/tools/notes" element={<MeetingNotesPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/chat" replace />} />
       </Route>

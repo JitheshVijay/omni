@@ -26,7 +26,8 @@ export type GeneratorName =
   | "slides"
   | "sheet"
   | "podcast"
-  | "webapp";
+  | "webapp"
+  | "meeting";
 
 export type GenerateEvent =
   | { type: "status"; label: string }

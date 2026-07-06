@@ -27,6 +27,9 @@ import { voiceAgentRoutes } from "./routes/voice-agent.js";
 import { searchRoutes } from "./routes/search.js";
 import { skillsRoutes } from "./routes/skills.js";
 import { agentbaseRoutes } from "./routes/agentbase.js";
+import { researchRoutes } from "./routes/research.js";
+import { agentPresetRoutes } from "./routes/agent-presets.js";
+import { seedAgentPresets } from "./lib/agent-presets-seed.js";
 import { seedBuiltinSkills } from "./lib/skills-seed.js";
 import { ensureSearchVecIndex, reindexAll } from "./lib/search-index.js";
 import { startWorkspaceSweep } from "./agent/workspace.js";
@@ -218,6 +221,7 @@ async function main() {
   ensureVecIndex();
   ensureSearchVecIndex();
   seedBuiltinSkills();
+  seedAgentPresets();
   if (vecAvailable) {
     app.log.info("sqlite-vec loaded — vector KNN enabled");
   } else {
@@ -241,6 +245,8 @@ async function main() {
   await app.register(searchRoutes);
   await app.register(skillsRoutes);
   await app.register(agentbaseRoutes);
+  await app.register(researchRoutes);
+  await app.register(agentPresetRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);
