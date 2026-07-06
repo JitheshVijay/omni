@@ -8,30 +8,38 @@
 
 /* ── Omni color tokens ──────────────────────────────────────────────────
    Raw RGB triplets — required for Tailwind's opacity-modifier syntax
-   (`bg-surface/60`, see tailwind.config.ts). :root is light mode, .dark is
-   dark mode; same token names so every className works in both themes.
+   (`bg-surface/60`, see tailwind.config.ts). Same token names in both
+   themes so every className works in either.
 
-   The Omni look: clean neutral surface, deep near-black ink, and an
-   electric indigo/violet accent. Deliberately distinct from Flo101's
-   cream/orange. */
+   The Omni look is modeled on Genspark: a near-black canvas, barely-there
+   borders, big rounded surfaces, and colour carried by the tool icons +
+   gradient heading accents rather than a single loud brand hue. Dark is the
+   default (see theme.tsx); light is a refined toggle alternative.
+
+   surface  = page canvas
+   surface2 = cards / panels / sidebar
+   surface3 = inputs, hovers, lifted chips
+   accent   = links, focus, streaming, small highlights (indigo-blue) */
 :root {
-  --color-surface: 250 250 251;   /* page bg — cool near-white */
-  --color-surface2: 255 255 255;  /* panels/cards — pure white */
+  --color-surface: 255 255 255;   /* page bg — clean white */
+  --color-surface2: 250 250 251;  /* cards — faint off-white */
+  --color-surface3: 244 244 246;  /* inputs / hover */
   --color-ink: 24 24 27;          /* primary text — zinc-900 */
   --color-muted: 113 113 122;     /* secondary text — zinc-500 */
-  --color-accent: 79 70 229;      /* electric indigo (indigo-600) */
-  --color-accent2: 139 92 246;    /* violet-500 — gradients + highlights */
-  --color-line: 228 228 231;      /* subtle border — zinc-200 */
+  --color-accent: 99 102 241;     /* indigo-500 */
+  --color-accent2: 139 92 246;    /* violet-500 — gradients */
+  --color-line: 231 231 234;      /* subtle border */
 }
 
 .dark {
-  --color-surface: 16 16 20;      /* deep neutral near-black */
-  --color-surface2: 26 26 31;     /* slightly lifted panel surface */
-  --color-ink: 244 244 245;       /* zinc-100 */
-  --color-muted: 161 161 170;     /* zinc-400 */
-  --color-accent: 129 140 248;    /* indigo-400 — brighter for dark contrast */
+  --color-surface: 9 9 11;        /* #09090b — near-black canvas */
+  --color-surface2: 22 22 26;     /* #16161a — cards / rail */
+  --color-surface3: 32 32 37;     /* #202025 — inputs / hover / lifted */
+  --color-ink: 244 244 246;       /* near-white */
+  --color-muted: 138 138 148;     /* balanced gray */
+  --color-accent: 129 140 248;    /* indigo-400 — brighter on black */
   --color-accent2: 167 139 250;   /* violet-400 */
-  --color-line: 41 41 48;         /* dark border */
+  --color-line: 38 38 44;         /* #26262c — barely-there border */
 }
 
 html,
@@ -56,6 +64,19 @@ body {
 
 ::selection {
   background: rgb(var(--color-accent) / 0.25);
+}
+
+/* Genspark-style gradient accent word inside a heading
+   (e.g. "What would you like to <span class='grad-word'>build</span>?"). */
+.grad-word {
+  background: linear-gradient(
+    100deg,
+    rgb(var(--color-accent)),
+    rgb(var(--color-accent2))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ── Thin scrollbar — webkit + Firefox. Transparent track, subtle thumb

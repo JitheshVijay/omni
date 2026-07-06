@@ -1,21 +1,47 @@
-// Empty state for /chat (and /chat/new): a hero composer. The thread doesn't
-// exist yet — on first send we POST a new thread, then navigate to
-// /chat/:id passing the message via router state; ChatThreadPage sends it on
-// mount (exactly once). That keeps all streaming logic in one place.
+// Home / empty state for /chat (and /chat/new): a Genspark-style hero — a
+// centered title, one big composer, and a row of colorful tool shortcuts.
+// The thread doesn't exist yet — on first send we POST a new thread, then
+// navigate to /chat/:id passing the message via router state; ChatThreadPage
+// sends it on mount (exactly once), keeping all streaming logic in one place.
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { Sparkles } from "lucide-react";
+import {
+  FileText,
+  Presentation,
+  Table2,
+  Image as ImageIcon,
+  Podcast,
+  Bot,
+  GitBranch,
+} from "lucide-react";
 import { authFetch, invalidateApiPrefix } from "@/lib/use-api";
 import type { ChatAttachment, ChatThread } from "@/lib/types";
 import { Composer } from "@/components/chat/Composer";
 
 const SUGGESTIONS = [
-  "Summarize the key ideas in a file from my Drive",
-  "Compare two models on the same prompt",
-  "Draft a project plan for a weekend build",
-  "Explain a concept like I'm five",
+  "Summarize a file from my Drive",
+  "Compare two models on one prompt",
+  "Plan a weekend build",
+  "Explain a concept simply",
+];
+
+// Colorful tool shortcuts, Genspark-style: an outline icon in the tool's
+// signature colour over a small label.
+const TOOLS: {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}[] = [
+  { href: "/tools/docs", label: "Docs", icon: FileText, color: "text-sky-400" },
+  { href: "/tools/slides", label: "Slides", icon: Presentation, color: "text-orange-400" },
+  { href: "/tools/sheets", label: "Sheets", icon: Table2, color: "text-emerald-400" },
+  { href: "/tools/images", label: "Image", icon: ImageIcon, color: "text-fuchsia-400" },
+  { href: "/tools/podcast", label: "Podcast", icon: Podcast, color: "text-amber-400" },
+  { href: "/agent", label: "Agent", icon: Bot, color: "text-indigo-400" },
+  { href: "/workflows", label: "Flows", icon: GitBranch, color: "text-teal-400" },
 ];
 
 export interface ChatNavState {
@@ -53,54 +79,72 @@ export default function ChatIndexPage() {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto scrollbar-thin px-6 py-10">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="flex w-full max-w-2xl flex-col items-center gap-4 text-center"
-        >
-          <div className="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 shadow-lg shadow-accent/20">
-            <Sparkles className="size-7 text-white" />
-          </div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
-            What can I help with?
-          </h1>
-          <p className="max-w-md text-sm text-muted">
-            Multi-model chat over OpenRouter — attach files, ground answers in your
-            Hubs, and switch models mid-conversation.
-          </p>
+    <div className="flex h-screen flex-col items-center justify-center overflow-y-auto scrollbar-thin px-6 py-10">
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="flex w-full max-w-2xl flex-col items-center"
+      >
+        {/* Title */}
+        <h1 className="text-center font-display text-3xl font-semibold tracking-tight text-ink sm:text-[2.5rem]">
+          What can I help you <span className="grad-word">build</span>?
+        </h1>
+        <p className="mt-3 max-w-md text-center text-sm text-muted">
+          Ask anything, or start with a tool — chat across models, ground answers
+          in your Hubs, and turn ideas into docs, decks, and more.
+        </p>
 
-          <div className="mt-2 flex flex-wrap justify-center gap-2">
-            {SUGGESTIONS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setPrefill(s)}
-                className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-xs text-muted transition hover:border-accent/40 hover:text-ink"
+        {/* Big centered composer */}
+        <div className="mt-7 w-full">
+          <Composer
+            key={prefill}
+            variant="bare"
+            initialValue={prefill}
+            onSend={startChat}
+            disabled={creating}
+            autoFocus
+            placeholder="Ask anything, create anything…"
+          />
+        </div>
+
+        {/* Suggestion chips */}
+        <div className="mt-3 flex flex-wrap justify-center gap-2">
+          {SUGGESTIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setPrefill(s)}
+              className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-xs text-muted transition hover:border-accent/40 hover:text-ink"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+
+        {error && <p className="mt-3 text-sm text-rose-400">{error}</p>}
+
+        {/* Colorful tool shortcuts */}
+        <div className="mt-10 flex flex-wrap items-start justify-center gap-x-2 gap-y-3">
+          {TOOLS.map((t) => {
+            const Icon = t.icon;
+            return (
+              <Link
+                key={t.href}
+                to={t.href}
+                className="group flex w-[72px] flex-col items-center gap-1.5 rounded-xl px-1 py-2 text-center transition hover:bg-surface3/60"
               >
-                {s}
-              </button>
-            ))}
-          </div>
-
-          {error && (
-            <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Keyed by prefill: tapping a suggestion remounts the composer with the
-          suggestion seeded into the textarea, ready to edit or send. */}
-      <Composer
-        key={prefill}
-        initialValue={prefill}
-        onSend={startChat}
-        disabled={creating}
-        autoFocus
-        placeholder="Start a new chat…"
-      />
+                <span className="grid size-11 place-items-center rounded-xl border border-line bg-surface2 transition group-hover:-translate-y-0.5 group-hover:border-accent/40">
+                  <Icon className={`size-5 ${t.color}`} />
+                </span>
+                <span className="text-[11px] font-medium text-muted group-hover:text-ink">
+                  {t.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </motion.div>
     </div>
   );
 }

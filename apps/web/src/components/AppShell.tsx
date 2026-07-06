@@ -1,17 +1,16 @@
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 
-// Wraps every routed page in the app sidebar + main content area. Pages
-// under the shell own their full height: SidebarInset is a flex-1 <main>,
-// so a page that wants an internal scroll region uses h-screen inside it.
-// GlobalSearch mounts once here and owns the Cmd/Ctrl+K palette shortcut.
+// App frame: a fixed Genspark-style icon rail on the left + the routed page
+// filling the rest. GlobalSearch mounts once here and owns the Cmd/Ctrl+K
+// palette. Pages under the shell own their full height (the <main> is a
+// flex-1 min-h-screen column).
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
+    <div className="flex min-h-screen w-full bg-surface text-ink">
       <AppSidebar />
-      <SidebarInset>{children}</SidebarInset>
+      <main className="min-w-0 flex-1">{children}</main>
       <GlobalSearch />
-    </SidebarProvider>
+    </div>
   );
 }

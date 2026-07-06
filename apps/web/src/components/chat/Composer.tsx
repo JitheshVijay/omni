@@ -41,6 +41,9 @@ export interface ComposerProps {
   initialValue?: string;
   /** Small slot rendered in the footer row (e.g. the thread's model chip). */
   modelIndicator?: ReactNode;
+  /** "docked" (default) renders the bottom-bar chrome; "bare" drops the top
+   *  border/background/padding so the composer can sit centered on a hero. */
+  variant?: "docked" | "bare";
 }
 
 export function Composer({
@@ -52,6 +55,7 @@ export function Composer({
   autoFocus = false,
   initialValue = "",
   modelIndicator,
+  variant = "docked",
 }: ComposerProps) {
   const [input, setInput] = useState(initialValue);
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
@@ -242,8 +246,14 @@ export function Composer({
   );
 
   return (
-    <div className="border-t border-line bg-surface px-4 pb-4 pt-3 md:px-8">
-      <div className="mx-auto max-w-3xl">
+    <div
+      className={cn(
+        variant === "docked"
+          ? "border-t border-line bg-surface px-4 pb-4 pt-3 md:px-8"
+          : "w-full px-0",
+      )}
+    >
+      <div className={cn(variant === "docked" ? "mx-auto max-w-3xl" : "w-full")}>
         {localError && (
           <p className="mb-2 text-xs text-rose-600 dark:text-rose-400">{localError}</p>
         )}

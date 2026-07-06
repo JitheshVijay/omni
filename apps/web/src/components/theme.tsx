@@ -32,7 +32,8 @@ export function readStoredTheme(): Theme {
   } catch {
     // localStorage may be blocked
   }
-  return "system";
+  // Default to dark — Omni's Genspark-style look is designed dark-first.
+  return "dark";
 }
 
 function readSystemPref(): ResolvedTheme {

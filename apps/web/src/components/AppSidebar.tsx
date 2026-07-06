@@ -14,18 +14,6 @@ import {
   Monitor,
 } from "lucide-react";
 import { useTheme } from "@/components/theme";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarLabel,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 type IconCmp = React.ComponentType<{ className?: string }>;
@@ -34,128 +22,110 @@ interface NavEntry {
   href: string;
   label: string;
   icon: IconCmp;
-  /** "soon" chip — surface exists but the real feature lands in a later phase. */
-  soon?: boolean;
-  /** Fully disabled — no route yet; renders as a non-interactive row. */
-  disabled?: boolean;
 }
 
+// A thin Genspark-style icon rail: each item is an icon stacked over a tiny
+// label, centered in a fixed narrow column. Active route gets a lifted chip.
 const NAV: NavEntry[] = [
   { href: "/chat", label: "Chat", icon: MessageSquare },
   { href: "/hubs", label: "Hubs", icon: FolderKanban },
   { href: "/drive", label: "Drive", icon: HardDrive },
   { href: "/library", label: "Library", icon: LibraryBig },
   { href: "/agent", label: "Agent", icon: Bot },
-  { href: "/workflows", label: "Workflows", icon: GitBranch },
+  { href: "/workflows", label: "Flows", icon: GitBranch },
   { href: "/secretary", label: "Secretary", icon: Mail },
   { href: "/tools", label: "Tools", icon: Wrench },
 ];
 
-function SoonBadge() {
+function RailItem({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: NavEntry & { active: boolean }) {
   return (
-    <span className="ml-auto rounded-full bg-accent/10 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-accent">
-      soon
-    </span>
+    <li className="list-none">
+      <Link
+        to={href}
+        title={label}
+        className={cn(
+          "group flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium leading-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
+          active
+            ? "bg-surface3 text-ink"
+            : "text-muted hover:bg-surface3/60 hover:text-ink",
+        )}
+      >
+        <Icon
+          className={cn(
+            "size-[18px] transition-colors",
+            active ? "text-accent" : "text-muted group-hover:text-ink",
+          )}
+        />
+        <span className="max-w-full truncate">{label}</span>
+      </Link>
+    </li>
   );
 }
 
 export function AppSidebar() {
   const pathname = useLocation().pathname;
-  const { collapsed } = useSidebar();
 
   return (
-    <Sidebar>
-      <SidebarHeader className={cn(collapsed && "justify-center px-0")}>
-        <Link
-          to="/chat"
-          className="flex min-w-0 items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-md"
-          aria-label="Omni home"
-        >
-          {/* Brand mark: gradient tile + wordmark. The tile alone carries the
-              brand when the rail is collapsed. */}
-          <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent2 font-display text-sm font-bold text-white shadow-sm">
-            O
-          </span>
-          <SidebarLabel className="font-display text-lg font-semibold tracking-tight text-ink">
-            Omni
-          </SidebarLabel>
-        </Link>
-        {!collapsed && <SidebarTrigger className="ml-auto" />}
-      </SidebarHeader>
+    <aside className="sticky top-0 flex h-screen w-[76px] shrink-0 flex-col items-center border-r border-line bg-surface2">
+      {/* Brand mark */}
+      <Link
+        to="/chat"
+        aria-label="Omni home"
+        className="mt-3 grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent2 font-display text-base font-bold text-white shadow-md shadow-accent/25 outline-none transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-accent/50"
+      >
+        O
+      </Link>
 
-      <SidebarContent>
-        <SidebarGroup label="Workspace">
-          {NAV.map((item) => {
-            const Icon = item.icon;
-            const active = pathname.startsWith(item.href);
-            if (item.disabled) {
-              return (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    tooltip={`${item.label} — coming soon`}
-                    disabled
-                    aria-disabled
-                    className="cursor-default opacity-60 hover:bg-transparent hover:text-muted"
-                  >
-                    <Icon className="size-4 shrink-0" />
-                    <SidebarLabel className="flex-1 text-left">{item.label}</SidebarLabel>
-                    {item.soon && !collapsed && <SoonBadge />}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
-            }
-            return (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
-                  <Link to={item.href} className="flex w-full items-center gap-2">
-                    <Icon className="size-4 shrink-0" />
-                    <SidebarLabel className="flex-1 text-left">{item.label}</SidebarLabel>
-                    {item.soon && !collapsed && <SoonBadge />}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarGroup>
-        {collapsed && (
-          <div className="mt-2 flex justify-center">
-            <SidebarTrigger />
-          </div>
-        )}
-      </SidebarContent>
+      {/* Nav rail */}
+      <nav className="mt-4 w-full flex-1 overflow-y-auto no-scrollbar px-2">
+        <ul className="flex flex-col gap-1">
+          {NAV.map((item) => (
+            <RailItem
+              key={item.href}
+              {...item}
+              active={pathname.startsWith(item.href)}
+            />
+          ))}
+        </ul>
+      </nav>
 
-      <SidebarFooter>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            asChild
-            isActive={pathname.startsWith("/settings")}
-            tooltip="Settings"
-          >
-            <Link to="/settings" className="flex w-full items-center gap-2">
-              <SettingsIcon className="size-4 shrink-0" />
-              <SidebarLabel>Settings</SidebarLabel>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-        <ThemeToggleItem />
-      </SidebarFooter>
-    </Sidebar>
+      {/* Footer: settings + theme toggle */}
+      <div className="w-full px-2 pb-3">
+        <ul className="flex flex-col gap-1">
+          <RailItem
+            href="/settings"
+            label="Settings"
+            icon={SettingsIcon}
+            active={pathname.startsWith("/settings")}
+          />
+          <ThemeToggleRailItem />
+        </ul>
+      </div>
+    </aside>
   );
 }
 
-// Theme toggle: cycles light → dark → system. Three states keep the user's
-// explicit preference distinct from "respect my OS".
-function ThemeToggleItem() {
+// Theme toggle styled as a rail item: cycles light → dark → system.
+function ThemeToggleRailItem() {
   const { theme, toggle } = useTheme();
   const Icon = theme === "dark" ? Moon : theme === "light" ? Sun : Monitor;
-  const label =
-    theme === "dark" ? "Dark mode" : theme === "light" ? "Light mode" : "System theme";
+  const label = theme === "dark" ? "Dark" : theme === "light" ? "Light" : "System";
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton onClick={toggle} tooltip={label} variant="ghost">
-        <Icon className="size-4 shrink-0" />
-        <SidebarLabel>{label}</SidebarLabel>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+    <li className="list-none">
+      <button
+        type="button"
+        onClick={toggle}
+        title={`Theme: ${label}`}
+        className="group flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium leading-none text-muted transition-colors outline-none hover:bg-surface3/60 hover:text-ink focus-visible:ring-2 focus-visible:ring-accent/50"
+      >
+        <Icon className="size-[18px] text-muted transition-colors group-hover:text-ink" />
+        <span className="max-w-full truncate">{label}</span>
+      </button>
+    </li>
   );
 }

@@ -10,6 +10,7 @@ const config: Config = {
       colors: {
         surface: "rgb(var(--color-surface) / <alpha-value>)",
         surface2: "rgb(var(--color-surface2) / <alpha-value>)",
+        surface3: "rgb(var(--color-surface3) / <alpha-value>)",
         ink: "rgb(var(--color-ink) / <alpha-value>)",
         muted: "rgb(var(--color-muted) / <alpha-value>)",
         accent: "rgb(var(--color-accent) / <alpha-value>)",

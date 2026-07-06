@@ -42,13 +42,13 @@ export default function ToolsPage() {
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-5xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
-      <div className="mb-6 pl-10 lg:pl-0">
-        <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-          Tools
+      <div className="mb-8 pt-4 text-center">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          What would you like to <span className="grad-word">make</span>?
         </h1>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mx-auto mt-3 max-w-md text-sm text-muted">
           Generators that turn a prompt into something you can keep — everything
-          lands in your library.
+          lands in your Library.
         </p>
       </div>
 
