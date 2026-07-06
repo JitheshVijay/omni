@@ -9,6 +9,7 @@ import {
   Mail,
   Wrench,
   Sparkles,
+  LayoutDashboard,
   Settings as SettingsIcon,
   Sun,
   Moon,
@@ -37,6 +38,7 @@ const NAV: NavEntry[] = [
   { href: "/secretary", label: "Secretary", icon: Mail },
   { href: "/tools", label: "Tools", icon: Wrench },
   { href: "/skills", label: "Skills", icon: Sparkles },
+  { href: "/agentbase", label: "Systems", icon: LayoutDashboard },
 ];
 
 function RailItem({

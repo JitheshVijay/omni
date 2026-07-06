@@ -28,6 +28,7 @@ import {
   Play,
   Plus,
   Save,
+  Sparkles,
   Trash2,
   TriangleAlert,
   Workflow as WorkflowIcon,
@@ -398,6 +399,16 @@ export default function WorkflowEditorPage() {
           </Button>
         </div>
       </div>
+
+      {!loading && !enabled && chain.length > 0 && (
+        <div className="flex items-center gap-2 border-b border-accent/30 bg-accent/[0.06] px-4 py-1.5 text-[12px] text-ink">
+          <Sparkles className="size-3.5 shrink-0 text-accent" />
+          <span>
+            <span className="font-medium">Draft — review the steps.</span> Click a step to tweak
+            it, then Save and turn it on to schedule or run.
+          </span>
+        </div>
+      )}
 
       {actionError && (
         <div className="flex items-center gap-2 border-b border-rose-500/30 bg-rose-500/5 px-4 py-1.5 text-[12px] text-rose-600 dark:text-rose-400">

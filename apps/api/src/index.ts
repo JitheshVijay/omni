@@ -26,6 +26,7 @@ import { secretaryRoutes } from "./routes/secretary.js";
 import { voiceAgentRoutes } from "./routes/voice-agent.js";
 import { searchRoutes } from "./routes/search.js";
 import { skillsRoutes } from "./routes/skills.js";
+import { agentbaseRoutes } from "./routes/agentbase.js";
 import { seedBuiltinSkills } from "./lib/skills-seed.js";
 import { ensureSearchVecIndex, reindexAll } from "./lib/search-index.js";
 import { startWorkspaceSweep } from "./agent/workspace.js";
@@ -239,6 +240,7 @@ async function main() {
   await app.register(voiceAgentRoutes);
   await app.register(searchRoutes);
   await app.register(skillsRoutes);
+  await app.register(agentbaseRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);

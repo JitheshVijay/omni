@@ -104,6 +104,15 @@ export interface WorkflowDetail extends Workflow {
   runs: WorkflowRun[];
 }
 
+/** GET /api/workflows/templates — a curated starter template. */
+export interface WorkflowTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  graph: WorkflowGraph;
+}
+
 /** GET /api/workflows/runs/:runId — flat run + graph snapshot + steps. */
 export interface WorkflowRunDetail extends WorkflowRun {
   workflow_name: string | null;
