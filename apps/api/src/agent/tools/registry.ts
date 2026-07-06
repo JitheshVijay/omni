@@ -7,7 +7,8 @@ import type { ArtifactRow, GenEvent, GeneratorService } from "../../generators/t
 import { toArtifactSummary } from "../../generators/types.js";
 import { BUILTIN_TOOLS } from "./builtin.js";
 import { runCodeTool } from "./run-code.js";
-import { getSecretaryTools } from "./secretary-tools.js";
+import { getConnectorTools } from "./connector-tools.js";
+import { getMcpTools } from "./mcp.js";
 import { zodToJsonSchema } from "./zod-to-jsonschema.js";
 import type { AgentTool, AgentToolCtx, ToolResult } from "./types.js";
 
@@ -133,13 +134,15 @@ function toSpecs(tools: AgentTool[]): Array<Record<string, unknown>> {
 }
 
 /**
- * The per-user tool set: the shared tools plus this user's connected Secretary
- * (Composio Gmail/Calendar) actions. Async because Composio is queried live;
- * returns just the shared set when the Secretary is unconfigured.
+ * The per-user tool set: the shared tools, this user's connected Composio app
+ * actions (Gmail/Calendar/Slack/Notion/GitHub/... — supersedes the old
+ * Secretary-only splice), and any tools exposed by configured MCP servers.
+ * Async because connectors are queried live; each source fails soft to [].
  */
 export async function getAgentToolsForUser(userId: string): Promise<AgentTool[]> {
-  const secretary = await getSecretaryTools(userId).catch(() => []);
-  return secretary.length ? [...getAgentTools(), ...secretary] : getAgentTools();
+  const connectors = await getConnectorTools(userId).catch(() => []);
+  const mcp = getMcpTools();
+  return [...getAgentTools(), ...connectors, ...mcp];
 }
 
 export async function getToolMapForUser(userId: string): Promise<Map<string, AgentTool>> {

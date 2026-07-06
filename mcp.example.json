@@ -1,0 +1,23 @@
+{
+  "$comment": "Copy this file to mcp.json (repo root, or ${OMNI_DATA_DIR:-~/.omni}/mcp.json) to make Omni's Super Agent an MCP host. Each server's tools are exposed to the agent as `<name>__<tool>`. Read-looking tools (get/list/search/read/...) run immediately; everything else is confirm-gated. Restart the API or POST /api/mcp/reload after editing.",
+  "servers": [
+    {
+      "name": "everything",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-everything"]
+    },
+    {
+      "name": "filesystem",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
+    },
+    {
+      "name": "remote-example",
+      "transport": "http",
+      "url": "https://mcp.example.com/mcp",
+      "disabled": true
+    }
+  ]
+}

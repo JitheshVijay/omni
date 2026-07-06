@@ -27,6 +27,9 @@ import { voiceAgentRoutes } from "./routes/voice-agent.js";
 import { searchRoutes } from "./routes/search.js";
 import { skillsRoutes } from "./routes/skills.js";
 import { agentbaseRoutes } from "./routes/agentbase.js";
+import { connectorRoutes } from "./routes/connectors.js";
+import { mcpRoutes } from "./routes/mcp.js";
+import { startMcp, stopMcp } from "./agent/tools/mcp.js";
 import { researchRoutes } from "./routes/research.js";
 import { agentPresetRoutes } from "./routes/agent-presets.js";
 import { seedAgentPresets } from "./lib/agent-presets-seed.js";
@@ -245,6 +248,8 @@ async function main() {
   await app.register(searchRoutes);
   await app.register(skillsRoutes);
   await app.register(agentbaseRoutes);
+  await app.register(connectorRoutes);
+  await app.register(mcpRoutes);
   await app.register(researchRoutes);
   await app.register(agentPresetRoutes);
 
@@ -267,6 +272,9 @@ async function main() {
   // Workflows: rehydrate cron schedules (missed-while-closed runs are missed).
   startWorkflowCron();
 
+  // MCP host: connect to configured MCP servers so their tools become agent tools.
+  void startMcp();
+
   // Global search: build/refresh the semantic index in the background.
   void reindexAll(env.LOCAL_USER_ID).catch((err) =>
     app.log.warn({ err }, "[search] boot reindex failed"),
@@ -275,6 +283,7 @@ async function main() {
   // ── Graceful shutdown ──
   const shutdown = async (signal: string) => {
     app.log.info(`Received ${signal}, shutting down...`);
+    await stopMcp().catch(() => {});
     try {
       await app.close();
     } catch (err) {

@@ -33,6 +33,7 @@ const WebAppStudioPage = lazyWithReload(() => import("@/pages/WebAppStudioPage")
 const WebAppViewPage = lazyWithReload(() => import("@/pages/WebAppViewPage"));
 const DesignStudioPage = lazyWithReload(() => import("@/pages/DesignStudioPage"));
 const DesignViewPage = lazyWithReload(() => import("@/pages/DesignViewPage"));
+const ConnectorsPage = lazyWithReload(() => import("@/pages/ConnectorsPage"));
 const LibraryPage = lazyWithReload(() => import("@/pages/LibraryPage"));
 const SecretaryPage = lazyWithReload(() => import("@/pages/SecretaryPage"));
 const SkillsPage = lazyWithReload(() => import("@/pages/SkillsPage"));
@@ -103,6 +104,7 @@ export default function App() {
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/secretary" element={<SecretaryPage />} />
         <Route path="/skills" element={<SkillsPage />} />
+        <Route path="/connectors" element={<ConnectorsPage />} />
         <Route path="/agentbase" element={<AgentBasePage />} />
         <Route path="/agentbase/:id" element={<SystemViewPage />} />
         <Route path="/research" element={<ResearchPage />} />
