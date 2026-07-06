@@ -246,7 +246,7 @@ export default function WebAppStudioPage() {
             <iframe
               title="Live preview"
               srcDoc={previewHtml}
-              sandbox="allow-scripts"
+              sandbox="allow-scripts allow-same-origin"
               className="h-[60vh] w-full bg-white"
             />
           ) : (

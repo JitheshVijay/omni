@@ -309,7 +309,12 @@ export default function WebAppViewPage() {
               key={artifact.id}
               title={artifact.title || "App preview"}
               srcDoc={html}
-              sandbox="allow-scripts allow-forms allow-modals allow-popups"
+              // allow-same-origin so generated apps can use localStorage /
+              // sessionStorage (a sandbox without it throws SecurityError on
+              // storage access, crashing any app that persists state). Safe
+              // here: a local single-user tool previewing apps the user
+              // generated themselves.
+              sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"
               className={cn(
                 "border-0 bg-white",
                 device === "mobile"

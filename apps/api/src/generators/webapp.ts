@@ -83,7 +83,14 @@ export function cleanFences(raw: string, ended: boolean): string | null {
   }
   // Closing fence only ever appears at the very end of the document.
   s = s.replace(/\n?```\s*$/, "");
-  return ended ? s.trim() : s;
+  if (ended) {
+    // Salvage: if the model prefixed prose (e.g. "Here's your app:"), start the
+    // document at the first real HTML tag so the preview never renders chatter.
+    const start = /<!doctype html|<html[\s>]/i.exec(s);
+    if (start && start.index > 0) s = s.slice(start.index);
+    return s.trim();
+  }
+  return s;
 }
 
 // ─── Prompt assembly ────────────────────────────────────────────────
@@ -109,6 +116,7 @@ function buildSystemPrompt(style: WebappStyle): string {
       "- ZERO network requests: no external URLs, no CDNs, no <link>/@import stylesheets, no web fonts, no remote images, no fetch/XHR/WebSocket. It must run fully offline inside a sandboxed iframe whose only permission is allow-scripts.",
       "- Need images/icons? Draw them with inline SVG, CSS, emoji, or canvas — never a remote src. Need fonts? Use the system font stack.",
       "- Make it genuinely FUNCTIONAL, not a mockup: wire up real interactivity and state with JS. Handle empty and edge states. It should feel finished and delightful.",
+      "- CRITICAL — the app MUST fully render its real initial UI on load. Put the <script> at the end of <body> and CALL your init/render function immediately at the end of it (the DOM already exists) so everything is populated before the user sees it. NEVER ship literal placeholder text that code should have replaced (e.g. 'Month Year', 'Lorem ipsum', '{{value}}', empty grids): compute and fill the actual content (today's date, the current month's day cells, sample data, etc.) up front.",
       "- Write clean, responsive, accessible markup that looks great on both desktop and mobile.",
       "- Include a meaningful <title>.",
     ].join("\n"),
@@ -155,6 +163,12 @@ async function streamHtml(opts: {
       messages,
       stream: true,
       max_tokens: MAX_TOKENS,
+      // CRITICAL: disable extended thinking. A reasoning-enabled Claude model
+      // will spend the ENTIRE max_tokens budget "thinking" about a non-trivial
+      // app and emit zero HTML (finish_reason: "length", content: ""), which
+      // surfaced as "Model produced an empty document". Writing markup is a
+      // direct task; no thinking budget needed.
+      reasoning: { enabled: false },
       ...providerRoutingForCache(opts.model),
     },
     { ...LLM_REQUEST_OPTS, signal: ctx.signal },
@@ -175,8 +189,36 @@ async function streamHtml(opts: {
   }
 
   const html = cleanFences(raw, true) ?? "";
-  if (!html.trim()) throw new Error("Model produced an empty document");
+  if (!html.trim()) {
+    throw new EmptyDocumentError();
+  }
   return html;
+}
+
+/** Thrown when the model returns no usable HTML — retried once by the caller. */
+class EmptyDocumentError extends Error {
+  constructor() {
+    super("Model produced an empty document");
+    this.name = "EmptyDocumentError";
+  }
+}
+
+/** streamHtml, retried once if the first attempt yields nothing. */
+async function streamHtmlWithRetry(opts: {
+  system: string;
+  prompt: string;
+  model: string;
+  ctx: GenCtx;
+}): Promise<string> {
+  try {
+    return await streamHtml(opts);
+  } catch (err) {
+    if (err instanceof EmptyDocumentError && !opts.ctx.signal.aborted) {
+      opts.ctx.emit({ type: "status", label: "Retrying" });
+      return await streamHtml(opts);
+    }
+    throw err;
+  }
 }
 
 /** Blob-first (atomic .part -> rename) then row: a crash never leaves a row
@@ -214,7 +256,7 @@ async function runWebapp(input: WebappInput, ctx: GenCtx): Promise<ArtifactSumma
   const model = input.model ?? MODELS.default;
   ctx.emit({ type: "status", label: "Designing the app" });
 
-  const html = await streamHtml({
+  const html = await streamHtmlWithRetry({
     system: buildSystemPrompt(input.style),
     prompt: input.prompt,
     model,
