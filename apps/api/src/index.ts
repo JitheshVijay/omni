@@ -25,6 +25,8 @@ import { startWorkflowCron } from "./lib/workflow-cron.js";
 import { secretaryRoutes } from "./routes/secretary.js";
 import { voiceAgentRoutes } from "./routes/voice-agent.js";
 import { searchRoutes } from "./routes/search.js";
+import { skillsRoutes } from "./routes/skills.js";
+import { seedBuiltinSkills } from "./lib/skills-seed.js";
 import { ensureSearchVecIndex, reindexAll } from "./lib/search-index.js";
 import { startWorkspaceSweep } from "./agent/workspace.js";
 import { chatRoutes } from "./routes/chat.js";
@@ -214,6 +216,7 @@ async function main() {
   );
   ensureVecIndex();
   ensureSearchVecIndex();
+  seedBuiltinSkills();
   if (vecAvailable) {
     app.log.info("sqlite-vec loaded — vector KNN enabled");
   } else {
@@ -235,6 +238,7 @@ async function main() {
   await app.register(secretaryRoutes);
   await app.register(voiceAgentRoutes);
   await app.register(searchRoutes);
+  await app.register(skillsRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);

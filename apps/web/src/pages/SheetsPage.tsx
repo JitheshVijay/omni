@@ -39,6 +39,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=sheet&limit=50";
 const NO_HUB = "__none__";
@@ -85,8 +87,23 @@ export default function SheetsPage() {
   const [previewRows, setPreviewRows] = useState<SheetCell[][]>([]);
   const [genError, setGenError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const promptRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Template → prefill the form (prompt + row count) and focus it so the user
+  // can tweak before generating (Genspark "Add & Use").
+  function useTemplate(t: GenTemplate) {
+    if (generating) return;
+    setPrompt(t.prompt);
+    if (typeof t.extra?.rows_hint === "number") setRowCount(t.extra.rows_hint);
+    setColumnsHint("");
+    setGenError(null);
+    requestAnimationFrame(() => {
+      promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      promptRef.current?.focus();
+    });
+  }
 
   async function generate() {
     const trimmed = prompt.trim();
@@ -141,21 +158,21 @@ export default function SheetsPage() {
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-5xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
-      <div className="mb-6 flex items-center gap-3 pl-10 lg:pl-0">
+      <div className="mb-4 pl-10 lg:pl-0">
         <Button variant="ghost" size="iconSm" asChild aria-label="Back to Tools">
           <Link to="/tools">
             <ArrowLeft />
           </Link>
         </Button>
-        <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            AI Sheets
-          </h1>
-          <p className="mt-0.5 text-sm text-muted">
-            Describe the data you need — Omni designs typed columns and fills
-            the rows, streaming into an editable spreadsheet.
-          </p>
-        </div>
+      </div>
+      <div className="mb-6 text-center">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          Build data with <span className="grad-word">AI Sheets</span>
+        </h1>
+        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+          Describe the data you need — Omni designs typed columns and fills
+          the rows, streaming into an editable spreadsheet.
+        </p>
       </div>
 
       {/* New sheet panel */}
@@ -173,6 +190,7 @@ export default function SheetsPage() {
         </div>
 
         <Textarea
+          ref={promptRef}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {
@@ -264,6 +282,9 @@ export default function SheetsPage() {
           total={rowCount}
         />
       )}
+
+      {/* Template gallery */}
+      <TemplateGallery kind="sheet" onUse={useTemplate} />
 
       {/* Existing sheets */}
       <div className="mt-8">

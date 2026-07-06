@@ -30,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=doc&limit=50";
 
@@ -73,23 +75,35 @@ export default function DocsListPage() {
     });
   }
 
+  // Template → straight into the editor with the seeded prompt + length,
+  // reusing the same router-state handoff as manual generation.
+  function useTemplate(t: GenTemplate) {
+    navigate("/tools/docs/new", {
+      state: {
+        prompt: t.prompt,
+        hub_id: hubId === NO_HUB ? null : hubId,
+        length: (t.extra?.length as DocLength) ?? "medium",
+      } satisfies DocGenNavState,
+    });
+  }
+
   return (
     <div className="mx-auto flex h-screen w-full max-w-5xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
-      <div className="mb-6 flex items-center gap-3 pl-10 lg:pl-0">
+      <div className="mb-4 pl-10 lg:pl-0">
         <Button variant="ghost" size="iconSm" asChild aria-label="Back to Tools">
           <Link to="/tools">
             <ArrowLeft />
           </Link>
         </Button>
-        <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            AI Docs
-          </h1>
-          <p className="mt-0.5 text-sm text-muted">
-            Full documents, streamed into a rich editor — grounded in your hubs
-            with inline citations.
-          </p>
-        </div>
+      </div>
+      <div className="mb-6 text-center">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          Write anything with <span className="grad-word">AI Docs</span>
+        </h1>
+        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+          Full documents, streamed into a rich editor — grounded in your hubs
+          with inline citations.
+        </p>
       </div>
 
       {/* New document panel */}
@@ -167,6 +181,9 @@ export default function DocsListPage() {
           </Button>
         </div>
       </motion.div>
+
+      {/* Template gallery */}
+      <TemplateGallery kind="doc" onUse={useTemplate} />
 
       {/* Existing docs */}
       <div className="mt-8">

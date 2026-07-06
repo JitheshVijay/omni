@@ -50,6 +50,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=image&limit=50";
 
@@ -82,8 +84,25 @@ export default function ImageStudioPage() {
   const [statusLabel, setStatusLabel] = useState<string | null>(null);
   const [genError, setGenError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const promptRef = useRef<HTMLTextAreaElement>(null);
 
   const [selected, setSelected] = useState<ArtifactSummary | null>(null);
+
+  // Template → prefill the form (prompt + aspect ratio) and focus it so the
+  // user can tweak before generating (Genspark "Add & Use").
+  function useTemplate(t: GenTemplate) {
+    if (generating) return;
+    setPrompt(t.prompt);
+    const ar = t.extra?.aspect_ratio;
+    if (ar && (ASPECT_RATIOS as readonly string[]).includes(ar)) {
+      setAspect(ar as AspectRatio);
+    }
+    setGenError(null);
+    requestAnimationFrame(() => {
+      promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      promptRef.current?.focus();
+    });
+  }
 
   // Deep-link from Tools/Library: open a specific artifact once the list is
   // in. Router state is cleared immediately so back/refresh doesn't re-open.
@@ -142,20 +161,20 @@ export default function ImageStudioPage() {
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-6xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
-      <div className="mb-6 flex items-center gap-3 pl-10 lg:pl-0">
+      <div className="mb-4 pl-10 lg:pl-0">
         <Button variant="ghost" size="iconSm" asChild aria-label="Back to Tools">
           <Link to="/tools">
             <ArrowLeft />
           </Link>
         </Button>
-        <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            Image Studio
-          </h1>
-          <p className="mt-0.5 text-sm text-muted">
-            Describe it, generate it, then refine it with follow-up edits.
-          </p>
-        </div>
+      </div>
+      <div className="mb-6 text-center">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          Create with <span className="grad-word">Image Studio</span>
+        </h1>
+        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+          Describe it, generate it, then refine it with follow-up edits.
+        </p>
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[340px_1fr]">
@@ -164,6 +183,7 @@ export default function ImageStudioPage() {
           <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
             Prompt
             <Textarea
+              ref={promptRef}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => {
@@ -304,6 +324,9 @@ export default function ImageStudioPage() {
           )}
         </div>
       </div>
+
+      {/* Template gallery */}
+      <TemplateGallery kind="image" onUse={useTemplate} />
 
       <ImageDetailDialog
         artifact={selected}

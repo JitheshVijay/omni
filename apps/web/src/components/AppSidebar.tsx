@@ -8,6 +8,7 @@ import {
   GitBranch,
   Mail,
   Wrench,
+  Sparkles,
   Settings as SettingsIcon,
   Sun,
   Moon,
@@ -35,6 +36,7 @@ const NAV: NavEntry[] = [
   { href: "/workflows", label: "Flows", icon: GitBranch },
   { href: "/secretary", label: "Secretary", icon: Mail },
   { href: "/tools", label: "Tools", icon: Wrench },
+  { href: "/skills", label: "Skills", icon: Sparkles },
 ];
 
 function RailItem({
