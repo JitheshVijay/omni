@@ -31,6 +31,8 @@ const WorkflowRunPage = lazyWithReload(() => import("@/pages/WorkflowRunPage"));
 const DeckEditorPage = lazyWithReload(() => import("@/pages/DeckEditorPage"));
 const WebAppStudioPage = lazyWithReload(() => import("@/pages/WebAppStudioPage"));
 const WebAppViewPage = lazyWithReload(() => import("@/pages/WebAppViewPage"));
+const DesignStudioPage = lazyWithReload(() => import("@/pages/DesignStudioPage"));
+const DesignViewPage = lazyWithReload(() => import("@/pages/DesignViewPage"));
 const LibraryPage = lazyWithReload(() => import("@/pages/LibraryPage"));
 const SecretaryPage = lazyWithReload(() => import("@/pages/SecretaryPage"));
 const SkillsPage = lazyWithReload(() => import("@/pages/SkillsPage"));
@@ -93,6 +95,8 @@ export default function App() {
         <Route path="/tools/podcast" element={<PodcastStudioPage />} />
         <Route path="/tools/apps" element={<WebAppStudioPage />} />
         <Route path="/tools/apps/:artifactId" element={<WebAppViewPage />} />
+        <Route path="/tools/design" element={<DesignStudioPage />} />
+        <Route path="/tools/design/:artifactId" element={<DesignViewPage />} />
         <Route path="/workflows" element={<WorkflowsPage />} />
         <Route path="/workflows/:id" element={<WorkflowEditorPage />} />
         <Route path="/workflows/:id/runs/:runId" element={<WorkflowRunPage />} />

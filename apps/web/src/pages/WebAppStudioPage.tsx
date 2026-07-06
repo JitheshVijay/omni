@@ -64,7 +64,8 @@ export default function WebAppStudioPage() {
   const navigate = useNavigate();
 
   const { data, isInitialLoading } = useApi<{ artifacts: ArtifactSummary[] }>(LIST_PATH);
-  const apps = data?.artifacts ?? [];
+  // Exclude Design Studio artifacts (they share kind "webpage").
+  const apps = (data?.artifacts ?? []).filter((a) => a.meta?.subtype !== "design");
 
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState<WebappStyle>("clean");

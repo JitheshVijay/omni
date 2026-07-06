@@ -1,6 +1,7 @@
 // Generator registry: name -> service. Both adapters resolve through here —
 // POST /api/generate/:name (P2) and the agent tool auto-wrapper (P3).
 import type { GeneratorService } from "./types.js";
+import { designGenerator } from "./design.js";
 import { docGenerator } from "./doc.js";
 import { imageGenerator } from "./image.js";
 import { meetingGenerator } from "./meeting.js";
@@ -19,6 +20,7 @@ const GENERATORS: Record<string, GeneratorService<any>> = {
   sheet: sheetGenerator,
   podcast: podcastGenerator,
   webapp: webappGenerator,
+  design: designGenerator,
 };
 
 export function getGenerator(name: string): GeneratorService<any> | undefined {

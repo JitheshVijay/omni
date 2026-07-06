@@ -20,6 +20,7 @@ import { parseApiError, type ParsedApiError } from "@/lib/api-error";
 import type { ArtifactSummary } from "@/lib/types";
 
 export type GeneratorName =
+  | "design"
   | "doc"
   | "image"
   | "tts"
@@ -27,6 +28,7 @@ export type GeneratorName =
   | "sheet"
   | "podcast"
   | "webapp"
+  | "design"
   | "meeting";
 
 export type GenerateEvent =

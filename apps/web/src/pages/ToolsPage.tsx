@@ -8,6 +8,7 @@ import {
   AudioLines,
   Code2,
   FileText,
+  Palette,
   Images,
   NotebookPen,
   Podcast,
@@ -37,7 +38,8 @@ export default function ToolsPage() {
       navigate("/tools/images", { state: { openId: a.id } });
     else if (a.kind === "slides") navigate(`/tools/slides/${a.id}`);
     else if (a.kind === "sheet") navigate(`/tools/sheets/${a.id}`);
-    else if (a.kind === "webpage") navigate(`/tools/apps/${a.id}`);
+    else if (a.kind === "webpage")
+      navigate(a.meta?.subtype === "design" ? `/tools/design/${a.id}` : `/tools/apps/${a.id}`);
     else if (a.kind === "audio" && a.meta?.subtype === "podcast")
       navigate("/tools/podcast", { state: { openId: a.id } });
     // plain TTS audio plays inline on its card — no viewer page.
@@ -79,6 +81,14 @@ export default function ToolsPage() {
           gradient="from-violet-500 to-fuchsia-500"
           title="AI Developer"
           text="Describe an app or page and get a complete, working single-file web app — live sandboxed preview with the code in reach."
+          index={2}
+        />
+        <ToolCard
+          to="/tools/design"
+          icon={Palette}
+          gradient="from-rose-500 to-orange-400"
+          title="Design Studio"
+          text="Describe a poster, social post, flyer, or cover — get a print-quality graphic you can export as PNG."
           index={2}
         />
         <ExplainerCard

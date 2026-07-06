@@ -31,6 +31,7 @@ import {
   type GenCtx,
   type GeneratorService,
 } from "./types.js";
+import { designGenerator } from "./design.js";
 
 // ─── Input ──────────────────────────────────────────────────────────
 
@@ -281,11 +282,20 @@ async function reviseWebapp(
   const parent = getArtifact(artifactId, ctx.userId);
   if (!parent) throw new Error("Artifact not found");
   if (parent.kind !== "webpage") throw new Error("Not a webapp artifact");
+
+  const parentMeta = fromJson<Record<string, unknown>>(parent.meta) ?? {};
+  // Designs (Design Studio) share kind 'webpage' with web apps, so the revise
+  // route resolves them here via getGeneratorForKind('webpage'). Delegate them
+  // to the design generator so a revised design stays a design — preserving
+  // meta.subtype, the exact canvas dimensions, and the graphic-design prompt —
+  // instead of being rewritten as a plain web app.
+  if (parentMeta.subtype === "design" && designGenerator.revise) {
+    return designGenerator.revise(artifactId, instruction, ctx);
+  }
+
   const parentContent = fromJson<WebappContent>(parent.content);
   const currentHtml = parentContent?.html?.trim();
   if (!currentHtml) throw new Error("Web app has no HTML to revise");
-
-  const parentMeta = fromJson<Record<string, unknown>>(parent.meta) ?? {};
   const style = (STYLES as readonly string[]).includes(parentMeta.style as string)
     ? (parentMeta.style as WebappStyle)
     : "clean";
