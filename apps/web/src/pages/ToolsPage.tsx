@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   AudioLines,
+  Code2,
   FileText,
   Images,
   Podcast,
@@ -35,6 +36,7 @@ export default function ToolsPage() {
       navigate("/tools/images", { state: { openId: a.id } });
     else if (a.kind === "slides") navigate(`/tools/slides/${a.id}`);
     else if (a.kind === "sheet") navigate(`/tools/sheets/${a.id}`);
+    else if (a.kind === "webpage") navigate(`/tools/apps/${a.id}`);
     else if (a.kind === "audio" && a.meta?.subtype === "podcast")
       navigate("/tools/podcast", { state: { openId: a.id } });
     // plain TTS audio plays inline on its card — no viewer page.
@@ -69,6 +71,14 @@ export default function ToolsPage() {
           title="AI Docs"
           text="Draft full documents that stream into a rich editor — grounded in your hub memory with citations."
           index={1}
+        />
+        <ToolCard
+          to="/tools/apps"
+          icon={Code2}
+          gradient="from-violet-500 to-fuchsia-500"
+          title="AI Developer"
+          text="Describe an app or page and get a complete, working single-file web app — live sandboxed preview with the code in reach."
+          index={2}
         />
         <ExplainerCard
           icon={AudioLines}

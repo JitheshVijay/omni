@@ -56,6 +56,7 @@ import {
   type SheetColumn,
 } from "@/lib/sheet-types";
 import { cn } from "@/lib/utils";
+import { SaveAsSkillButton } from "@/components/skills/SaveAsSkillButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -121,6 +122,7 @@ export default function SheetEditorPage() {
   const [columns, setColumns] = useState<SheetColumn[]>([]);
   const [rows, setRows] = useState<SheetCell[][]>([]);
   const [title, setTitle] = useState("");
+  const [sourcePrompt, setSourcePrompt] = useState<string | null>(null);
   const [artifactId, setArtifactId] = useState<string | null>(routeId ?? null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -158,6 +160,9 @@ export default function SheetEditorPage() {
         setRows(sheet.rows);
         setTitle(art.title ?? "");
         savedTitleRef.current = art.title ?? "";
+        setSourcePrompt(
+          typeof art.meta?.prompt === "string" ? (art.meta.prompt as string) : null,
+        );
         setDirty(false);
         setPhase("ready");
       } catch (err) {
@@ -447,6 +452,13 @@ export default function SheetEditorPage() {
           <WandSparkles />
           Edit with AI
         </Button>
+
+        <SaveAsSkillButton
+          target="sheet"
+          defaultName={title || undefined}
+          defaultPrompt={sourcePrompt || title || ""}
+          disabled={!ready}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

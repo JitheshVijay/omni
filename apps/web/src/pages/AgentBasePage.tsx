@@ -26,6 +26,7 @@ import {
 import { useApi, invalidateApiPrefix } from "@/lib/use-api";
 import {
   createSystem,
+  createSystemFromFile,
   deleteSystem,
   SYSTEMS_KEY,
   TEMPLATES_KEY,
@@ -79,10 +80,12 @@ export default function AgentBasePage() {
   const navigate = useNavigate();
   const confirm = useConfirm();
   const describeRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [prompt, setPrompt] = useState("");
   const [creating, setCreating] = useState(false);
   const [usingId, setUsingId] = useState<string | null>(null);
+  const [importing, setImporting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("systems");
   const [category, setCategory] = useState<string | null>(null);
@@ -110,6 +113,34 @@ export default function AgentBasePage() {
   function focusDescribe(hint: string) {
     if (hint) setPrompt((p) => (p.trim() ? p : hint));
     requestAnimationFrame(() => describeRef.current?.focus());
+  }
+
+  // "From files" source: pick a CSV/TSV and let the server parse it into a real
+  // system (typed columns + records + auto-suggested tiles), then open it.
+  function handleSourceClick(source: (typeof SOURCES)[number]) {
+    if (source.id === "files") {
+      if (!importing) fileInputRef.current?.click();
+      return;
+    }
+    focusDescribe(source.hint);
+  }
+
+  async function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file later
+    if (!file || importing) return;
+    setImporting(file.name);
+    setError(null);
+    try {
+      const system = await createSystemFromFile(file);
+      await invalidateApiPrefix(SYSTEMS_KEY);
+      navigate(`/agentbase/${system.id}`);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not build a system from that file.",
+      );
+      setImporting(null);
+    }
   }
 
   async function handleCreate() {
@@ -177,13 +208,15 @@ export default function AgentBasePage() {
           {/* Source options */}
           <div className="mt-5 grid grid-cols-2 gap-2">
             {SOURCES.map((s) => {
-              const Icon = s.icon;
+              const busy = s.id === "files" && importing !== null;
+              const Icon = busy ? Loader2 : s.icon;
               return (
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => focusDescribe(s.hint)}
-                  className={`group flex items-center gap-2 rounded-xl border p-2.5 text-left transition ${
+                  onClick={() => handleSourceClick(s)}
+                  disabled={busy}
+                  className={`group flex items-center gap-2 rounded-xl border p-2.5 text-left transition disabled:cursor-wait ${
                     s.describe
                       ? "border-accent/50 bg-accent/10 hover:border-accent"
                       : "border-line bg-surface2 hover:border-accent/40 hover:bg-surface3/60"
@@ -194,7 +227,7 @@ export default function AgentBasePage() {
                       s.describe ? "bg-accent text-white" : "bg-surface3 text-muted group-hover:text-ink"
                     }`}
                   >
-                    <Icon className="size-4" />
+                    <Icon className={`size-4 ${busy ? "animate-spin" : ""}`} />
                   </span>
                   <span className="text-xs font-medium leading-tight text-ink">
                     {s.label}
@@ -203,6 +236,21 @@ export default function AgentBasePage() {
               );
             })}
           </div>
+
+          {/* Hidden picker for the "From files" source (CSV/TSV ingestion) */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain"
+            className="hidden"
+            onChange={handleFileSelected}
+          />
+          {importing && (
+            <p className="mt-3 inline-flex items-center gap-2 text-xs text-muted">
+              <Loader2 className="size-3.5 animate-spin" />
+              Parsing {importing}…
+            </p>
+          )}
 
           {/* Describe box */}
           <div className="mt-4 rounded-2xl border border-line bg-surface2 p-3 shadow-sm">

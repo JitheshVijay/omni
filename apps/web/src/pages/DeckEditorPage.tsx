@@ -29,6 +29,7 @@ import { exportDeckToPptx } from "@/lib/pptx-export";
 import { DeckViewer } from "@/components/tools/DeckViewer";
 import type { Artifact, ArtifactSummary } from "@/lib/types";
 import type { DeckContent, SlideSpec } from "@/lib/slide-types";
+import { SaveAsSkillButton } from "@/components/skills/SaveAsSkillButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -90,6 +91,7 @@ export default function DeckEditorPage() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [deck, setDeck] = useState<DeckContent | null>(null);
   const [title, setTitle] = useState("");
+  const [sourcePrompt, setSourcePrompt] = useState<string | null>(null);
   const [artifactId, setArtifactId] = useState<string | null>(routeId ?? null);
   const [pageError, setPageError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -121,6 +123,9 @@ export default function DeckEditorPage() {
         setDeck(d);
         setTitle(art.title ?? "");
         savedTitleRef.current = art.title ?? "";
+        setSourcePrompt(
+          typeof art.meta?.prompt === "string" ? (art.meta.prompt as string) : null,
+        );
         setPhase("ready");
       } catch (err) {
         if (cancelled) return;
@@ -260,6 +265,13 @@ export default function DeckEditorPage() {
           <WandSparkles />
           Edit with AI
         </Button>
+
+        <SaveAsSkillButton
+          target="slides"
+          defaultName={title || undefined}
+          defaultPrompt={sourcePrompt || title || ""}
+          disabled={phase !== "ready"}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

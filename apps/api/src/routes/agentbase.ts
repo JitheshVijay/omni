@@ -34,6 +34,11 @@ import {
   generateSystem,
   touchSystem,
 } from "../lib/agentbase-gen.js";
+import {
+  buildSystemFromTable,
+  parseTabular,
+  systemNameFromFilename,
+} from "../lib/agentbase-import.js";
 
 interface SystemRow {
   id: string;
@@ -105,6 +110,8 @@ function summarizeSystem(row: SystemRow) {
     record_count: recordCount?.n ?? 0,
   };
 }
+
+const MAX_IMPORT_BYTES = 10 * 1024 * 1024;
 
 const CreateSchema = z
   .object({
@@ -226,6 +233,65 @@ export async function agentbaseRoutes(app: FastifyInstance) {
         success: false,
         error: err instanceof Error ? err.message : "Could not create that system.",
         code: "generation_failed",
+      });
+    }
+
+    const row = loadOwnedSystem(systemId, userId)!;
+    return reply.status(201).send({ success: true, data: summarizeSystem(row) });
+  });
+
+  // ── POST /api/agentbase/systems/from-file ── build a system from a CSV/TSV
+  // Multipart: field "file" (the spreadsheet), optional field "name". Parses the
+  // uploaded bytes into a typed schema + records and persists a real system.
+  app.post("/api/agentbase/systems/from-file", async (request, reply) => {
+    const { userId } = request as AuthenticatedRequest;
+
+    let buffer: Buffer | undefined;
+    let filename = "upload.csv";
+    let nameOverride: string | undefined;
+    try {
+      for await (const part of request.parts()) {
+        if (part.type === "file") {
+          if (part.fieldname === "file" && !buffer) {
+            buffer = await part.toBuffer();
+            filename = (part.filename || "upload.csv").slice(0, 300);
+          } else {
+            // Drain any other/extra file part so the stream completes.
+            await part.toBuffer();
+          }
+        } else if (part.fieldname === "name" && typeof part.value === "string") {
+          nameOverride = part.value.slice(0, 120);
+        }
+      }
+    } catch (err) {
+      request.log.warn({ err }, "[agentbase] multipart read failed");
+      return reply
+        .status(400)
+        .send({ success: false, error: "Malformed upload", code: "bad_upload" });
+    }
+
+    if (!buffer || buffer.length === 0) {
+      return reply
+        .status(400)
+        .send({ success: false, error: "No file uploaded", code: "no_file" });
+    }
+    if (buffer.length > MAX_IMPORT_BYTES) {
+      return reply
+        .status(413)
+        .send({ success: false, error: "File must be under 10MB", code: "too_large" });
+    }
+
+    let systemId: string;
+    try {
+      const table = parseTabular(buffer, filename);
+      const name = (nameOverride?.trim() || systemNameFromFilename(filename)).slice(0, 120);
+      systemId = buildSystemFromTable(userId, name, table);
+    } catch (err) {
+      request.log.warn({ err }, "[agentbase] file import failed");
+      return reply.status(400).send({
+        success: false,
+        error: err instanceof Error ? err.message : "Could not read that file.",
+        code: "import_failed",
       });
     }
 

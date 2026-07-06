@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=doc&limit=50";
@@ -181,6 +182,9 @@ export default function DocsListPage() {
           </Button>
         </div>
       </motion.div>
+
+      {/* Skills that target docs — seed the prompt above */}
+      <GeneratorSkillsStrip output="doc" onUse={setPrompt} />
 
       {/* Template gallery */}
       <TemplateGallery kind="doc" onUse={useTemplate} />

@@ -58,6 +58,62 @@ test("workflow NL generate builds a valid graph; template clone works", async ({
   await request.delete(`/api/workflows/${clone.id}`, { headers: AUTH_HEADERS });
 });
 
+test("ai developer: generates a self-contained webpage artifact", async ({ request }) => {
+  const res = await request.post("/api/generate/webapp", {
+    headers: AUTH_HEADERS,
+    data: { prompt: "A minimal counter: a number and + / - buttons.", style: "minimal" },
+  });
+  expect(res.ok()).toBe(true);
+  const artifact = (await res.text())
+    .split("\n\n")
+    .map((f) => f.split("\n").find((l) => l.startsWith("data:")))
+    .filter(Boolean)
+    .map((l) => {
+      try {
+        return JSON.parse(l!.slice(5).trim());
+      } catch {
+        return null;
+      }
+    })
+    .find((e) => e?.type === "artifact")?.artifact;
+  expect(artifact, "expected a webpage artifact").toBeTruthy();
+  expect(artifact.kind).toBe("webpage");
+
+  const detail = await getData(request, `/api/artifacts/${artifact.id}`);
+  const html: string = detail.content.html;
+  expect(html.toLowerCase()).toContain("<!doctype html");
+  expect(html).toContain("<script");
+  // Self-contained: no external http(s) resource references.
+  expect(/(src|href)=["']https?:/.test(html)).toBe(false);
+
+  await request.delete(`/api/artifacts/${artifact.id}`, { headers: AUTH_HEADERS });
+});
+
+test("agentbase from-file: CSV -> typed system with computed tiles", async ({ request }) => {
+  const csv =
+    'Name,Amount,Stage,Signed\n"Acme, Inc.",1200.50,Won,2026-01-05\nBeta LLC,900,Lost,2026-02-11\nGamma Co,3400,Won,2026-03-02\n';
+  const res = await request.post("/api/agentbase/systems/from-file", {
+    headers: AUTH_HEADERS,
+    multipart: {
+      name: "Deals",
+      file: { name: "deals.csv", mimeType: "text/csv", buffer: Buffer.from(csv) },
+    },
+  });
+  expect(res.ok()).toBe(true);
+  const system = (await res.json()).data;
+
+  const detail = await getData(request, `/api/agentbase/systems/${system.id}`);
+  const table = detail.tables[0];
+  expect(table.records.length).toBe(3);
+  const types = Object.fromEntries(table.columns.map((c: any) => [c.key, c.type]));
+  expect(types.amount).toBe("number");
+  expect(types.signed).toBe("date");
+  const stat = detail.tiles.find((t: any) => t.kind === "stat");
+  expect(typeof stat.value).toBe("number");
+
+  await request.delete(`/api/agentbase/systems/${system.id}`, { headers: AUTH_HEADERS });
+});
+
 test("agentbase: template -> system with computed dashboard tiles + add record", async ({
   request,
 }) => {

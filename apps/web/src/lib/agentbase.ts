@@ -136,6 +136,20 @@ export function createSystem(body: CreateSystemBody): Promise<SystemSummary> {
   });
 }
 
+/**
+ * Build a real system from an uploaded CSV/TSV spreadsheet. Parses headers into
+ * typed columns and rows into records server-side, then returns the bare system.
+ */
+export function createSystemFromFile(file: File, name?: string): Promise<SystemSummary> {
+  const form = new FormData();
+  form.append("file", file);
+  if (name && name.trim()) form.append("name", name.trim());
+  return authFetch<SystemSummary>(`${SYSTEMS_KEY}/from-file`, {
+    method: "POST",
+    body: form,
+  });
+}
+
 export function deleteSystem(id: string): Promise<{ deleted: boolean }> {
   return authFetch<{ deleted: boolean }>(systemKey(id), { method: "DELETE" });
 }

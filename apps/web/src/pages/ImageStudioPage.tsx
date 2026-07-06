@@ -51,6 +51,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=image&limit=50";
@@ -124,6 +125,18 @@ export default function ImageStudioPage() {
 
   // Abort a live generation when leaving the page.
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Skill → seed the prompt (aspect ratio stays as configured) and focus the
+  // form, mirroring the template "Add & Use".
+  function seedPrompt(seeded: string) {
+    if (generating) return;
+    setPrompt(seeded);
+    setGenError(null);
+    requestAnimationFrame(() => {
+      promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      promptRef.current?.focus();
+    });
+  }
 
   async function generate() {
     const trimmed = prompt.trim();
@@ -324,6 +337,9 @@ export default function ImageStudioPage() {
           )}
         </div>
       </div>
+
+      {/* Skills that target images — seed the prompt above */}
+      <GeneratorSkillsStrip output="image" onUse={seedPrompt} />
 
       {/* Template gallery */}
       <TemplateGallery kind="image" onUse={useTemplate} />

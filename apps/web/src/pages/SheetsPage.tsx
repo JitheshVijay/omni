@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=sheet&limit=50";
@@ -98,6 +99,18 @@ export default function SheetsPage() {
     setPrompt(t.prompt);
     if (typeof t.extra?.rows_hint === "number") setRowCount(t.extra.rows_hint);
     setColumnsHint("");
+    setGenError(null);
+    requestAnimationFrame(() => {
+      promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      promptRef.current?.focus();
+    });
+  }
+
+  // Skill → seed the prompt (row count / columns hint stay as configured) and
+  // focus the form, mirroring the template "Add & Use".
+  function seedPrompt(seeded: string) {
+    if (generating) return;
+    setPrompt(seeded);
     setGenError(null);
     requestAnimationFrame(() => {
       promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -282,6 +295,9 @@ export default function SheetsPage() {
           total={rowCount}
         />
       )}
+
+      {/* Skills that target sheets — seed the prompt above */}
+      <GeneratorSkillsStrip output="sheet" onUse={seedPrompt} />
 
       {/* Template gallery */}
       <TemplateGallery kind="sheet" onUse={useTemplate} />

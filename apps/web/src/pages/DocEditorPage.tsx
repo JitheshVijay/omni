@@ -43,6 +43,7 @@ import {
 import type { Artifact, ArtifactSummary, DocContent, DocSource } from "@/lib/types";
 import type { DocGenNavState } from "@/pages/DocsListPage";
 import { cn } from "@/lib/utils";
+import { SaveAsSkillButton } from "@/components/skills/SaveAsSkillButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -83,6 +84,7 @@ export default function DocEditorPage() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [title, setTitle] = useState("");
+  const [sourcePrompt, setSourcePrompt] = useState<string | null>(null);
   const [sources, setSources] = useState<DocSource[]>([]);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -130,6 +132,9 @@ export default function DocEditorPage() {
     const content = (art.content ?? {}) as Partial<DocContent>;
     setTitle(art.title ?? "");
     savedTitleRef.current = art.title ?? "";
+    setSourcePrompt(
+      typeof art.meta?.prompt === "string" ? (art.meta.prompt as string) : null,
+    );
     const srcs = Array.isArray(content.sources) ? content.sources : [];
     setSources(srcs);
     if (Array.isArray(content.blocks) && content.blocks.length > 0) {
@@ -455,6 +460,13 @@ export default function DocEditorPage() {
           <WandSparkles />
           Edit with AI
         </Button>
+
+        <SaveAsSkillButton
+          target="doc"
+          defaultName={title || undefined}
+          defaultPrompt={sourcePrompt || title || ""}
+          disabled={phase !== "ready"}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

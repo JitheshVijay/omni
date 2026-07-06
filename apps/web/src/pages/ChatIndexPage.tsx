@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   Podcast,
   Bot,
+  Code2,
   GitBranch,
 } from "lucide-react";
 import { authFetch, invalidateApiPrefix } from "@/lib/use-api";
@@ -39,6 +40,7 @@ const TOOLS: {
   { href: "/tools/slides", label: "Slides", icon: Presentation, color: "text-orange-400" },
   { href: "/tools/sheets", label: "Sheets", icon: Table2, color: "text-emerald-400" },
   { href: "/tools/images", label: "Image", icon: ImageIcon, color: "text-fuchsia-400" },
+  { href: "/tools/apps", label: "App", icon: Code2, color: "text-violet-400" },
   { href: "/tools/podcast", label: "Podcast", icon: Podcast, color: "text-amber-400" },
   { href: "/agent", label: "Agent", icon: Bot, color: "text-indigo-400" },
   { href: "/workflows", label: "Flows", icon: GitBranch, color: "text-teal-400" },

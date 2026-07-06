@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
+import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=slides&limit=50";
@@ -84,6 +85,18 @@ export default function SlidesPage() {
     setPrompt(t.prompt);
     if (typeof t.extra?.slide_count === "number") setCount(t.extra.slide_count);
     if (t.extra?.theme) setThemeId(t.extra.theme);
+    setGenError(null);
+    requestAnimationFrame(() => {
+      promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      promptRef.current?.focus();
+    });
+  }
+
+  // Skill → seed the prompt (its slide count / theme stay as configured) and
+  // bring the form into focus, mirroring the template "Add & Use".
+  function seedPrompt(seeded: string) {
+    if (generating) return;
+    setPrompt(seeded);
     setGenError(null);
     requestAnimationFrame(() => {
       promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -310,6 +323,9 @@ export default function SlidesPage() {
           preset={activePreset}
         />
       )}
+
+      {/* Skills that target slides — seed the prompt above */}
+      <GeneratorSkillsStrip output="slides" onUse={seedPrompt} />
 
       {/* Template gallery */}
       <TemplateGallery kind="slides" onUse={useTemplate} />

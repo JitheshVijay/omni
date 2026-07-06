@@ -7,6 +7,7 @@ import { podcastGenerator } from "./podcast.js";
 import { sheetGenerator } from "./sheet.js";
 import { slidesGenerator } from "./slides.js";
 import { ttsGenerator } from "./tts.js";
+import { webappGenerator } from "./webapp.js";
 
 const GENERATORS: Record<string, GeneratorService<any>> = {
   doc: docGenerator,
@@ -15,6 +16,7 @@ const GENERATORS: Record<string, GeneratorService<any>> = {
   tts: ttsGenerator,
   sheet: sheetGenerator,
   podcast: podcastGenerator,
+  webapp: webappGenerator,
 };
 
 export function getGenerator(name: string): GeneratorService<any> | undefined {
@@ -33,6 +35,7 @@ const GENERATOR_NAME_BY_KIND: Record<string, string> = {
   slides: "slides",
   audio: "tts",
   sheet: "sheet",
+  webpage: "webapp",
 };
 
 export function getGeneratorForKind(kind: string): GeneratorService<any> | undefined {

@@ -7,7 +7,7 @@
 // routes, no backend, no generation happens from a template until the user
 // runs the seeded form.
 
-export type GenKind = "doc" | "slides" | "sheet" | "image";
+export type GenKind = "doc" | "slides" | "sheet" | "image" | "webapp";
 
 export interface GenTemplate {
   id: string;
@@ -25,6 +25,7 @@ export interface GenTemplate {
     slide_count?: number;
     rows_hint?: number;
     aspect_ratio?: string;
+    style?: "clean" | "playful" | "dark" | "minimal"; // webapp visual style
   };
 }
 
@@ -396,11 +397,82 @@ const IMAGE_TEMPLATES: GenTemplate[] = [
   },
 ];
 
+// ─── Web apps ────────────────────────────────────────────────────────
+const WEBAPP_TEMPLATES: GenTemplate[] = [
+  {
+    id: "webapp-landing",
+    kind: "webapp",
+    title: "Landing page",
+    category: "Marketing",
+    description: "Hero, features, and a call-to-action for a product.",
+    prompt:
+      "Build a polished marketing landing page for a modern SaaS product. Include a sticky nav, a hero with a headline, subheadline and primary CTA button, a three-up feature section with inline SVG icons, a testimonial, a simple pricing hint, and a footer. Make the CTA button show a friendly confirmation when clicked.",
+    accent: "from-sky-500 to-indigo-500",
+    extra: { style: "clean" },
+  },
+  {
+    id: "webapp-todo",
+    kind: "webapp",
+    title: "Todo app",
+    category: "Productivity",
+    description: "Add, complete, filter, and clear tasks — with persistence.",
+    prompt:
+      "Build a fully working todo app. Let me add tasks, mark them complete, edit and delete them, filter by all/active/completed, and show a live count of remaining tasks. Persist everything to localStorage so it survives a reload, and animate items in and out.",
+    accent: "from-violet-500 to-fuchsia-500",
+    extra: { style: "playful" },
+  },
+  {
+    id: "webapp-pricing",
+    kind: "webapp",
+    title: "Pricing page",
+    category: "Marketing",
+    description: "Three tiers with a monthly / yearly toggle.",
+    prompt:
+      "Build a pricing page with three plan cards (Starter, Pro, Enterprise), a highlighted 'most popular' tier, a feature checklist per plan, and a monthly/yearly billing toggle that updates the prices live with an annual discount. Clean and conversion-focused.",
+    accent: "from-emerald-500 to-teal-500",
+    extra: { style: "clean" },
+  },
+  {
+    id: "webapp-calculator",
+    kind: "webapp",
+    title: "Calculator",
+    category: "Tools",
+    description: "A working calculator with keyboard support.",
+    prompt:
+      "Build a fully functional calculator: a display and a grid of buttons for digits, the four operations, decimal, clear, sign toggle, and percent. Handle chained operations and division-by-zero gracefully, and support keyboard input. Give it a tactile, satisfying look.",
+    accent: "from-slate-500 to-gray-600",
+    extra: { style: "dark" },
+  },
+  {
+    id: "webapp-portfolio",
+    kind: "webapp",
+    title: "Portfolio",
+    category: "Personal",
+    description: "A one-page personal site with projects and contact.",
+    prompt:
+      "Build a one-page personal portfolio site for a designer/developer. Include an intro hero with a short bio, an about section, a grid of project cards with hover states, a skills list, and a contact section with a form that validates and shows a thank-you message on submit. Smooth-scroll the nav links.",
+    accent: "from-rose-500 to-orange-500",
+    extra: { style: "minimal" },
+  },
+  {
+    id: "webapp-dashboard",
+    kind: "webapp",
+    title: "Dashboard UI",
+    category: "Product",
+    description: "Analytics dashboard with sidebar, stats, and charts.",
+    prompt:
+      "Build an analytics dashboard UI. Include a sidebar with nav items, a top bar with a search field and avatar, a row of KPI stat cards with trend indicators, a bar chart and a line chart drawn with inline SVG or canvas from sample data, and a recent-activity table. Make it responsive and give it a premium dark look.",
+    accent: "from-indigo-500 to-blue-500",
+    extra: { style: "dark" },
+  },
+];
+
 const ALL: Record<GenKind, GenTemplate[]> = {
   doc: DOC_TEMPLATES,
   slides: SLIDE_TEMPLATES,
   sheet: SHEET_TEMPLATES,
   image: IMAGE_TEMPLATES,
+  webapp: WEBAPP_TEMPLATES,
 };
 
 /** All templates for a kind, in curated order. */
