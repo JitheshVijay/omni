@@ -69,6 +69,13 @@ const envSchema = z.object({
   // managed OAuth. Whole layer is a no-op until this is set.
   COMPOSIO_API_KEY: z.string().optional(),
 
+  // Apify — LinkedIn profile scraping for the linkedin_profile agent tool.
+  // Optional; the tool fails soft with a setup hint when the key is absent. The
+  // actor is configurable because different Apify LinkedIn actors vary in
+  // price/quality — swap it without a code change.
+  APIFY_API_KEY: z.string().optional(),
+  APIFY_LINKEDIN_ACTOR: z.string().default("supreme_coder~linkedin-profile-scraper"),
+
   // ── LangSmith tracing (off by default) ─────────────────────────────
   LANGSMITH_TRACING: z.string().optional(),
   LANGSMITH_API_KEY: z.string().optional(),

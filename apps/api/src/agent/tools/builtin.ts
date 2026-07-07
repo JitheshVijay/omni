@@ -22,6 +22,7 @@ import {
 } from "@omni/sdk";
 import { extractText } from "../../lib/extract-text.js";
 import { searchHubMemory } from "../../lib/hub-memory.js";
+import { profileToPromptContext, scrapeLinkedInProfile } from "../../lib/apify.js";
 import type { AgentTool, AgentToolCtx, ToolResult } from "./types.js";
 
 // Strip NUL/C0/C1 control chars (keep tab/newline/CR) that would corrupt
@@ -1332,6 +1333,39 @@ export const httpGetJsonTool: AgentTool = {
   execute: httpGetJson,
 };
 
+export const linkedinProfileTool: AgentTool = {
+  name: "linkedin_profile",
+  description:
+    "Fetch a public LinkedIn profile's REAL data (name, headline, location, about, work experience, education, skills) via Apify. Call this BEFORE writing a portfolio site, bio, resume, or 'about me' so it is built from real facts — never invent job counts, years, connection numbers, or details you did not get from here. Input: the full profile URL. Requires APIFY_API_KEY.",
+  parameters: {
+    type: "object",
+    properties: {
+      url: {
+        type: "string",
+        description: "Full public LinkedIn profile URL, e.g. https://www.linkedin.com/in/username",
+      },
+    },
+    required: ["url"],
+    additionalProperties: false,
+  },
+  kind: "read",
+  maxResultChars: 6000,
+  label: (args) => `Reading LinkedIn profile ${str(args, "url")}`.trim(),
+  async execute(args, ctx): Promise<ToolResult> {
+    const url = str(args, "url").trim();
+    if (!/linkedin\.com\/(in|pub)\//i.test(url)) {
+      return { content: "Provide a full LinkedIn profile URL like https://www.linkedin.com/in/username." };
+    }
+    try {
+      const profile = await scrapeLinkedInProfile(url, ctx.signal);
+      return { content: profileToPromptContext(profile) };
+    } catch (err) {
+      if (ctx.signal.aborted) throw err;
+      return { content: `Couldn't fetch that LinkedIn profile: ${(err as Error).message}` };
+    }
+  },
+};
+
 export const BUILTIN_TOOLS: AgentTool[] = [
   updatePlanTool,
   webSearchTool,
@@ -1349,4 +1383,5 @@ export const BUILTIN_TOOLS: AgentTool[] = [
   wikipediaLookupTool,
   weatherTool,
   httpGetJsonTool,
+  linkedinProfileTool,
 ];

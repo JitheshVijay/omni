@@ -119,6 +119,7 @@ function buildSystemPrompt(style: WebappStyle): string {
       "- Make it genuinely FUNCTIONAL, not a mockup: wire up real interactivity and state with JS. Handle empty and edge states. It should feel finished and delightful.",
       "- CRITICAL — the app MUST fully render its real initial UI on load. Put the <script> at the end of <body> and CALL your init/render function immediately at the end of it (the DOM already exists) so everything is populated before the user sees it. NEVER ship literal placeholder text that code should have replaced (e.g. 'Month Year', 'Lorem ipsum', '{{value}}', empty grids): compute and fill the actual content (today's date, the current month's day cells, sample data, etc.) up front.",
       "- Write clean, responsive, accessible markup that looks great on both desktop and mobile.",
+      "- REAL vs INVENTED DATA: if the prompt asks you to use someone's real info (a portfolio, resume, 'about me', profile) but does NOT include that info, DO NOT fabricate specific facts — no invented years of experience, project counts, connection numbers, employers, or metrics. Use clearly-editable placeholders instead (e.g. \"[Your headline]\", \"[X years]\", \"[Add your projects]\") so the user can fill them in. Only state concrete facts that are actually given in the prompt.",
       "- Include a meaningful <title>.",
     ].join("\n"),
     STYLE_GUIDANCE[style],

@@ -41,6 +41,7 @@ function keyStatus() {
     exa: { configured: !!env.EXA_API_KEY },
     elevenlabs: { configured: !!env.ELEVENLABS_API_KEY },
     llamaparse: { configured: !!env.LLAMAPARSE_API_KEY },
+    apify: { configured: !!env.APIFY_API_KEY },
   };
 }
 
