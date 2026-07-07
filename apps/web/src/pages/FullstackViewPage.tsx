@@ -7,7 +7,7 @@
 // - failed      => the error in a rose-tinted panel.
 // A Preview / Code tab pair surfaces the generated files either way.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -19,17 +19,20 @@ import {
   KeyRound,
   Loader2,
   TriangleAlert,
+  WandSparkles,
 } from "lucide-react";
-import { useApi } from "@/lib/use-api";
+import { useApi, invalidateApi } from "@/lib/use-api";
 import {
   STATUS_META,
   isBuildingStatus,
   langForPath,
+  streamFullstackEdit,
   type FullstackProjectDetail,
 } from "@/lib/fullstack";
 import { cn, timeAgo } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CodeBlock } from "@/components/CodeBlock";
 
@@ -49,6 +52,59 @@ export default function FullstackViewPage() {
 
   const [tab, setTab] = useState<Tab>("preview");
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+
+  // Edit-with-AI bar state. `previewNonce` is bumped on each applied edit to
+  // remount the preview <iframe> (preview_url is unchanged, but the app is).
+  const [instruction, setInstruction] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [editStatus, setEditStatus] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [previewNonce, setPreviewNonce] = useState(0);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Reset the bar when the route swaps to a different project id.
+  const lastIdRef = useRef<string | null>(null);
+  if (id && lastIdRef.current !== id) {
+    lastIdRef.current = id;
+    if (instruction) setInstruction("");
+    if (editError) setEditError(null);
+  }
+
+  async function applyEdit() {
+    const trimmed = instruction.trim();
+    if (!id || !trimmed || editing) return;
+    setEditing(true);
+    setEditError(null);
+    setEditStatus("Starting…");
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      await streamFullstackEdit({
+        id,
+        instruction: trimmed,
+        signal: ctrl.signal,
+        onEvent: (e) => {
+          if (e.type === "status") setEditStatus(e.label);
+          else if (e.type === "project") {
+            // Re-fetch the detail so the Code tab shows the new files, and
+            // remount the live preview so it reloads the hot-applied app.
+            void invalidateApi(`/api/fullstack/projects/${id}`);
+            setPreviewNonce((n) => n + 1);
+            setInstruction("");
+          } else if (e.type === "error") setEditError(e.message);
+        },
+      });
+    } catch (err) {
+      if (!ctrl.signal.aborted) {
+        setEditError(err instanceof Error ? err.message : "Edit failed.");
+      }
+    } finally {
+      setEditing(false);
+      setEditStatus(null);
+    }
+  }
 
   // ── Loading / error ──────────────────────────────────────────────────────
   if (isInitialLoading) {
@@ -138,7 +194,7 @@ export default function FullstackViewPage() {
       {/* Body */}
       <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-line bg-surface2">
         {tab === "preview" ? (
-          <PreviewPane project={project} building={building} />
+          <PreviewPane project={project} building={building} previewNonce={previewNonce} />
         ) : (
           <CodePane
             files={files}
@@ -147,6 +203,46 @@ export default function FullstackViewPage() {
           />
         )}
       </div>
+
+      {/* Edit with AI: iterate on the app once it has code (not mid-build). */}
+      {!building && (
+        <>
+          <form
+            className="mt-3 flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void applyEdit();
+            }}
+          >
+            <div className="relative flex-1">
+              <WandSparkles className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-accent" />
+              <Input
+                value={instruction}
+                onChange={(e) => setInstruction(e.target.value)}
+                placeholder="Add a dark-mode toggle, or make the header sticky…"
+                className="pl-8"
+                maxLength={2000}
+                disabled={editing}
+              />
+            </div>
+            <Button type="submit" disabled={!instruction.trim() || editing}>
+              {editing ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  {editStatus ?? "Editing…"}
+                </>
+              ) : (
+                "Apply"
+              )}
+            </Button>
+          </form>
+          {editError && (
+            <p className="mt-2 rounded-lg border border-rose-500/30 bg-rose-500/5 px-3 py-2 text-sm text-rose-600 dark:text-rose-400">
+              {editError}
+            </p>
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -156,9 +252,11 @@ export default function FullstackViewPage() {
 function PreviewPane({
   project,
   building,
+  previewNonce,
 }: {
   project: FullstackProjectDetail;
   building: boolean;
+  previewNonce: number;
 }) {
   if (building) {
     return (
@@ -219,6 +317,9 @@ function PreviewPane({
   if (project.status === "ready" && project.preview_url) {
     return (
       <iframe
+        // Remount on each applied edit: preview_url is unchanged (the files are
+        // hot-applied), so bumping the key forces a fresh load of the new app.
+        key={previewNonce}
         title="App preview"
         src={project.preview_url}
         // External https origin (an E2B sandbox). allow-same-origin so the app

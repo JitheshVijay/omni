@@ -87,6 +87,29 @@ export function streamFullstackBuild({
   });
 }
 
+/** Iterative "Edit with AI": POST /api/fullstack/projects/:id/edit (SSE).
+ *  Same wire format and reader as streamFullstackBuild, minus the "created"
+ *  event: the project's files are updated in place (and, when a live sandbox
+ *  exists, hot-applied) so preview_url is unchanged but the app updates. */
+export function streamFullstackEdit({
+  id,
+  instruction,
+  signal,
+  onEvent,
+}: {
+  id: string;
+  instruction: string;
+  signal?: AbortSignal;
+  onEvent: (evt: FullstackBuildEvent) => void;
+}) {
+  return streamSse<FullstackBuildEvent>({
+    path: `/api/fullstack/projects/${id}/edit`,
+    body: { instruction },
+    signal,
+    onEvent,
+  });
+}
+
 // Map a file extension to a CodeBlock `lang` token (it resolves aliases).
 export function langForPath(path: string): string {
   const ext = path.slice(path.lastIndexOf(".") + 1).toLowerCase();
