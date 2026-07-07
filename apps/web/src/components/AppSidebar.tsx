@@ -84,9 +84,9 @@ export function AppSidebar() {
       <Link
         to="/chat"
         aria-label="Omni home"
-        className="mt-3 grid size-10 shrink-0 place-items-center rounded-xl brand-ribbon font-display text-base font-bold text-white outline-none transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-accent/50"
+        className="mt-3 block size-10 shrink-0 overflow-hidden rounded-xl outline-none transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-accent/50"
       >
-        O
+        <img src="/logo.webp" alt="Omni" className="size-full object-cover" />
       </Link>
 
       {/* Nav rail */}
