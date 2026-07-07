@@ -17,7 +17,17 @@ export interface GeneratedProject {
 }
 
 export const PREVIEW_PORT = 5173;
+export const INSTALL_CMD = "npm install";
+export const DEV_CMD = "npm run dev";
 const API_PORT = 3001;
+
+// The toolchain config is owned by the scaffold; iterative edits may touch app
+// files (src/**, server/**) but never these.
+const IMMUTABLE_PATHS = new Set(["package.json", "vite.config.js", "index.html", "src/main.jsx"]);
+const EDITABLE_PREFIXES = ["src/", "server/"];
+function isEditable(path: string): boolean {
+  return !IMMUTABLE_PATHS.has(path) && EDITABLE_PREFIXES.some((p) => path.startsWith(p));
+}
 
 // ── fixed scaffold: guaranteed-runnable toolchain, written verbatim ──
 const SCAFFOLD: ProjectFile[] = [
@@ -29,7 +39,9 @@ const SCAFFOLD: ProjectFile[] = [
         private: true,
         type: "module",
         scripts: {
-          dev: `concurrently -k -n api,web "node server/index.js" "vite --host --port ${PREVIEW_PORT}"`,
+          // node --watch so backend edits hot-reload during iterative editing,
+          // matching Vite's HMR for the frontend.
+          dev: `concurrently -k -n api,web "node --watch server/index.js" "vite --host --port ${PREVIEW_PORT}"`,
           build: "vite build",
         },
         dependencies: {
@@ -162,8 +174,47 @@ export async function generateFullstackProject(prompt: string): Promise<Generate
     name: (raw.name || "omni-app").replace(/[^a-z0-9-]/gi, "-").toLowerCase().slice(0, 40) || "omni-app",
     summary: raw.summary || prompt.slice(0, 140),
     files: [...SCAFFOLD, ...llmFiles],
-    installCmd: "npm install",
-    devCmd: "npm run dev",
+    installCmd: INSTALL_CMD,
+    devCmd: DEV_CMD,
     previewPort: PREVIEW_PORT,
   };
+}
+
+const REVISE_SYSTEM = [
+  "You are editing an existing full-stack app: a Vite + React 18 frontend and an Express + better-sqlite3 backend, with Vite proxying /api to the server on port " + API_PORT + ".",
+  "Apply the user's change request to the existing code.",
+  "",
+  "RULES:",
+  "- Return the COMPLETE new content of ONLY the files you change or add. Do not return files you didn't touch.",
+  "- You may only change files under src/ or server/. NEVER change package.json, vite.config.js, index.html, or src/main.jsx.",
+  "- Keep the same toolchain and dependencies (react, react-dom, express, better-sqlite3 only). No new npm packages, no external network calls or CDNs.",
+  "- The frontend talks to the backend with fetch('/api/...'). Keep the app functional and persistent; preserve existing features unless the request says otherwise.",
+].join("\n");
+
+/** Apply a natural-language change to an existing project; returns only changed files. */
+export async function reviseFullstackProject(
+  currentFiles: ProjectFile[],
+  instruction: string,
+): Promise<{ changedFiles: ProjectFile[]; summary: string }> {
+  const editable = currentFiles.filter((f) => isEditable(f.path));
+  const filesBlock = editable.map((f) => `=== ${f.path} ===\n${f.content}`).join("\n\n");
+
+  const raw = await callLLMJSON<RawGen>({
+    system: REVISE_SYSTEM,
+    prompt:
+      `Current app files:\n\n${filesBlock}\n\n` +
+      `Change request: ${instruction}\n\n` +
+      'Respond with JSON: {"summary": string (one sentence on what changed), "files": [{"path": string, "content": string}]}. Return only the files you changed or added.',
+    model: MODELS.agent,
+    maxTokens: 16000,
+  });
+
+  const changedFiles = (raw.files ?? [])
+    .filter((f): f is { path: string; content: string } =>
+      typeof f?.path === "string" && typeof f?.content === "string" && f.path.trim().length > 0,
+    )
+    .map((f) => ({ path: f.path.replace(/^\/+/, "").trim(), content: f.content }))
+    .filter((f) => isEditable(f.path));
+
+  return { changedFiles, summary: raw.summary || instruction.slice(0, 140) };
 }

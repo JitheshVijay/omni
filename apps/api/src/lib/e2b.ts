@@ -5,6 +5,7 @@
 //
 // NOTE: the live sandbox path requires E2B_API_KEY (sandboxes are billed), so it
 // cannot be exercised in CI — the pure/fail-soft paths are what's unit-tested.
+import type { Sandbox as E2BSandbox } from "e2b";
 import { env } from "@omni/env-config";
 import { logger } from "@omni/sdk";
 
@@ -56,13 +57,29 @@ export async function createSandbox(
     ...(env.E2B_TEMPLATE ? { template: env.E2B_TEMPLATE } : {}),
     timeoutMs: opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
   });
-  const id = sandbox.sandboxId;
-  logger.info({ sandboxId: id }, "[e2b] sandbox created");
+  logger.info({ sandboxId: sandbox.sandboxId }, "[e2b] sandbox created");
+  return wrapSession(sandbox);
+}
 
+/** Reconnect to a still-running sandbox for iterative edits; null if it's gone. */
+export async function connectSandbox(sandboxId: string): Promise<SandboxSession | null> {
+  if (!env.E2B_API_KEY) return null;
+  const { Sandbox } = await import("e2b");
+  try {
+    const sandbox = await Sandbox.connect(sandboxId, { apiKey: env.E2B_API_KEY });
+    return wrapSession(sandbox);
+  } catch (err) {
+    logger.info({ err, sandboxId }, "[e2b] reconnect failed (sandbox likely expired)");
+    return null;
+  }
+}
+
+function wrapSession(sandbox: E2BSandbox): SandboxSession {
+  const id = sandbox.sandboxId;
   return {
     id,
-    previewUrl: (port: number) => `https://${sandbox.getHost(port)}`,
-    async writeFiles(files: ProjectFile[]) {
+    previewUrl: (port) => `https://${sandbox.getHost(port)}`,
+    async writeFiles(files) {
       await sandbox.files.write(files.map((f) => ({ path: f.path, data: f.content })));
     },
     async exec(cmd, o = {}) {
@@ -83,7 +100,7 @@ export async function createSandbox(
         onStderr: o.onLog,
       });
     },
-    async keepAlive(ms: number) {
+    async keepAlive(ms) {
       await sandbox.setTimeout(ms);
     },
     async kill() {

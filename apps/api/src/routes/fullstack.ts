@@ -8,12 +8,14 @@ import type { AuthenticatedRequest } from "../middleware/auth.js";
 import {
   buildApp,
   createProjectRow,
+  editApp,
   getProject,
   listProjects,
   type BuildEvent,
 } from "../lib/app-builder.js";
 
 const BuildSchema = z.object({ prompt: z.string().min(1).max(4000) });
+const EditSchema = z.object({ instruction: z.string().min(1).max(4000) });
 
 export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/fullstack/projects", async (request) => {
@@ -52,6 +54,28 @@ export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
     sse.send({ type: "created", id: project.id });
     try {
       await buildApp(project.id, (request as AuthenticatedRequest).userId, (e: BuildEvent) => sse.send(e), ac.signal);
+    } catch (err) {
+      sse.send({ type: "error", message: (err as Error).message });
+    }
+    sse.close();
+  });
+
+  // SSE: apply a natural-language edit to an existing project.
+  app.post("/api/fullstack/projects/:id/edit", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const parsed = EditSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ success: false, error: parsed.error.issues });
+    }
+    const userId = (request as AuthenticatedRequest).userId;
+    if (!getProject(userId, id)) {
+      return reply.status(404).send({ success: false, error: "Project not found", code: "not_found" });
+    }
+    const sse = openSSE(request, reply);
+    const ac = new AbortController();
+    sse.onClose(() => ac.abort());
+    try {
+      await editApp(id, userId, parsed.data.instruction, (e: BuildEvent) => sse.send(e), ac.signal);
     } catch (err) {
       sse.send({ type: "error", message: (err as Error).message });
     }
