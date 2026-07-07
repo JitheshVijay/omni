@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarkdownMessage } from "@/components/MarkdownMessage";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 
 const LIST_PATH = "/api/artifacts?kind=doc&limit=50";
 
@@ -94,7 +95,8 @@ export default function MeetingNotesPage() {
       </div>
 
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>MEETING NOTES</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Turn a transcript into <span className="grad-word">notes</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -109,10 +111,10 @@ export default function MeetingNotesPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="rounded-2xl border border-line bg-gradient-to-b from-accent/[0.05] to-transparent p-5"
+        className="rounded-2xl border border-line bg-surface2 p-5"
       >
         <div className="mb-3 flex items-center gap-2">
-          <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+          <div className="grid size-8 place-items-center rounded-lg bg-ink text-surface">
             <NotebookPen className="size-4" />
           </div>
           <h2 className="font-display text-base font-semibold text-ink">New notes</h2>
@@ -188,9 +190,7 @@ export default function MeetingNotesPage() {
 
       {/* Recent notes */}
       <div className="mt-10">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Recent notes
-        </h2>
+        <Eyebrow className="mb-3">Recent notes</Eyebrow>
         {isInitialLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -199,8 +199,8 @@ export default function MeetingNotesPage() {
           </div>
         ) : notes.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line py-12 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <NotebookPen className="size-5 text-accent" />
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <NotebookPen className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">No notes yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -229,10 +229,10 @@ function NoteCard({ note, index }: { note: ArtifactSummary; index: number }) {
     >
       <Link
         to={`/tools/docs/${note.id}`}
-        className="group flex h-full flex-col rounded-xl border border-line bg-surface2 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lg"
+        className="group flex h-full flex-col rounded-xl border border-line bg-surface2 p-4 transition hover:border-accent/40"
       >
         <div className="mb-2 flex items-center gap-2">
-          <div className="grid size-8 place-items-center rounded-lg bg-accent/10 text-accent">
+          <div className="grid size-8 place-items-center rounded-lg bg-ink text-surface">
             <NotebookPen className="size-4" />
           </div>
           {note.parent_id && (

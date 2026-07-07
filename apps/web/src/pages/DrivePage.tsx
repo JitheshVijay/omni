@@ -36,6 +36,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IndexStatusBadge } from "@/components/ui/badge";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import {
   Dialog,
@@ -111,7 +112,8 @@ export default function DrivePage() {
     <div className="mx-auto flex h-screen max-w-5xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 pl-10 lg:pl-0">
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          <Eyebrow>Drive</Eyebrow>
+          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">
             Drive
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -144,8 +146,8 @@ export default function DrivePage() {
           </div>
         ) : files.length === 0 ? (
           <div className="mt-8 flex flex-col items-center gap-3 text-center">
-            <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-              <HardDrive className="size-6 text-accent" />
+            <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+              <HardDrive className="size-6" />
             </div>
             <p className="font-display text-lg font-semibold text-ink">
               {query ? "No files match" : "Your Drive is empty"}
@@ -212,8 +214,8 @@ function UploadDropzone({
       />
       <div
         className={cn(
-          "grid size-11 place-items-center rounded-xl transition",
-          dragging ? "bg-accent text-white" : "bg-accent/10 text-accent",
+          "grid size-11 place-items-center rounded-lg transition",
+          dragging ? "bg-accent text-white" : "bg-ink text-surface",
         )}
       >
         {uploading ? (

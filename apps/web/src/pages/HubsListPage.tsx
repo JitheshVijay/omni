@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +32,8 @@ export default function HubsListPage() {
     <div className="mx-auto flex h-screen max-w-5xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       <div className="mb-6 flex items-center justify-between gap-4 pl-10 lg:pl-0">
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          <Eyebrow>Hubs</Eyebrow>
+          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">
             Hubs
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -49,8 +51,8 @@ export default function HubsListPage() {
         </div>
       ) : hubs.length === 0 ? (
         <div className="mt-16 flex flex-col items-center gap-3 text-center">
-          <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-            <FolderKanban className="size-6 text-accent" />
+          <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+            <FolderKanban className="size-6" />
           </div>
           <p className="font-display text-lg font-semibold text-ink">No hubs yet</p>
           <p className="max-w-sm text-sm text-muted">
@@ -70,9 +72,9 @@ export default function HubsListPage() {
             >
               <Link
                 to={`/hubs/${hub.id}`}
-                className="group flex h-full flex-col rounded-xl border border-line bg-surface2 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+                className="group flex h-full flex-col rounded-lg border border-line bg-surface p-5 transition hover:border-accent/40 hover:bg-surface2"
               >
-                <div className="mb-3 grid size-9 place-items-center rounded-lg bg-accent/10 text-accent transition group-hover:bg-accent group-hover:text-white">
+                <div className="mb-3 grid size-9 place-items-center rounded-lg bg-ink text-surface">
                   <FolderKanban className="size-5" />
                 </div>
                 <h2 className="font-display text-base font-semibold text-ink group-hover:text-accent">

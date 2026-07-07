@@ -64,6 +64,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 
 type Tab = "community" | "mine";
 
@@ -167,10 +168,11 @@ export default function AgentPresetsPage() {
     <div className="mx-auto flex h-screen w-full max-w-6xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       {/* Hero */}
       <div className="pt-4 text-center">
-        <div className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 text-white shadow-md shadow-accent/20">
+        <div className="mx-auto mb-4 grid size-12 place-items-center rounded-lg bg-ink text-surface">
           <Bot className="size-6" />
         </div>
-        <h1 className="mx-auto max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow className="text-center">Agents</Eyebrow>
+        <h1 className="mx-auto mt-3 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           <span className="grad-word">Custom agents</span> for every job.
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -194,9 +196,9 @@ export default function AgentPresetsPage() {
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+              className={`rounded px-3 py-1.5 text-sm font-medium transition ${
                 tab === t.id
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-accent text-white"
                   : "text-muted hover:text-ink"
               }`}
             >
@@ -244,14 +246,12 @@ export default function AgentPresetsPage() {
         </div>
       </div>
 
-      {error && <p className="mt-4 text-sm text-rose-400">{error}</p>}
+      {error && <p className="mt-4 text-sm text-muted">{error}</p>}
 
       {/* Discover grid */}
       <div className="mt-6">
         <div className="mb-3 flex items-center gap-2">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-            Discover
-          </h2>
+          <Eyebrow>Discover</Eyebrow>
           {!isInitialLoading && (
             <span className="text-xs text-muted/70">
               {presets.length} agent{presets.length === 1 ? "" : "s"}
@@ -334,14 +334,12 @@ function PresetCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index, 8) * 0.03 }}
-      className="group relative flex h-full flex-col rounded-2xl border border-line bg-surface2 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+      className="group relative flex h-full flex-col rounded-lg border border-line bg-surface2 p-4 transition hover:border-accent/40"
     >
       {/* Header: icon badge + category */}
       <div className="mb-3 flex items-start justify-between gap-2">
-        <div
-          className={`grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${preset.accent} text-white shadow-sm`}
-        >
-          <Icon className="size-5 drop-shadow" />
+        <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-ink text-surface">
+          <Icon className="size-5" />
         </div>
         <div className="flex items-center gap-1.5">
           <span className="rounded-full border border-line bg-surface3/60 px-2 py-0.5 text-[10px] font-medium text-muted">
@@ -352,7 +350,7 @@ function PresetCard({
               type="button"
               onClick={() => onDelete(preset)}
               aria-label="Delete agent"
-              className="grid size-7 place-items-center rounded-lg text-muted/70 opacity-0 transition hover:bg-rose-600/15 hover:text-rose-400 group-hover:opacity-100 focus-visible:opacity-100"
+              className="grid size-7 place-items-center rounded-lg text-muted/70 opacity-0 transition hover:bg-surface3 hover:text-ink group-hover:opacity-100 focus-visible:opacity-100"
             >
               <Trash2 className="size-3.5" />
             </button>
@@ -413,9 +411,9 @@ function Chip({
 
 function EmptyState({ tab, onCreate }: { tab: Tab; onCreate: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-14 text-center">
-      <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-        <Bot className="size-5 text-accent" />
+    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-line py-14 text-center">
+      <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+        <Bot className="size-5" />
       </div>
       <p className="text-sm font-medium text-ink">
         {tab === "mine" ? "No agents of your own yet" : "No agents match those filters"}

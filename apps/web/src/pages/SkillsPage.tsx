@@ -15,7 +15,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Sparkles, Wand2 } from "lucide-react";
+import { Plus, Search, Wand2 } from "lucide-react";
 import { authFetch, invalidateApiPrefix, useApi } from "@/lib/use-api";
 import type { ChatThread } from "@/lib/types";
 import type { ChatNavState } from "@/pages/ChatIndexPage";
@@ -51,6 +51,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 type Tab = "community" | "mine";
 
@@ -149,18 +152,18 @@ export default function SkillsPage() {
   return (
     <div className="mx-auto flex h-screen w-full max-w-6xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       {/* Hero */}
-      <div className="pt-4 text-center">
-        <div className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 text-white shadow-md shadow-accent/20">
-          <Sparkles className="size-6" />
+      <HeroBand>
+        <div className="mx-auto max-w-2xl text-center">
+          <Eyebrow>Skills</Eyebrow>
+          <h1 className="mx-auto mt-3 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Skills are reusable AI tools for <span className="grad-word">specific jobs</span>.
+          </h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+            Browse a curated library of saved prompts, add the ones you need, and
+            save your own. Every skill drops straight into a new chat, ready to run.
+          </p>
         </div>
-        <h1 className="mx-auto max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Skills are reusable AI tools for <span className="grad-word">specific jobs</span>.
-        </h1>
-        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Browse a curated library of saved prompts, add the ones you need, and
-          save your own. Every skill drops straight into a new chat, ready to run.
-        </p>
-      </div>
+      </HeroBand>
 
       {/* Actions row */}
       <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -176,9 +179,9 @@ export default function SkillsPage() {
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+              className={`rounded px-3 py-1.5 text-sm font-medium transition ${
                 tab === t.id
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-accent text-white"
                   : "text-muted hover:text-ink"
               }`}
             >
@@ -233,14 +236,12 @@ export default function SkillsPage() {
         </FilterRow>
       </div>
 
-      {error && <p className="mt-4 text-sm text-rose-400">{error}</p>}
+      {error && <p className="mt-4 text-sm text-muted">{error}</p>}
 
       {/* Discover grid */}
       <div className="mt-6">
         <div className="mb-3 flex items-center gap-2">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-            Discover
-          </h2>
+          <Eyebrow>Discover</Eyebrow>
           {!isInitialLoading && (
             <span className="text-xs text-muted/70">
               {skills.length} skill{skills.length === 1 ? "" : "s"}
@@ -284,6 +285,8 @@ export default function SkillsPage() {
         }}
         onError={setError}
       />
+
+      <WordmarkBanner />
     </div>
   );
 }
@@ -325,9 +328,9 @@ function Chip({
 
 function EmptyState({ tab, onCreate }: { tab: Tab; onCreate: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-14 text-center">
-      <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-        <Wand2 className="size-5 text-accent" />
+    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-line py-14 text-center">
+      <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+        <Wand2 className="size-5" />
       </div>
       <p className="text-sm font-medium text-ink">
         {tab === "mine" ? "No skills of your own yet" : "No skills match those filters"}

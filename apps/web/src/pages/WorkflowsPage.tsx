@@ -42,6 +42,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 const RUN_DOT: Record<WorkflowRunStatus, { className: string; label: string }> = {
   queued: { className: "bg-slate-400", label: "Queued" },
@@ -140,18 +143,18 @@ export default function WorkflowsPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="pt-4 text-center"
+        className="pt-2"
       >
-        <div className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 text-white shadow-md shadow-accent/20">
-          <WorkflowIcon className="size-6" />
-        </div>
-        <h1 className="mx-auto max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          What would you like to <span className="grad-word">automate</span>?
-        </h1>
-        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Describe a task in plain language and AI drafts the steps — searches, agents, and
-          generators, chained into a workflow you can review, tweak, and run.
-        </p>
+        <HeroBand className="text-center">
+          <Eyebrow>Workflows</Eyebrow>
+          <h1 className="mx-auto mt-3 max-w-2xl font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+            What would you like to <span className="grad-word">automate</span>?
+          </h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+            Describe a task in plain language and AI drafts the steps — searches, agents, and
+            generators, chained into a workflow you can review, tweak, and run.
+          </p>
+        </HeroBand>
       </motion.div>
 
       {/* ── NL builder ── */}
@@ -161,7 +164,7 @@ export default function WorkflowsPage() {
         transition={{ duration: 0.3, delay: 0.05, ease: "easeOut" }}
         className="mx-auto mt-7 w-full max-w-2xl"
       >
-        <div className="rounded-2xl border border-line bg-surface2 p-2 shadow-sm focus-within:border-accent/50">
+        <div className="rounded-2xl border border-line bg-surface2 p-2 focus-within:border-accent/50">
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -211,9 +214,7 @@ export default function WorkflowsPage() {
       {/* ── Template gallery ── */}
       <section className="mt-12">
         <div className="mb-3 flex items-center gap-2">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-            Start from a template
-          </h2>
+          <Eyebrow>Start from a template</Eyebrow>
           {!templatesResult.isInitialLoading && (
             <span className="text-xs text-muted/70">{templates.length}</span>
           )}
@@ -245,9 +246,7 @@ export default function WorkflowsPage() {
       <section className="mb-4 mt-12">
         <div className="mb-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-              My workflows
-            </h2>
+            <Eyebrow>My workflows</Eyebrow>
             {!isInitialLoading && workflows.length > 0 && (
               <span className="text-xs text-muted/70">{workflows.length}</span>
             )}
@@ -266,8 +265,8 @@ export default function WorkflowsPage() {
           </div>
         ) : workflows.length === 0 ? (
           <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line py-12 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <WorkflowIcon className="size-5 text-accent" />
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <WorkflowIcon className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">No workflows yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -282,6 +281,8 @@ export default function WorkflowsPage() {
           </ul>
         )}
       </section>
+
+      <WordmarkBanner />
 
       <Dialog open={createOpen} onOpenChange={(open) => !creating && setCreateOpen(open)}>
         <DialogContent>
@@ -330,7 +331,7 @@ function StepChainPreview({ graph }: { graph: WorkflowGraph }) {
         return (
           <div key={n.id} className="flex items-center gap-1">
             <span
-              className="grid size-7 place-items-center rounded-lg bg-accent/10 text-accent"
+              className="grid size-7 place-items-center rounded-lg bg-ink text-surface"
               title={meta?.label ?? n.type}
             >
               <Icon className="size-3.5" />
@@ -445,7 +446,7 @@ function WorkflowRow({ workflow, index }: { workflow: Workflow; index: number })
     >
       <div className="group flex items-center gap-3 px-4 py-3 transition hover:bg-ink/[0.02]">
         <Link to={`/workflows/${workflow.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
             <WorkflowIcon className="size-4" />
           </div>
           <div className="min-w-0 flex-1">

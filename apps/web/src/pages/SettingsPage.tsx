@@ -3,15 +3,7 @@
 // availability, table list).
 
 import { useState } from "react";
-import {
-  Cpu,
-  Database,
-  KeyRound,
-  Monitor,
-  Moon,
-  Palette,
-  Sun,
-} from "lucide-react";
+import { Monitor, Moon, Sun } from "lucide-react";
 import { useApi, authFetch, invalidateApi } from "@/lib/use-api";
 import type { SettingsData } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -19,6 +11,7 @@ import { useTheme, type Theme } from "@/components/theme";
 import { ModelPicker } from "@/components/chat/ModelPicker";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import {
   Card,
   CardContent,
@@ -85,18 +78,14 @@ export default function SettingsPage() {
         <p className="mt-1 text-sm text-muted">
           Local-first: everything here lives in your Omni data folder.
         </p>
-        {error && (
-          <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{error}</p>
-        )}
+        {error && <p className="mt-2 text-sm text-muted">{error}</p>}
       </div>
 
       {/* Default model */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Cpu className="size-4 text-accent" />
-            Default model
-          </CardTitle>
+          <Eyebrow>Model</Eyebrow>
+          <CardTitle className="text-base">Default model</CardTitle>
           <CardDescription>
             New chats start with this model unless a hub overrides it.
           </CardDescription>
@@ -118,10 +107,8 @@ export default function SettingsPage() {
       {/* Theme */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Palette className="size-4 text-accent" />
-            Appearance
-          </CardTitle>
+          <Eyebrow>Theme</Eyebrow>
+          <CardTitle className="text-base">Appearance</CardTitle>
           <CardDescription>Choose a theme, or follow your OS.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -154,10 +141,8 @@ export default function SettingsPage() {
       {/* API keys */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <KeyRound className="size-4 text-accent" />
-            API keys
-          </CardTitle>
+          <Eyebrow>Keys</Eyebrow>
+          <CardTitle className="text-base">API keys</CardTitle>
           <CardDescription>
             Set in your <code className="font-mono text-xs">.env</code> — only status
             and the last characters are shown here.
@@ -200,10 +185,8 @@ export default function SettingsPage() {
       {/* Storage debug */}
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Database className="size-4 text-accent" />
-            Storage
-          </CardTitle>
+          <Eyebrow>Data</Eyebrow>
+          <CardTitle className="text-base">Storage</CardTitle>
           <CardDescription>Where your data lives on disk.</CardDescription>
         </CardHeader>
         <CardContent>

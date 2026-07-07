@@ -23,6 +23,9 @@ import type { ArtifactSummary } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArtifactCard } from "@/components/tools/ArtifactCard";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 export default function ToolsPage() {
   const navigate = useNavigate();
@@ -47,22 +50,22 @@ export default function ToolsPage() {
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-5xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
-      <div className="mb-8 pt-4 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+      <HeroBand className="mb-8 text-center">
+        <Eyebrow className="mb-3">GENERATORS</Eyebrow>
+        <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
           What would you like to <span className="grad-word">make</span>?
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm text-muted">
           Generators that turn a prompt into something you can keep — everything
           lands in your Library.
         </p>
-      </div>
+      </HeroBand>
 
       {/* Hero grid */}
       <div className="grid gap-4 sm:grid-cols-2">
         <ToolCard
           to="/tools/images"
           icon={Images}
-          gradient="from-fuchsia-500 to-accent2"
           title="Image Studio"
           text="Generate images from a prompt, then refine them with follow-up edits — full lineage kept."
           index={0}
@@ -70,7 +73,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/docs"
           icon={FileText}
-          gradient="from-accent to-accent2"
           title="AI Docs"
           text="Draft full documents that stream into a rich editor — grounded in your hub memory with citations."
           index={1}
@@ -78,7 +80,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/apps"
           icon={Code2}
-          gradient="from-violet-500 to-fuchsia-500"
           title="AI Developer"
           text="Describe an app or page and get a complete, working single-file web app — live sandboxed preview with the code in reach."
           index={2}
@@ -86,7 +87,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/design"
           icon={Palette}
-          gradient="from-rose-500 to-orange-400"
           title="Design Studio"
           text="Describe a poster, social post, flyer, or cover — get a print-quality graphic you can export as PNG."
           index={2}
@@ -109,7 +109,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/slides"
           icon={Presentation}
-          gradient="from-sky-500 to-accent"
           title="AI Slides"
           text="Outline-first slide decks across seven layouts — export a real .pptx with editable charts."
           index={3}
@@ -117,7 +116,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/sheets"
           icon={Table2}
-          gradient="from-emerald-500 to-teal-400"
           title="AI Sheets"
           text="Spreadsheets that stream in row by row — edit any cell, export CSV or .xlsx."
           index={4}
@@ -125,7 +123,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/podcast"
           icon={Podcast}
-          gradient="from-orange-500 to-amber-400"
           title="Podcast"
           text="Two hosts discuss any topic or document — narrated with contrasting voices, script-synced playback."
           index={5}
@@ -133,7 +130,6 @@ export default function ToolsPage() {
         <ToolCard
           to="/tools/notes"
           icon={NotebookPen}
-          gradient="from-rose-500 to-orange-400"
           title="Meeting Notes"
           text="Paste a Zoom/Meet/Teams transcript and get structured notes — summary, key points, decisions, action items with owners, and open questions."
           index={6}
@@ -149,9 +145,7 @@ export default function ToolsPage() {
 
       {/* Recent creations */}
       <div className="mt-10">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Recent creations
-        </h2>
+        <Eyebrow className="mb-3">Recent creations</Eyebrow>
         {isInitialLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -159,9 +153,9 @@ export default function ToolsPage() {
             ))}
           </div>
         ) : artifacts.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line py-10 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <Wrench className="size-5 text-accent" />
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-line py-10 text-center">
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <Wrench className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">Nothing generated yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -177,6 +171,8 @@ export default function ToolsPage() {
           </div>
         )}
       </div>
+
+      <WordmarkBanner />
     </div>
   );
 }
@@ -184,14 +180,12 @@ export default function ToolsPage() {
 function ToolCard({
   to,
   icon: Icon,
-  gradient,
   title,
   text,
   index,
 }: {
   to: string;
   icon: React.ComponentType<{ className?: string }>;
-  gradient: string;
   title: string;
   text: string;
   index: number;
@@ -204,11 +198,9 @@ function ToolCard({
     >
       <Link
         to={to}
-        className="group flex h-full flex-col rounded-2xl border border-line bg-surface2 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+        className="group flex h-full flex-col rounded-lg border border-line bg-surface2 p-5 transition hover:border-accent/40"
       >
-        <div
-          className={`mb-3 grid size-11 place-items-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-md shadow-accent/20 transition group-hover:scale-105`}
-        >
+        <div className="mb-3 grid size-11 place-items-center rounded-lg bg-ink text-surface transition group-hover:scale-105">
           <Icon className="size-5" />
         </div>
         <h2 className="font-display text-base font-semibold text-ink group-hover:text-accent">
@@ -240,12 +232,12 @@ function ExplainerCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.05 }}
-      className={`flex h-full flex-col rounded-2xl border p-5 ${
-        dashed ? "border-dashed border-line" : "border-line bg-surface2 shadow-sm"
+      className={`flex h-full flex-col rounded-lg border p-5 ${
+        dashed ? "border-dashed border-line" : "border-line bg-surface2"
       }`}
     >
       <div className="mb-3 flex items-center justify-between">
-        <div className="grid size-11 place-items-center rounded-xl bg-accent/10 text-accent">
+        <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
           <Icon className="size-5" />
         </div>
         {badge}

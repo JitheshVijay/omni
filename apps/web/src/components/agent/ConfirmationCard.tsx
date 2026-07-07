@@ -57,13 +57,13 @@ export function ConfirmationCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        "overflow-hidden rounded-2xl border border-accent/40 bg-accent/[0.04] shadow-sm",
+        "overflow-hidden rounded-2xl border border-accent/40 bg-accent/[0.04]",
         resolved && "opacity-60",
         className,
       )}
     >
       <div className="flex items-center gap-2 border-b border-accent/20 px-4 py-2.5">
-        <span className="grid size-7 place-items-center rounded-lg bg-accent/15 text-accent">
+        <span className="grid size-7 place-items-center rounded-lg bg-ink text-surface">
           {isQuestion ? (
             <MessageSquare className="size-4" />
           ) : (
@@ -71,7 +71,7 @@ export function ConfirmationCard({
           )}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">
+          <p className="eyebrow">
             {isQuestion ? "The agent needs your input" : "Confirm this action"}
           </p>
           <p className="truncate font-mono text-[12px] text-muted" title={card.tool_name}>

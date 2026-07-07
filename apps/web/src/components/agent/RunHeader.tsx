@@ -111,7 +111,7 @@ export function RunHeader({ run, connection, onCancel, onPause, onResume }: RunH
       : "bg-accent";
 
   return (
-    <div className="rounded-2xl border border-line bg-surface2 p-4 shadow-sm md:p-5">
+    <div className="rounded-2xl border border-line bg-surface2 p-4 md:p-5">
       <div className="flex flex-wrap items-start gap-3">
         <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex flex-wrap items-center gap-2">

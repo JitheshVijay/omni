@@ -132,7 +132,7 @@ function InlineCopyButton({ text }: { text: string }) {
           /* clipboard blocked (insecure context / permissions) — no-op */
         }
       }}
-      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium text-zinc-400 transition-colors hover:bg-zinc-700/60 hover:text-zinc-100"
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium text-white/50 transition-colors hover:bg-white/10 hover:text-white"
       title={copied ? "Copied" : "Copy code"}
       aria-label={copied ? "Copied" : "Copy code"}
     >
@@ -156,12 +156,11 @@ export const CodeBlock = memo(function CodeBlock({
   const resolved = LANG_ALIAS[lang.toLowerCase()] ?? lang.toLowerCase();
   const label = LANG_LABELS[resolved] ?? (lang === "text" ? "Code" : lang.toUpperCase());
   return (
-    <div className="group/code my-2.5 overflow-hidden rounded-lg border border-zinc-700/60 bg-[#282c34] shadow-md shadow-black/10 dark:shadow-none">
-      {/* The body is intentionally locked dark in both app themes; in light
-          mode the soft shadow lifts it off the page so it reads as a
-          deliberate editor card. */}
-      <div className="flex items-center justify-between border-b border-zinc-700/60 px-3 py-1.5">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">
+    <div className="group/code my-2.5 overflow-hidden rounded-lg border border-white/10 bg-[#282c34]">
+      {/* The body is intentionally locked dark in both app themes; it reads as
+          a deliberate editor card sitting inside the hairline border. */}
+      <div className="flex items-center justify-between border-b border-white/10 px-3 py-1.5">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-white/60">
           {label}
         </span>
         <InlineCopyButton text={code} />

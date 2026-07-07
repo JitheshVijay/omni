@@ -286,7 +286,7 @@ export default function DesignViewPage() {
               onClick={() => setTab(t)}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium capitalize transition",
-                tab === t ? "bg-accent text-white" : "text-muted hover:text-ink",
+                tab === t ? "bg-ink text-surface" : "text-muted hover:text-ink",
               )}
             >
               {t === "preview" ? <ImageIcon className="size-3.5" /> : <Code2 className="size-3.5" />}
@@ -335,7 +335,7 @@ export default function DesignViewPage() {
             <Skeleton className="h-[70%] w-[40%] rounded-xl" />
           ) : (
             <div
-              className="shrink-0 overflow-hidden rounded-xl border border-line bg-white shadow-2xl"
+              className="shrink-0 overflow-hidden rounded-xl border border-line bg-white"
               style={{
                 width: width * scale,
                 height: height * scale,

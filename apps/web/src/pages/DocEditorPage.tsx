@@ -43,6 +43,7 @@ import {
 import type { Artifact, ArtifactSummary, DocContent, DocSource } from "@/lib/types";
 import type { DocGenNavState } from "@/pages/DocsListPage";
 import { cn } from "@/lib/utils";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import { SaveAsSkillButton } from "@/components/skills/SaveAsSkillButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -543,10 +544,10 @@ export default function DocEditorPage() {
 
           {sources.length > 0 && (
             <aside className="print:hidden lg:sticky lg:top-8 lg:self-start">
-              <h2 className="mb-2 flex items-center gap-1.5 font-display text-xs font-semibold uppercase tracking-wider text-muted">
+              <Eyebrow className="mb-2 flex items-center gap-1.5">
                 <Quote className="size-3.5" />
                 Sources
-              </h2>
+              </Eyebrow>
               <div className="space-y-2">
                 {sources.map((s) => (
                   <SourceCard key={s.idx} source={s} highlighted={highlightIdx === s.idx} />
@@ -581,12 +582,12 @@ function SourceCard({ source, highlighted }: { source: DocSource; highlighted: b
       className={cn(
         "rounded-xl border bg-surface2 p-3 transition-all duration-300",
         highlighted
-          ? "border-accent shadow-md ring-2 ring-accent/30"
-          : "border-line shadow-sm",
+          ? "border-accent ring-2 ring-accent/30"
+          : "border-line",
       )}
     >
       <div className="flex items-center gap-2">
-        <span className="grid size-5 shrink-0 place-items-center rounded-md bg-accent/10 font-mono text-[10px] font-semibold text-accent">
+        <span className="grid size-5 shrink-0 place-items-center rounded-md bg-ink font-mono text-[10px] font-semibold text-surface">
           {source.idx}
         </span>
         {source.file_id ? (

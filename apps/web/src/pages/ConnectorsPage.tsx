@@ -13,7 +13,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import {
-  Blocks,
   Check,
   KeyRound,
   Loader2,
@@ -41,18 +40,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 import { cn } from "@/lib/utils";
-
-// Per-category tint for the monogram tile + category tag. Kept in-file so the
-// catalog on the backend stays pure metadata.
-const CATEGORY_STYLE: Record<ConnectorCategory, { tile: string; tag: string }> = {
-  Communication: { tile: "bg-emerald-500/10 text-emerald-500", tag: "text-emerald-400" },
-  "Docs & Notes": { tile: "bg-blue-500/10 text-blue-500", tag: "text-blue-400" },
-  Dev: { tile: "bg-violet-500/10 text-violet-500", tag: "text-violet-400" },
-  "CRM & Sales": { tile: "bg-amber-500/10 text-amber-500", tag: "text-amber-400" },
-  Productivity: { tile: "bg-rose-500/10 text-rose-500", tag: "text-rose-400" },
-  Social: { tile: "bg-cyan-500/10 text-cyan-500", tag: "text-cyan-400" },
-};
 
 // A short monogram for the avatar tile: initials of the first two words, or the
 // first two letters for a single-word name. "Google Drive" → "GD", "Slack" → "S".
@@ -164,24 +155,24 @@ export default function ConnectorsPage() {
   return (
     <div className="mx-auto flex h-screen w-full max-w-6xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       {/* Hero */}
-      <div className="pt-4 text-center">
-        <div className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 text-white shadow-md shadow-accent/20">
-          <Blocks className="size-6" />
+      <HeroBand>
+        <div className="mx-auto max-w-2xl text-center">
+          <Eyebrow>Connectors</Eyebrow>
+          <h1 className="mx-auto mt-3 max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <span className="grad-word">Connect your apps</span> and put them to work.
+          </h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+            Link the tools you already use. Every connected app's actions become agent
+            tools automatically — reads run instantly, and anything that sends or changes
+            something waits for your confirmation.
+          </p>
         </div>
-        <h1 className="mx-auto max-w-2xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          <span className="grad-word">Connect your apps</span> and put them to work.
-        </h1>
-        <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Link the tools you already use. Every connected app's actions become agent
-          tools automatically — reads run instantly, and anything that sends or changes
-          something waits for your confirmation.
-        </p>
-      </div>
+      </HeroBand>
 
       {/* Not-configured banner */}
       {!isInitialLoading && !configured && (
-        <div className="mt-7 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
-          <KeyRound className="mt-0.5 size-5 shrink-0 text-amber-500" />
+        <div className="mt-7 flex items-start gap-3 rounded-lg border border-line bg-surface2 p-4">
+          <KeyRound className="mt-0.5 size-5 shrink-0 text-muted" />
           <div className="text-sm">
             <p className="font-medium text-ink">Connectors aren't configured yet</p>
             <p className="mt-0.5 text-muted">
@@ -197,9 +188,7 @@ export default function ConnectorsPage() {
       {/* Controls */}
       <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-            App store
-          </h2>
+          <Eyebrow>App store</Eyebrow>
           {!isInitialLoading && configured && (
             <span className="text-xs text-muted/70">
               {connectedCount} connected
@@ -234,7 +223,7 @@ export default function ConnectorsPage() {
       </div>
 
       {error && (
-        <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/5 px-4 py-3 text-sm text-rose-600 dark:text-rose-400">
+        <div className="mt-4 rounded-lg border border-line bg-surface2 px-4 py-3 text-sm text-ink">
           {error}
         </div>
       )}
@@ -276,6 +265,7 @@ export default function ConnectorsPage() {
       <McpSection />
 
       <div className="h-6 shrink-0" />
+      <WordmarkBanner />
     </div>
   );
 }
@@ -297,7 +287,6 @@ function ConnectorCard({
   onConnect: () => void;
   onDisconnect: () => void;
 }) {
-  const style = CATEGORY_STYLE[connector.category];
   const connected = connector.status === "active";
   const badge = statusBadge(connector.status);
 
@@ -306,15 +295,10 @@ function ConnectorCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.24) }}
-      className="flex flex-col rounded-2xl border border-line bg-surface2 p-5 shadow-sm"
+      className="flex flex-col rounded-lg border border-line bg-surface2 p-5 transition hover:border-accent/40"
     >
       <div className="flex items-start justify-between">
-        <div
-          className={cn(
-            "grid size-11 place-items-center rounded-xl font-display text-sm font-semibold",
-            style.tile,
-          )}
-        >
+        <div className="grid size-11 place-items-center rounded-lg bg-ink font-display text-sm font-semibold text-surface">
           {monogram(connector.name)}
         </div>
         {configured && badge && (
@@ -330,7 +314,7 @@ function ConnectorCard({
       <p className="mt-1 flex-1 text-sm text-muted">{connector.description}</p>
 
       <div className="mt-4 flex items-center justify-between">
-        <span className={cn("text-[11px] font-medium uppercase tracking-wider", style.tag)}>
+        <span className="text-[11px] font-medium uppercase tracking-wider text-muted">
           {connector.category}
         </span>
         {connected ? (
@@ -380,9 +364,7 @@ function McpSection() {
     <div className="mt-10">
       <div className="mb-3 flex items-center gap-2">
         <Server className="size-4 text-muted" />
-        <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          MCP servers
-        </h2>
+        <Eyebrow>MCP servers</Eyebrow>
         <span className="text-xs text-muted/70">
           {servers.length} configured
         </span>

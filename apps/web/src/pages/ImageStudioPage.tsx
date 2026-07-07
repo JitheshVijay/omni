@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
 import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=image&limit=50";
@@ -182,7 +183,8 @@ export default function ImageStudioPage() {
         </Button>
       </div>
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>IMAGE STUDIO</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Create with <span className="grad-word">Image Studio</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -192,7 +194,7 @@ export default function ImageStudioPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[340px_1fr]">
         {/* Generation form */}
-        <div className="rounded-2xl border border-line bg-surface2 p-4 shadow-sm lg:sticky lg:top-0">
+        <div className="rounded-2xl border border-line bg-surface2 p-4 lg:sticky lg:top-0">
           <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
             Prompt
             <Textarea
@@ -273,8 +275,8 @@ export default function ImageStudioPage() {
             </div>
           ) : images.length === 0 && !generating ? (
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-16 text-center">
-              <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-                <Images className="size-6 text-accent" />
+              <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+                <Images className="size-6" />
               </div>
               <p className="font-display text-lg font-semibold text-ink">
                 No images yet

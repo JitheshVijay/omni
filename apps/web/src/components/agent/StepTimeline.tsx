@@ -328,7 +328,7 @@ function ToolRowItem({ row }: { row: ToolRow }) {
   return (
     <div
       className={cn(
-        "rounded-xl border bg-surface2 shadow-sm transition-colors",
+        "rounded-xl border bg-surface2 transition-colors",
         isError ? "border-rose-500/30" : "border-line",
       )}
     >
@@ -436,9 +436,9 @@ export function ArtifactChip({ artifact }: { artifact: ArtifactSummary }) {
     <Link
       to={to}
       state={state}
-      className="group inline-flex max-w-full items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm shadow-sm transition hover:border-accent/40 hover:shadow-md"
+      className="group inline-flex max-w-full items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm transition hover:border-accent/40"
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-accent/10 text-accent">
+      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-ink text-surface">
         <Icon className="size-4" />
       </span>
       <span className="min-w-0">

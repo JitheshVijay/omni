@@ -35,6 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RunStatusBadge } from "@/components/agent/RunHeader";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 const NO_HUB = "__none__";
 
@@ -95,21 +98,17 @@ export default function AgentPage() {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="pl-10 lg:pl-0"
       >
-        <div className="flex items-center gap-3">
-          <div className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 shadow-lg shadow-accent/25">
-            <Bot className="size-6 text-white" />
-          </div>
-          <div>
-            <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-              Super Agent
-            </h1>
-            <p className="text-sm text-muted">
-              Give it a goal — it plans, acts across tools, and reports back live.
-            </p>
-          </div>
-        </div>
+        <HeroBand>
+          <Eyebrow>Super agent</Eyebrow>
+          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+            Super <span className="grad-word">Agent</span>
+          </h1>
+          <p className="mt-3 max-w-md text-sm text-muted">
+            Give it a goal — it plans, acts across tools, and reports back live.
+          </p>
+        </HeroBand>
 
-        <div className="mt-5 rounded-2xl border border-line bg-gradient-to-b from-accent/[0.05] to-transparent p-4 md:p-5">
+        <div className="mt-5 rounded-2xl border border-line bg-surface2 p-4 md:p-5">
           <Textarea
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
@@ -209,9 +208,9 @@ export default function AgentPage() {
       {/* Browse the Custom Agents store */}
       <Link
         to="/agents"
-        className="group mt-6 flex items-center gap-3 rounded-2xl border border-line bg-surface2 p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+        className="group mt-6 flex items-center gap-3 rounded-lg border border-line bg-surface2 p-4 transition hover:border-accent/40"
       >
-        <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+        <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <Store className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -237,9 +236,7 @@ export default function AgentPage() {
 
       {/* Recent runs */}
       <div className="mt-9">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Recent runs
-        </h2>
+        <Eyebrow className="mb-3">Recent runs</Eyebrow>
         {isInitialLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -248,8 +245,8 @@ export default function AgentPage() {
           </div>
         ) : runs.length === 0 ? (
           <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line py-12 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <Bot className="size-5 text-accent" />
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <Bot className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">No runs yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -265,6 +262,8 @@ export default function AgentPage() {
           </ul>
         )}
       </div>
+
+      <WordmarkBanner />
     </div>
   );
 }
@@ -282,7 +281,7 @@ function RunRow({ run, index }: { run: AgentRun; index: number }) {
           "group flex items-center gap-3 px-4 py-3 transition hover:bg-ink/[0.02]",
         )}
       >
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <Bot className="size-4" />
         </div>
         <div className="min-w-0 flex-1">

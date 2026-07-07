@@ -39,6 +39,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 type Tab = "systems" | "templates";
 
@@ -193,17 +196,17 @@ export default function AgentBasePage() {
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-6 py-8 md:px-10 lg:grid-cols-[22rem_1fr]">
         {/* ── Left rail: hero + sources + describe ── */}
         <div className="lg:sticky lg:top-8 lg:self-start">
-          <div className="mb-4 inline-flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent2 text-white shadow-md shadow-accent/20">
-            <Sparkles className="size-5" />
-          </div>
-          <h1 className="font-display text-3xl font-semibold italic leading-tight tracking-tight text-ink">
-            Custom dashboards, CRM &amp; systems in{" "}
-            <span className="grad-word not-italic">minutes.</span>
-          </h1>
-          <p className="mt-3 text-sm text-muted">
-            Describe what you want to track and AgentBase builds a working
-            system — typed tables of records with a live dashboard on top.
-          </p>
+          <HeroBand className="px-5 py-8 sm:px-6 sm:py-10">
+            <Eyebrow>Systems</Eyebrow>
+            <h1 className="mt-3 font-display text-3xl font-semibold italic leading-tight tracking-tight text-ink">
+              Custom dashboards, CRM &amp; systems in{" "}
+              <span className="grad-word not-italic">minutes.</span>
+            </h1>
+            <p className="mt-3 text-sm text-muted">
+              Describe what you want to track and AgentBase builds a working
+              system — typed tables of records with a live dashboard on top.
+            </p>
+          </HeroBand>
 
           {/* Source options */}
           <div className="mt-5 grid grid-cols-2 gap-2">
@@ -253,7 +256,7 @@ export default function AgentBasePage() {
           )}
 
           {/* Describe box */}
-          <div className="mt-4 rounded-2xl border border-line bg-surface2 p-3 shadow-sm">
+          <div className="mt-4 rounded-lg border border-line bg-surface2 p-3">
             <Textarea
               ref={describeRef}
               value={prompt}
@@ -287,7 +290,7 @@ export default function AgentBasePage() {
             </div>
           </div>
 
-          {error && <p className="mt-3 text-sm text-rose-400">{error}</p>}
+          {error && <p className="mt-3 text-sm text-muted">{error}</p>}
         </div>
 
         {/* ── Main area: tabs + grid ── */}
@@ -305,9 +308,9 @@ export default function AgentBasePage() {
                   key={t.id}
                   type="button"
                   onClick={() => setTab(t.id)}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                  className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium transition ${
                     effectiveTab === t.id
-                      ? "bg-accent text-white shadow-sm"
+                      ? "bg-accent text-white"
                       : "text-muted hover:text-ink"
                   }`}
                 >
@@ -382,14 +385,15 @@ export default function AgentBasePage() {
           </div>
         </div>
       </div>
+      <WordmarkBanner />
     </div>
   );
 }
 
 // ── Preview thumbnail: a couple of fake stat tiles + a bar sketch ──────────
-function DashboardPreview({ accent }: { accent: string }) {
+function DashboardPreview() {
   return (
-    <div className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${accent} p-3`}>
+    <div className="relative overflow-hidden rounded-lg bg-ink p-3">
       <div className="grid grid-cols-3 gap-2">
         {[0, 1].map((i) => (
           <div key={i} className="rounded-lg bg-black/20 p-2 backdrop-blur-sm">
@@ -432,21 +436,19 @@ function SystemCard({
   onDelete: () => void;
 }) {
   return (
-    <div className="group relative flex flex-col rounded-2xl border border-line bg-surface2 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md">
-      <DashboardPreview accent={system.accent} />
+    <div className="group relative flex flex-col rounded-lg border border-line bg-surface2 p-4 transition hover:border-accent/40">
+      <DashboardPreview />
       <button
         type="button"
         onClick={onDelete}
         aria-label="Delete system"
-        className="absolute right-6 top-6 grid size-7 place-items-center rounded-lg bg-black/30 text-white/80 opacity-0 backdrop-blur-sm transition hover:bg-rose-600/80 hover:text-white group-hover:opacity-100 focus-visible:opacity-100"
+        className="absolute right-6 top-6 grid size-7 place-items-center rounded-lg bg-black/30 text-white/80 opacity-0 backdrop-blur-sm transition hover:bg-black/60 hover:text-white group-hover:opacity-100 focus-visible:opacity-100"
       >
         <Trash2 className="size-3.5" />
       </button>
 
       <div className="mt-3 flex items-start gap-2">
-        <span
-          className={`grid size-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br ${system.accent} text-white`}
-        >
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <SystemIcon name={system.icon} className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
@@ -484,13 +486,11 @@ function TemplateCard({
 }) {
   const cols = template.tables[0]?.columns.length ?? 0;
   return (
-    <div className="group flex flex-col rounded-2xl border border-line bg-surface2 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md">
-      <DashboardPreview accent={template.accent} />
+    <div className="group flex flex-col rounded-lg border border-line bg-surface2 p-4 transition hover:border-accent/40">
+      <DashboardPreview />
 
       <div className="mt-3 flex items-start gap-2">
-        <span
-          className={`grid size-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br ${template.accent} text-white`}
-        >
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <SystemIcon name={template.icon} className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
@@ -565,9 +565,9 @@ function CardGridSkeleton() {
 
 function EmptySystems({ onBrowse }: { onBrowse: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-16 text-center">
-      <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-        <Sparkles className="size-5 text-accent" />
+    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-line py-16 text-center">
+      <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+        <Sparkles className="size-5" />
       </div>
       <p className="text-sm font-medium text-ink">No systems yet</p>
       <p className="max-w-xs text-xs text-muted">

@@ -110,8 +110,8 @@ export function ArtifactCard({ artifact, onOpen, onDeleted, className }: Artifac
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
       className={cn(
-        "group flex flex-col overflow-hidden rounded-xl border border-line bg-surface2 shadow-sm transition",
-        clickable && "hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md",
+        "group flex flex-col overflow-hidden rounded-lg border border-line bg-surface2 transition",
+        clickable && "hover:-translate-y-0.5 hover:border-accent/40",
         className,
       )}
     >
@@ -134,7 +134,7 @@ export function ArtifactCard({ artifact, onOpen, onDeleted, className }: Artifac
           </div>
         ) : (
           <div className="flex items-start gap-3 px-4 pt-4">
-            <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+            <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
               <Icon className="size-4" />
             </div>
             <div className="min-w-0 flex-1">

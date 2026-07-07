@@ -48,7 +48,7 @@ export function PlanChecklist({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-line bg-surface2/90 shadow-sm backdrop-blur",
+        "overflow-hidden rounded-2xl border border-line bg-surface2/90 backdrop-blur",
         className,
       )}
     >

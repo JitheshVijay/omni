@@ -132,7 +132,7 @@ export function Sidebar({
             className="absolute inset-0 bg-black/40 anim-fade-in"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-[var(--sidebar-width)] max-w-[85vw] border-r border-line bg-surface shadow-xl flex flex-col">
+          <div className="absolute left-0 top-0 h-full w-[var(--sidebar-width)] max-w-[85vw] border-r border-line bg-surface flex flex-col">
             <button
               onClick={() => setMobileOpen(false)}
               aria-label="Close menu"
@@ -167,7 +167,7 @@ function MobileSidebarTrigger() {
     <button
       onClick={() => setMobileOpen(!mobileOpen)}
       aria-label="Open menu"
-      className="lg:hidden fixed top-3 left-3 z-40 inline-flex size-9 items-center justify-center rounded-lg border border-line bg-surface2/95 backdrop-blur text-ink shadow-sm hover:bg-surface2 transition"
+      className="lg:hidden fixed top-3 left-3 z-40 inline-flex size-9 items-center justify-center rounded-lg border border-line bg-surface2/95 backdrop-blur text-ink hover:bg-surface2 transition"
     >
       <Menu className="size-4" />
     </button>

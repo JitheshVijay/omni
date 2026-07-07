@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
 import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=doc&limit=50";
@@ -98,7 +99,8 @@ export default function DocsListPage() {
         </Button>
       </div>
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>AI DOCS</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Write anything with <span className="grad-word">AI Docs</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -112,10 +114,10 @@ export default function DocsListPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="rounded-2xl border border-line bg-gradient-to-b from-accent/[0.05] to-transparent p-5"
+        className="rounded-2xl border border-line bg-surface2 p-5"
       >
         <div className="mb-3 flex items-center gap-2">
-          <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+          <div className="grid size-8 place-items-center rounded-lg bg-ink text-surface">
             <PenLine className="size-4" />
           </div>
           <h2 className="font-display text-base font-semibold text-ink">New document</h2>
@@ -156,7 +158,7 @@ export default function DocsListPage() {
           {/* Length segmented control */}
           <div className="flex flex-col gap-1.5 text-xs font-medium text-muted">
             Length
-            <div className="flex rounded-lg border border-line bg-surface2 p-0.5 shadow-sm">
+            <div className="flex rounded-lg border border-line bg-surface2 p-0.5">
               {LENGTHS.map((l) => (
                 <button
                   key={l.value}
@@ -166,7 +168,7 @@ export default function DocsListPage() {
                   className={cn(
                     "rounded-md px-3 py-1.5 text-xs font-medium transition",
                     length === l.value
-                      ? "bg-accent text-white shadow-sm"
+                      ? "bg-ink text-surface"
                       : "text-muted hover:text-ink",
                   )}
                 >
@@ -191,9 +193,7 @@ export default function DocsListPage() {
 
       {/* Existing docs */}
       <div className="mt-8">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Your documents
-        </h2>
+        <Eyebrow className="mb-3">Your documents</Eyebrow>
         {isInitialLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -202,8 +202,8 @@ export default function DocsListPage() {
           </div>
         ) : docs.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line py-12 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <FileText className="size-5 text-accent" />
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <FileText className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">No documents yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -258,7 +258,7 @@ function DocRow({ doc, index }: { doc: ArtifactSummary; index: number }) {
         to={`/tools/docs/${doc.id}`}
         className="group flex items-center gap-3 px-4 py-3 transition hover:bg-ink/[0.02]"
       >
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <FileText className="size-4" />
         </div>
         <div className="min-w-0 flex-1">

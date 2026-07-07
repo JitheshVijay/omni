@@ -486,9 +486,9 @@ function CompletedPanel({
   listenDisabled: boolean;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-surface2 shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-line bg-surface2">
       <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
-        <span className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+        <span className="grid size-7 place-items-center rounded-lg bg-ink text-surface">
           <Sparkles className="size-4" />
         </span>
         <span className="font-display text-sm font-semibold text-ink">Result</span>
@@ -509,9 +509,7 @@ function CompletedPanel({
 
         {artifacts.length > 0 && (
           <div className="mt-5 border-t border-line pt-4">
-            <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-              Artifacts
-            </p>
+            <p className="eyebrow mb-2.5">Artifacts</p>
             <div className="flex flex-wrap gap-2.5">
               {artifacts.map((a) => (
                 <ArtifactChip key={a.id} artifact={a} />

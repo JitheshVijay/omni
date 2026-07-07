@@ -17,7 +17,10 @@ export function HeroBand({
   return (
     <section
       className={cn(
-        "band-dark relative isolate overflow-hidden rounded-2xl px-6 py-14 sm:px-10 sm:py-16",
+        // shrink-0: as a flex child, `overflow-hidden` gives the band an
+        // auto-minimum of 0, so an overflowing flex-col parent would compress
+        // it to padding-height and clip the headline. Never let it shrink.
+        "band-dark relative isolate shrink-0 overflow-hidden rounded-2xl px-6 py-14 sm:px-10 sm:py-16",
         className,
       )}
     >

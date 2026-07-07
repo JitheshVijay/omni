@@ -54,6 +54,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScaledDesignFrame } from "@/components/tools/ScaledDesignFrame";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 
 const LIST_PATH = "/api/artifacts?kind=webpage&limit=50";
 const PREVIEW_INTERVAL_MS = 250;
@@ -176,7 +177,8 @@ export default function DesignStudioPage() {
       </div>
 
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>DESIGN STUDIO</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           What would you like to <span className="grad-word">design</span>?
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -186,7 +188,7 @@ export default function DesignStudioPage() {
       </div>
 
       {/* Composer */}
-      <div className="rounded-2xl border border-line bg-surface2 p-4 shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface2 p-4">
         {/* Format category tabs */}
         <div className="mb-3 flex flex-wrap gap-1.5">
           {CATEGORIES.map((c) => (
@@ -199,7 +201,7 @@ export default function DesignStudioPage() {
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium transition disabled:opacity-60",
                 category === c
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-ink text-surface"
                   : "border border-line bg-surface text-muted hover:border-accent/40 hover:text-ink",
               )}
             >
@@ -303,7 +305,7 @@ export default function DesignStudioPage() {
 
       {/* Live streaming preview */}
       {generating && (
-        <div className="mt-4 overflow-hidden rounded-2xl border border-accent/30 bg-surface shadow-sm">
+        <div className="mt-4 overflow-hidden rounded-2xl border border-accent/30 bg-surface">
           <div className="flex items-center gap-2 border-b border-line bg-surface2 px-3 py-2">
             <Loader2 className="size-3.5 animate-spin text-accent" />
             <span className="text-xs font-medium text-muted">
@@ -334,9 +336,7 @@ export default function DesignStudioPage() {
 
       {/* Existing designs */}
       <div className="mt-10">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Your designs
-        </h2>
+        <Eyebrow className="mb-3">Your designs</Eyebrow>
         {isInitialLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -345,8 +345,8 @@ export default function DesignStudioPage() {
           </div>
         ) : designs.length === 0 && !generating ? (
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-14 text-center">
-            <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-              <Palette className="size-6 text-accent" />
+            <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+              <Palette className="size-6" />
             </div>
             <p className="font-display text-lg font-semibold text-ink">No designs yet</p>
             <p className="max-w-xs text-sm text-muted">
@@ -474,7 +474,7 @@ function DesignCard({
       <button
         type="button"
         onClick={onOpen}
-        className="group flex w-full flex-col overflow-hidden rounded-xl border border-line bg-surface2 text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md focus-visible:ring-2 focus-visible:ring-accent/50"
+        className="group flex w-full flex-col overflow-hidden rounded-xl border border-line bg-surface2 text-left outline-none transition hover:border-accent/40 focus-visible:ring-2 focus-visible:ring-accent/50"
         aria-label={`Open ${artifact.title}`}
       >
         {/* Palette-tinted cover with the format's aspect ratio */}
@@ -555,9 +555,7 @@ function DesignTemplateGallery({ onUse }: { onUse: (t: DesignTemplate) => void }
   return (
     <section className="mt-12">
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Start from an example
-        </h2>
+        <Eyebrow>Start from an example</Eyebrow>
         <div className="flex flex-wrap gap-1.5">
           {tabs.map((c) => (
             <button
@@ -568,7 +566,7 @@ function DesignTemplateGallery({ onUse }: { onUse: (t: DesignTemplate) => void }
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium transition",
                 active === c
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-ink text-surface"
                   : "border border-line bg-surface2 text-muted hover:border-accent/40 hover:text-ink",
               )}
             >
@@ -592,7 +590,7 @@ function DesignTemplateGallery({ onUse }: { onUse: (t: DesignTemplate) => void }
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: Math.min(i * 0.03, 0.24) }}
               onClick={() => onUse(t)}
-              className="group flex flex-col overflow-hidden rounded-xl border border-line bg-surface2 p-2.5 text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-accent/50"
+              className="group flex flex-col overflow-hidden rounded-xl border border-line bg-surface2 p-2.5 text-left outline-none transition hover:border-accent/40 focus-visible:ring-2 focus-visible:ring-accent/50"
               aria-label={`Use example: ${t.title}`}
             >
               <div className="relative">

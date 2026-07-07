@@ -99,8 +99,8 @@ export function MessageList({
         <div className="mx-auto flex max-w-3xl flex-col gap-5">
           {empty ? (
             <div className="mt-24 flex flex-col items-center gap-3 text-center">
-              <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-                <MessageSquare className="size-6 text-accent" />
+              <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+                <MessageSquare className="size-6" />
               </div>
               <p className="font-display text-lg font-semibold text-ink">
                 Start the conversation
@@ -154,7 +154,7 @@ export function MessageList({
           type="button"
           onClick={scrollToBottom}
           aria-label="Scroll to latest"
-          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full border border-line bg-surface2/95 px-3 py-1.5 text-xs font-medium text-ink shadow-md backdrop-blur transition hover:bg-surface2"
+          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full border border-line bg-surface2/95 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur transition hover:bg-surface2"
         >
           <ArrowDown className="size-3.5" />
           Latest
@@ -185,7 +185,7 @@ function UserBubble({
       transition={{ duration: 0.18, ease: "easeOut" }}
       className={cn("flex justify-end", optimistic && "opacity-90")}
     >
-      <div className="max-w-[85%] min-w-0 break-words rounded-2xl rounded-br-md bg-ink px-4 py-2.5 text-[15px] leading-relaxed text-surface whitespace-pre-wrap shadow-sm">
+      <div className="max-w-[85%] min-w-0 break-words rounded-lg bg-ink px-4 py-2.5 text-[15px] leading-relaxed text-surface whitespace-pre-wrap">
         {message.content}
         {attachments && attachments.length > 0 && (
           <div className={cn("flex flex-wrap gap-1.5", message.content && "mt-2")}>

@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
 import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=sheet&limit=50";
@@ -179,7 +180,8 @@ export default function SheetsPage() {
         </Button>
       </div>
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>AI SHEETS</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Build data with <span className="grad-word">AI Sheets</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -193,10 +195,10 @@ export default function SheetsPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="rounded-2xl border border-line bg-gradient-to-b from-accent/[0.05] to-transparent p-5"
+        className="rounded-2xl border border-line bg-surface2 p-5"
       >
         <div className="mb-3 flex items-center gap-2">
-          <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+          <div className="grid size-8 place-items-center rounded-lg bg-ink text-surface">
             <Table2 className="size-4" />
           </div>
           <h2 className="font-display text-base font-semibold text-ink">New sheet</h2>
@@ -304,9 +306,7 @@ export default function SheetsPage() {
 
       {/* Existing sheets */}
       <div className="mt-8">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Your sheets
-        </h2>
+        <Eyebrow className="mb-3">Your sheets</Eyebrow>
         {isInitialLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -315,8 +315,8 @@ export default function SheetsPage() {
           </div>
         ) : sheets.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line py-14 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <Table2 className="size-5 text-accent" />
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <Table2 className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">No sheets yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -420,7 +420,7 @@ function LivePreview({
 
       <div className="h-1 w-full bg-accent/10" aria-hidden>
         <div
-          className="h-full bg-gradient-to-r from-accent to-accent2 transition-all duration-500"
+          className="h-full bg-accent transition-all duration-500"
           style={{
             width: `${total > 0 ? Math.round((Math.min(rows.length, total) / total) * 100) : 5}%`,
           }}
@@ -466,10 +466,10 @@ function SheetCard({ sheet, index }: { sheet: ArtifactSummary; index: number }) 
     >
       <Link
         to={`/tools/sheets/${sheet.id}`}
-        className="group block overflow-hidden rounded-xl border border-line bg-surface2 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lg"
+        className="group block overflow-hidden rounded-xl border border-line bg-surface2 transition hover:border-accent/40"
       >
         {/* Faux-grid cover */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-accent/[0.08] via-surface2 to-accent2/[0.08]">
+        <div className="relative aspect-[16/9] overflow-hidden bg-surface3">
           <div className="absolute inset-x-4 top-4 grid grid-cols-4 gap-px overflow-hidden rounded-md border border-line/80 bg-line/60">
             {Array.from({ length: 16 }).map((_, i) => (
               <div

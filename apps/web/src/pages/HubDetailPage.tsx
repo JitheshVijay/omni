@@ -40,6 +40,7 @@ import { Badge, IndexStatusBadge } from "@/components/ui/badge";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { VoiceCallButton } from "@/components/voice/VoiceCallButton";
 import { ModelPicker } from "@/components/chat/ModelPicker";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import {
   Dialog,
   DialogContent,
@@ -110,10 +111,11 @@ export default function HubDetailPage() {
 
       <div className="mb-5 flex items-start justify-between gap-4 pl-10 lg:pl-0">
         <div className="min-w-0">
+          <Eyebrow>Hub</Eyebrow>
           {isInitialLoading ? (
-            <Skeleton className="h-8 w-64" />
+            <Skeleton className="mt-1 h-8 w-64" />
           ) : (
-            <h1 className="truncate font-display text-2xl font-semibold tracking-tight text-ink">
+            <h1 className="mt-1 truncate font-display text-2xl font-semibold tracking-tight text-ink">
               {hub?.name}
             </h1>
           )}
@@ -631,7 +633,7 @@ function MemoryTab({ hubId }: { hubId: string }) {
               {/* Relevance bar, normalized against the best hit. */}
               <div className="mb-2.5 h-1 overflow-hidden rounded-full bg-line">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-accent to-accent2"
+                  className="h-full rounded-full bg-accent"
                   style={{
                     width: `${Math.max(6, (r.score / Math.max(bestScore, 0.0001)) * 100)}%`,
                   }}

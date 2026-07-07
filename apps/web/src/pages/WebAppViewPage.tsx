@@ -186,8 +186,8 @@ export default function WebAppViewPage() {
   if (error || !artifact) {
     return (
       <div className="mx-auto flex h-screen w-full max-w-2xl flex-col items-center justify-center gap-3 px-6 text-center">
-        <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-          <Code2 className="size-6 text-accent" />
+        <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+          <Code2 className="size-6" />
         </div>
         <p className="font-display text-lg font-semibold text-ink">App not found</p>
         <p className="max-w-xs text-sm text-muted">
@@ -318,7 +318,7 @@ export default function WebAppViewPage() {
               className={cn(
                 "border-0 bg-white",
                 device === "mobile"
-                  ? "h-[720px] max-h-full w-[390px] shrink-0 rounded-2xl border border-line shadow-lg"
+                  ? "h-[720px] max-h-full w-[390px] shrink-0 rounded-2xl border border-line"
                   : "h-full w-full",
               )}
             />
@@ -384,7 +384,7 @@ function TabButton({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition",
         active
-          ? "bg-accent text-white shadow-sm"
+          ? "bg-ink text-surface"
           : "text-muted hover:text-ink",
       )}
     >

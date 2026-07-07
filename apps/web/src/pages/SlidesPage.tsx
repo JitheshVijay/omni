@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/select";
 import { TemplateGallery } from "@/components/tools/TemplateGallery";
 import { GeneratorSkillsStrip } from "@/components/skills/GeneratorSkillsStrip";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 import type { GenTemplate } from "@/lib/templates";
 
 const LIST_PATH = "/api/artifacts?kind=slides&limit=50";
@@ -173,7 +174,8 @@ export default function SlidesPage() {
         </Button>
       </div>
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>AI SLIDES</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Design a deck with <span className="grad-word">AI Slides</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -187,10 +189,10 @@ export default function SlidesPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="rounded-2xl border border-line bg-gradient-to-b from-accent/[0.05] to-transparent p-5"
+        className="rounded-2xl border border-line bg-surface2 p-5"
       >
         <div className="mb-3 flex items-center gap-2">
-          <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-accent2 text-white shadow-sm">
+          <div className="grid size-8 place-items-center rounded-lg bg-ink text-surface">
             <Presentation className="size-4" />
           </div>
           <h2 className="font-display text-base font-semibold text-ink">New deck</h2>
@@ -217,7 +219,7 @@ export default function SlidesPage() {
           {/* Slide count stepper */}
           <div className="flex flex-col gap-1.5 text-xs font-medium text-muted">
             Slides
-            <div className="inline-flex items-center rounded-lg border border-line bg-surface2 p-0.5 shadow-sm">
+            <div className="inline-flex items-center rounded-lg border border-line bg-surface2 p-0.5">
               <button
                 type="button"
                 onClick={() => setCount((c) => Math.max(MIN_SLIDES, c - 1))}
@@ -332,9 +334,7 @@ export default function SlidesPage() {
 
       {/* Existing decks */}
       <div className="mt-8">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Your decks
-        </h2>
+        <Eyebrow className="mb-3">Your decks</Eyebrow>
         {isInitialLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -343,8 +343,8 @@ export default function SlidesPage() {
           </div>
         ) : decks.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line py-14 text-center">
-            <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-              <Presentation className="size-5 text-accent" />
+            <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+              <Presentation className="size-5" />
             </div>
             <p className="text-sm font-medium text-ink">No decks yet</p>
             <p className="max-w-xs text-xs text-muted">
@@ -488,7 +488,7 @@ function DeckCard({ deck, index }: { deck: ArtifactSummary; index: number }) {
     >
       <Link
         to={`/tools/slides/${deck.id}`}
-        className="group block overflow-hidden rounded-xl border border-line bg-surface2 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lg"
+        className="group block overflow-hidden rounded-xl border border-line bg-surface2 transition hover:border-accent/40"
       >
         {/* Themed cover */}
         <div

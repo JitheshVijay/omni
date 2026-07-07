@@ -44,6 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 
 const LIST_PATH = "/api/artifacts?kind=webpage&limit=50";
 
@@ -157,7 +158,8 @@ export default function WebAppStudioPage() {
       </div>
 
       <div className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <Eyebrow>AI DEVELOPER</Eyebrow>
+        <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Build an app with <span className="grad-word">AI</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
@@ -167,7 +169,7 @@ export default function WebAppStudioPage() {
       </div>
 
       {/* Composer */}
-      <div className="rounded-2xl border border-line bg-surface2 p-4 shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface2 p-4">
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
           Describe your app
           <Textarea
@@ -231,7 +233,7 @@ export default function WebAppStudioPage() {
 
       {/* Live streaming preview */}
       {generating && (
-        <div className="mt-4 overflow-hidden rounded-2xl border border-accent/30 bg-surface shadow-sm">
+        <div className="mt-4 overflow-hidden rounded-2xl border border-accent/30 bg-surface">
           <div className="flex items-center gap-2 border-b border-line bg-surface2 px-3 py-2">
             <span className="flex gap-1.5">
               <span className="size-2.5 rounded-full bg-rose-400/70" />
@@ -263,9 +265,7 @@ export default function WebAppStudioPage() {
 
       {/* Existing web apps */}
       <div className="mt-10">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Your apps
-        </h2>
+        <Eyebrow className="mb-3">Your apps</Eyebrow>
         {isInitialLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -274,8 +274,8 @@ export default function WebAppStudioPage() {
           </div>
         ) : apps.length === 0 && !generating ? (
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-14 text-center">
-            <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-              <Code2 className="size-6 text-accent" />
+            <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+              <Code2 className="size-6" />
             </div>
             <p className="font-display text-lg font-semibold text-ink">No apps yet</p>
             <p className="max-w-xs text-sm text-muted">
@@ -350,7 +350,7 @@ function WebAppCard({
       <button
         type="button"
         onClick={onOpen}
-        className="group flex w-full flex-col overflow-hidden rounded-xl border border-line bg-surface2 text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md focus-visible:ring-2 focus-visible:ring-accent/50"
+        className="group flex w-full flex-col overflow-hidden rounded-xl border border-line bg-surface2 text-left outline-none transition hover:border-accent/40 focus-visible:ring-2 focus-visible:ring-accent/50"
         aria-label={`Open ${artifact.title}`}
       >
         <BrowserMock title={artifact.title} />
@@ -406,15 +406,15 @@ function BrowserMock({ title }: { title: string }) {
           {title || "app"}
         </span>
       </div>
-      <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-surface2 to-surface p-3">
-        <div className="h-2.5 w-1/3 rounded-full bg-gradient-to-r from-accent to-accent2" />
+      <div className="relative aspect-[16/9] overflow-hidden bg-surface2 p-3">
+        <div className="h-2.5 w-1/3 rounded-full bg-ink/70" />
         <div className="mt-2 h-1.5 w-4/5 rounded-full bg-ink/10" />
         <div className="mt-1 h-1.5 w-3/5 rounded-full bg-ink/10" />
         <div className="mt-3 flex gap-2">
-          <div className="h-8 w-16 rounded-md bg-accent/20" />
+          <div className="h-8 w-16 rounded-md bg-ink/10" />
           <div className="h-8 w-16 rounded-md bg-ink/[0.06]" />
         </div>
-        <div className="absolute bottom-3 right-3 grid size-8 place-items-center rounded-lg bg-accent/10 text-accent">
+        <div className="absolute bottom-3 right-3 grid size-8 place-items-center rounded-lg bg-ink text-surface">
           <Code2 className="size-4" />
         </div>
       </div>
@@ -433,9 +433,7 @@ function WebAppTemplateGallery({ onUse }: { onUse: (t: GenTemplate) => void }) {
   return (
     <section className="mt-12">
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-          Start from a template
-        </h2>
+        <Eyebrow>Start from a template</Eyebrow>
         <div className="flex flex-wrap gap-1.5">
           {categories.map((c) => (
             <button
@@ -446,7 +444,7 @@ function WebAppTemplateGallery({ onUse }: { onUse: (t: GenTemplate) => void }) {
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium transition",
                 active === c
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-ink text-surface"
                   : "border border-line bg-surface2 text-muted hover:border-accent/40 hover:text-ink",
               )}
             >
@@ -466,7 +464,7 @@ function WebAppTemplateGallery({ onUse }: { onUse: (t: GenTemplate) => void }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: Math.min(i * 0.03, 0.24) }}
             onClick={() => onUse(t)}
-            className="group flex flex-col overflow-hidden rounded-xl border border-line bg-surface2 p-2.5 text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-accent/50"
+            className="group flex flex-col overflow-hidden rounded-xl border border-line bg-surface2 p-2.5 text-left outline-none transition hover:border-accent/40 focus-visible:ring-2 focus-visible:ring-accent/50"
             aria-label={`Use template: ${t.title}`}
           >
             <div className="relative">

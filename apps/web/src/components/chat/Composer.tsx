@@ -291,7 +291,7 @@ export function Composer({
 
         <div
           className={cn(
-            "flex items-end gap-1.5 rounded-2xl border border-line bg-surface2 p-2 shadow-sm transition",
+            "flex items-end gap-1.5 rounded-lg border border-line bg-surface p-2 transition",
             "focus-within:border-accent/50 focus-within:ring-2 focus-within:ring-accent/20",
           )}
         >
@@ -365,7 +365,7 @@ export function Composer({
               className={cn(
                 "inline-flex size-8 shrink-0 items-center justify-center rounded-lg transition",
                 canSend
-                  ? "bg-accent text-white shadow-sm hover:bg-accent/90"
+                  ? "bg-accent text-white hover:bg-accent/90"
                   : "bg-ink/10 text-muted",
               )}
             >

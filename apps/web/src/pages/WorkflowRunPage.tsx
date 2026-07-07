@@ -234,7 +234,7 @@ function RunHeaderPanel({
   const meta = RUN_STATUS_BADGE[run.status] ?? RUN_STATUS_BADGE.queued;
   const duration = fmtDuration(run.started_at, run.finished_at);
   return (
-    <div className="rounded-2xl border border-line bg-surface2 p-4 shadow-sm md:p-5">
+    <div className="rounded-2xl border border-line bg-surface2 p-4 md:p-5">
       <div className="mb-1.5 flex flex-wrap items-center gap-2">
         <Badge variant={meta.variant}>
           {meta.spin && <Loader2 className="size-3 animate-spin" />}
@@ -356,7 +356,7 @@ function StepRow({
 
       <div
         className={cn(
-          "rounded-xl border bg-surface2 shadow-sm transition-colors",
+          "rounded-xl border bg-surface2 transition-colors",
           isError ? "border-rose-500/30" : "border-line",
         )}
       >
@@ -384,7 +384,7 @@ function StepRow({
             {step.output?.agent_run_id && (
               <Link
                 to={`/agent/${step.output.agent_run_id}`}
-                className="group inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs text-muted shadow-sm transition hover:border-accent/40 hover:text-accent"
+                className="group inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs text-muted transition hover:border-accent/40 hover:text-accent"
               >
                 <Bot className="size-3.5" />
                 View agent run

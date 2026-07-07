@@ -90,7 +90,7 @@ function WfNodeCard({ data, selected }: NodeProps<WfFlowNode>) {
     <div
       style={{ width: NODE_W }}
       className={cn(
-        "rounded-xl border bg-surface2 px-3 py-2.5 shadow-sm transition-colors",
+        "rounded-xl border bg-surface2 px-3 py-2.5 transition-colors",
         selected ? "border-accent ring-2 ring-accent/20" : "border-line hover:border-accent/40",
       )}
     >
@@ -98,7 +98,7 @@ function WfNodeCard({ data, selected }: NodeProps<WfFlowNode>) {
         <Handle type="target" position={Position.Left} className="!size-2 !border-line !bg-surface" />
       )}
       <div className="flex items-center gap-2">
-        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <Icon className="size-4" />
         </span>
         <div className="min-w-0">
@@ -498,9 +498,7 @@ export default function WorkflowEditorPage() {
             />
           ) : (
             <div className="px-4 py-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                Workflow
-              </p>
+              <p className="eyebrow">Workflow</p>
               <p className="mt-2 text-xs leading-relaxed text-muted">
                 {chain.length === 0
                   ? "Add steps to build a chain. Click a step to configure it."
@@ -510,9 +508,7 @@ export default function WorkflowEditorPage() {
           )}
 
           <div className="mt-auto border-t border-line px-4 py-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-              Recent runs
-            </p>
+            <p className="eyebrow">Recent runs</p>
             {runs.length === 0 ? (
               <p className="mt-2 text-xs text-muted">No runs yet.</p>
             ) : (
@@ -581,7 +577,7 @@ function NodeConfigPanel({
   return (
     <div className="px-4 py-4">
       <div className="flex items-center gap-2">
-        <span className="grid size-8 place-items-center rounded-lg bg-accent/10 text-accent">
+        <span className="grid size-8 place-items-center rounded-lg bg-ink text-surface">
           <Icon className="size-4" />
         </span>
         <div className="min-w-0 flex-1">

@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 
 const LIST_PATH = "/api/artifacts?kind=audio&limit=100";
 const DOCS_PATH = "/api/artifacts?kind=doc&limit=100";
@@ -208,7 +209,8 @@ export default function PodcastStudioPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          <Eyebrow>PODCAST</Eyebrow>
+          <h1 className="mt-1.5 font-display text-2xl font-semibold tracking-tight text-ink">
             Podcast Studio
           </h1>
           <p className="mt-0.5 text-sm text-muted">
@@ -219,7 +221,7 @@ export default function PodcastStudioPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[340px_1fr]">
         {/* Generation form */}
-        <div className="rounded-2xl border border-line bg-surface2 p-4 shadow-sm lg:sticky lg:top-0">
+        <div className="rounded-2xl border border-line bg-surface2 p-4 lg:sticky lg:top-0">
           <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
             Topic
             <Textarea
@@ -350,8 +352,8 @@ export default function PodcastStudioPage() {
             </div>
           ) : episodes.length === 0 && !generating ? (
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-16 text-center">
-              <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-                <Podcast className="size-6 text-accent" />
+              <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+                <Podcast className="size-6" />
               </div>
               <p className="font-display text-lg font-semibold text-ink">No episodes yet</p>
               <p className="max-w-xs text-sm text-muted">
@@ -486,10 +488,10 @@ function LiveEpisodeCard({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-accent/30 bg-surface2 shadow-sm"
+      className="overflow-hidden rounded-2xl border border-accent/30 bg-surface2"
     >
       <div className="flex items-center gap-2.5 border-b border-line px-4 py-3">
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <Loader2 className="size-4 animate-spin" />
         </div>
         <div className="min-w-0 flex-1">
@@ -540,7 +542,7 @@ function EpisodeCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, delay: Math.min(index * 0.03, 0.25) }}
       className={cn(
-        "overflow-hidden rounded-2xl border bg-surface2 shadow-sm transition",
+        "overflow-hidden rounded-2xl border bg-surface2 transition",
         expanded ? "border-accent/40" : "border-line hover:border-accent/30",
       )}
     >
@@ -551,7 +553,7 @@ function EpisodeCard({
         aria-expanded={expanded}
         aria-label={`${expanded ? "Collapse" : "Expand"} ${artifact.title || "episode"}`}
       >
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <Podcast className="size-4" />
         </div>
         <div className="min-w-0 flex-1">

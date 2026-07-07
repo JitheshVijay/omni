@@ -8,13 +8,17 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Trash2, Loader2, Sparkles } from "lucide-react";
 import { useApi, invalidateApi } from "@/lib/use-api";
-import { deleteSystem, systemKey, type System } from "@/lib/agentbase";
+import { deleteSystem, formatStat, systemKey, type System } from "@/lib/agentbase";
 import { SystemIcon } from "@/components/agentbase/SystemIcon";
 import { TileCard } from "@/components/agentbase/TileCard";
 import { SystemTable } from "@/components/agentbase/SystemTable";
+import { StatTile } from "@/components/brand/StatTile";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+
+// Rotating pastel tints for the computed stat tiles.
+const TILE_TINTS = ["mint", "periwinkle", "magenta", "orange"] as const;
 
 export default function SystemViewPage() {
   const { id } = useParams<{ id: string }>();
@@ -70,9 +74,7 @@ export default function SystemViewPage() {
             {/* Header */}
             <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-start gap-3">
-                <span
-                  className={`grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br ${system.accent} text-white shadow-md`}
-                >
+                <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-ink text-surface">
                   <SystemIcon name={system.icon} className="size-6" />
                 </span>
                 <div>
@@ -95,7 +97,7 @@ export default function SystemViewPage() {
                 variant="secondary"
                 onClick={handleDelete}
                 disabled={deleting}
-                className="text-rose-400 hover:text-rose-300"
+                className="text-muted hover:text-ink"
               >
                 {deleting ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -106,14 +108,23 @@ export default function SystemViewPage() {
               </Button>
             </div>
 
-            {error && <p className="mt-4 text-sm text-rose-400">{error}</p>}
+            {error && <p className="mt-4 text-sm text-muted">{error}</p>}
 
             {/* Dashboard tiles */}
             {system.tiles.length > 0 && (
               <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {system.tiles.map((tile) => (
-                  <TileCard key={tile.id} tile={tile} />
-                ))}
+                {system.tiles.map((tile, i) =>
+                  tile.kind === "stat" ? (
+                    <StatTile
+                      key={tile.id}
+                      value={formatStat(tile.value)}
+                      label={tile.title}
+                      tint={TILE_TINTS[i % TILE_TINTS.length]}
+                    />
+                  ) : (
+                    <TileCard key={tile.id} tile={tile} />
+                  ),
+                )}
               </div>
             )}
 
@@ -160,9 +171,9 @@ function LoadingState() {
 
 function NotFound() {
   return (
-    <div className="mt-16 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line py-16 text-center">
-      <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-        <Sparkles className="size-5 text-accent" />
+    <div className="mt-16 flex flex-col items-center gap-3 rounded-lg border border-dashed border-line py-16 text-center">
+      <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+        <Sparkles className="size-5" />
       </div>
       <p className="text-sm font-medium text-ink">System not found</p>
       <p className="max-w-xs text-xs text-muted">

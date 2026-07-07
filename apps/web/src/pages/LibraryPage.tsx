@@ -10,6 +10,8 @@ import type { ArtifactSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArtifactCard } from "@/components/tools/ArtifactCard";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 type KindFilter = "all" | "doc" | "image" | "audio";
 
@@ -47,7 +49,8 @@ export default function LibraryPage() {
     <div className="mx-auto flex h-screen w-full max-w-6xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 pl-10 lg:pl-0">
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          <Eyebrow>Library</Eyebrow>
+          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">
             Library
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -56,7 +59,7 @@ export default function LibraryPage() {
         </div>
 
         {/* Kind filter tabs */}
-        <div className="flex rounded-lg border border-line bg-surface2 p-0.5 shadow-sm">
+        <div className="flex rounded-lg border border-line bg-surface2 p-0.5">
           {TABS.map((t) => {
             const Icon = t.icon;
             return (
@@ -65,9 +68,9 @@ export default function LibraryPage() {
                 type="button"
                 onClick={() => setKind(t.value)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition",
+                  "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition",
                   kind === t.value
-                    ? "bg-accent text-white shadow-sm"
+                    ? "bg-surface3 text-ink"
                     : "text-muted hover:text-ink",
                 )}
               >
@@ -87,8 +90,8 @@ export default function LibraryPage() {
         </div>
       ) : artifacts.length === 0 ? (
         <div className="mt-16 flex flex-col items-center gap-3 text-center">
-          <div className="grid size-12 place-items-center rounded-2xl bg-accent/10">
-            <LibraryBig className="size-6 text-accent" />
+          <div className="grid size-12 place-items-center rounded-lg bg-ink text-surface">
+            <LibraryBig className="size-6" />
           </div>
           <p className="font-display text-lg font-semibold text-ink">
             {kind === "all" ? "Your library is empty" : "Nothing here yet"}
@@ -102,6 +105,8 @@ export default function LibraryPage() {
           ))}
         </div>
       )}
+
+      <WordmarkBanner />
     </div>
   );
 }

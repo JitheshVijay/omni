@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/components/ui/confirm-dialog";
-import { cn } from "@/lib/utils";
+import { Eyebrow } from "@/components/brand/Eyebrow";
 
 const STATUS_PATH = "/api/secretary/status";
 
@@ -47,7 +47,6 @@ interface ToolkitMeta {
   name: string;
   blurb: string;
   icon: typeof Mail;
-  accent: string; // icon tile background
 }
 
 const TOOLKITS: ToolkitMeta[] = [
@@ -56,14 +55,12 @@ const TOOLKITS: ToolkitMeta[] = [
     name: "Gmail",
     blurb: "Read and search your inbox; draft, reply, and send behind confirmation.",
     icon: Mail,
-    accent: "bg-rose-500/10 text-rose-500",
   },
   {
     key: "googlecalendar",
     name: "Google Calendar",
     blurb: "See your schedule and create or update events behind confirmation.",
     icon: CalendarClock,
-    accent: "bg-blue-500/10 text-blue-500",
   },
 ];
 
@@ -166,11 +163,12 @@ export default function SecretaryPage() {
     <div className="mx-auto flex h-screen w-full max-w-4xl flex-col overflow-y-auto scrollbar-thin px-6 py-8 md:px-10">
       {/* Header */}
       <div className="mb-6 flex items-start gap-3 pl-10 lg:pl-0">
-        <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-accent/10">
-          <Sparkles className="size-5 text-accent" />
+        <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-ink text-surface">
+          <Sparkles className="size-5" />
         </div>
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          <Eyebrow>Secretary</Eyebrow>
+          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">
             Secretary
           </h1>
           <p className="mt-0.5 text-sm text-muted">
@@ -182,8 +180,8 @@ export default function SecretaryPage() {
 
       {/* Not-configured banner */}
       {!isInitialLoading && !configured && (
-        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
-          <KeyRound className="mt-0.5 size-5 shrink-0 text-amber-500" />
+        <div className="mb-6 flex items-start gap-3 rounded-lg border border-line bg-surface2 p-4">
+          <KeyRound className="mt-0.5 size-5 shrink-0 text-muted" />
           <div className="text-sm">
             <p className="font-medium text-ink">The Secretary isn't configured yet</p>
             <p className="mt-0.5 text-muted">
@@ -196,7 +194,7 @@ export default function SecretaryPage() {
       )}
 
       {error && (
-        <div className="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/5 px-4 py-3 text-sm text-rose-600 dark:text-rose-400">
+        <div className="mb-4 rounded-lg border border-line bg-surface2 px-4 py-3 text-sm text-ink">
           {error}
         </div>
       )}
@@ -218,10 +216,10 @@ export default function SecretaryPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2, delay: Math.min(i * 0.05, 0.2) }}
-                  className="flex flex-col rounded-2xl border border-line bg-surface2 p-5 shadow-sm"
+                  className="flex flex-col rounded-lg border border-line bg-surface2 p-5"
                 >
                   <div className="flex items-start justify-between">
-                    <div className={cn("grid size-11 place-items-center rounded-xl", t.accent)}>
+                    <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
                       <Icon className="size-5" />
                     </div>
                     {configured && (
@@ -262,11 +260,11 @@ export default function SecretaryPage() {
       </div>
 
       {/* Today's brief */}
-      <div className="mt-6 rounded-2xl border border-line bg-gradient-to-br from-accent/[0.07] to-accent2/[0.05] p-5">
+      <div className="mt-6 rounded-lg border border-line bg-surface2 p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent/15">
-              <Sparkles className="size-5 text-accent" />
+            <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-ink text-surface">
+              <Sparkles className="size-5" />
             </div>
             <div>
               <h3 className="font-display text-base font-semibold text-ink">Today's brief</h3>
@@ -291,9 +289,7 @@ export default function SecretaryPage() {
 
       {/* What the Secretary can do */}
       <div className="mt-6">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-muted">
-          What your Secretary can do
-        </h2>
+        <Eyebrow className="mb-3">What your Secretary can do</Eyebrow>
         <div className="grid gap-3 sm:grid-cols-3">
           <Capability
             icon={Eye}
@@ -311,8 +307,8 @@ export default function SecretaryPage() {
             body="Check availability and schedule events. Creating or changing events asks you first."
           />
         </div>
-        <div className="mt-4 flex items-center gap-2 rounded-xl border border-line bg-surface2 px-4 py-3 text-xs text-muted">
-          <ShieldCheck className="size-4 shrink-0 text-emerald-500" />
+        <div className="mt-4 flex items-center gap-2 rounded-lg border border-line bg-surface2 px-4 py-3 text-xs text-muted">
+          <ShieldCheck className="size-4 shrink-0 text-ink" />
           Nothing is sent, created, or deleted without your explicit confirmation. Your
           account tokens live in Composio, never in Omni.
         </div>
@@ -331,9 +327,9 @@ function Capability({
   body: string;
 }) {
   return (
-    <div className="rounded-xl border border-line bg-surface2 p-4">
-      <div className="grid size-9 place-items-center rounded-lg bg-accent/10">
-        <Icon className="size-4 text-accent" />
+    <div className="rounded-lg border border-line bg-surface2 p-4">
+      <div className="grid size-9 place-items-center rounded-lg bg-ink text-surface">
+        <Icon className="size-4" />
       </div>
       <h3 className="mt-2.5 text-sm font-semibold text-ink">{title}</h3>
       <p className="mt-1 text-xs leading-relaxed text-muted">{body}</p>

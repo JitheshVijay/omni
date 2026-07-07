@@ -22,6 +22,9 @@ import type { ArtifactSummary } from "@/lib/types";
 import { MarkdownMessage } from "@/components/MarkdownMessage";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Eyebrow } from "@/components/brand/Eyebrow";
+import { HeroBand } from "@/components/brand/HeroBand";
+import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 
 const EXAMPLES = [
   "How are small modular nuclear reactors being commercialized in 2026?",
@@ -110,18 +113,16 @@ export default function ResearchPage() {
     <div className="mx-auto flex h-screen w-full max-w-4xl flex-col overflow-y-auto scrollbar-thin px-6 py-10 md:px-10">
       {/* Hero */}
       {!started && (
-        <div className="mb-8 pt-10 text-center">
-          <div className="mx-auto mb-5 grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent2 text-white shadow-lg shadow-accent/25">
-            <FileSearch className="size-7" />
-          </div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <HeroBand className="mb-8 text-center">
+          <Eyebrow>Deep research</Eyebrow>
+          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
             Research <span className="grad-word">anything, deeply</span>
           </h1>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted">
             Ask a question and Omni fans out multiple web searches, reads the top
             sources, and writes a cited report you can keep.
           </p>
-        </div>
+        </HeroBand>
       )}
 
       {/* Question input */}
@@ -158,7 +159,7 @@ export default function ResearchPage() {
           <ProgressPanel steps={steps} phase={phase} />
 
           {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <div className="rounded-lg border border-rose-500/30 bg-rose-500/5 px-4 py-3 text-sm text-rose-600 dark:text-rose-400">
               {error}
             </div>
           )}
@@ -166,9 +167,7 @@ export default function ResearchPage() {
           {(report || phase === "running") && (
             <div className="rounded-2xl border border-line bg-surface2 p-5 md:p-6">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-muted">
-                  {phase === "done" ? "Report" : "Drafting report"}
-                </h2>
+                <Eyebrow>{phase === "done" ? "Report" : "Drafting report"}</Eyebrow>
                 {artifact && (
                   <Button
                     size="sm"
@@ -196,9 +195,7 @@ export default function ResearchPage() {
       {/* Recent research */}
       {!started && (
         <div className="mt-10">
-          <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-muted">
-            Recent research
-          </h2>
+          <Eyebrow className="mb-3">Recent research</Eyebrow>
           {isInitialLoading ? (
             <div className="grid gap-4 sm:grid-cols-2">
               {Array.from({ length: 2 }).map((_, i) => (
@@ -207,8 +204,8 @@ export default function ResearchPage() {
             </div>
           ) : recent.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-line py-10 text-center">
-              <div className="grid size-11 place-items-center rounded-2xl bg-accent/10">
-                <Sparkles className="size-5 text-accent" />
+              <div className="grid size-11 place-items-center rounded-lg bg-ink text-surface">
+                <Sparkles className="size-5" />
               </div>
               <p className="text-sm font-medium text-ink">No research yet</p>
               <p className="max-w-xs text-xs text-muted">
@@ -229,6 +226,8 @@ export default function ResearchPage() {
           )}
         </div>
       )}
+
+      {!started && <WordmarkBanner />}
     </div>
   );
 }
@@ -248,7 +247,7 @@ function QuestionInput({
 }) {
   return (
     <div
-      className={`mx-auto flex w-full items-center gap-2 rounded-2xl border border-line bg-surface2 px-3 shadow-sm transition focus-within:border-accent/50 ${
+      className={`mx-auto flex w-full items-center gap-2 rounded-2xl border border-line bg-surface2 px-3 transition focus-within:border-accent/50 ${
         compact ? "max-w-full py-1.5" : "max-w-2xl py-2"
       }`}
     >
@@ -352,10 +351,10 @@ function ResearchCard({
     <button
       type="button"
       onClick={onOpen}
-      className="group flex h-full flex-col rounded-2xl border border-line bg-surface2 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+      className="group flex h-full flex-col rounded-lg border border-line bg-surface2 p-4 text-left transition hover:border-accent/40"
     >
       <div className="mb-2 flex items-start justify-between gap-2">
-        <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent2 text-white">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-ink text-surface">
           <FileSearch className="size-4" />
         </div>
         <ExternalLink className="size-4 text-muted opacity-0 transition group-hover:opacity-100" />
