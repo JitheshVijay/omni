@@ -7,7 +7,7 @@
 //   3. A client-side navigation to a not-yet-visited route tries to import
 //      a stale chunk → 404/MIME mismatch → the route blanks out.
 //
-// The fix: detect the failure and reload — the reload fetches the FRESH
+// The fix: detect the failure and reload, since the reload fetches the FRESH
 // index.html, and the next navigation works. A sessionStorage guard
 // prevents an infinite reload loop if a chunk is genuinely missing.
 //
@@ -44,7 +44,7 @@ function markReloadAttempted(): void {
     sessionStorage.setItem(RELOAD_FLAG_KEY, String(Date.now()));
   } catch {
     // Storage may be unavailable in private mode. Without persistence we
-    // can't dedupe — risk one extra reload rather than blank-and-give-up.
+    // can't dedupe, so risk one extra reload rather than blank-and-give-up.
   }
 }
 

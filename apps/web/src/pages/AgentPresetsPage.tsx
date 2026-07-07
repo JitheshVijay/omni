@@ -1,4 +1,4 @@
-// /agents — the Custom Agents store: Genspark's "All Agents". A gallery of
+// /agents: the Custom Agents store, Genspark's "All Agents". A gallery of
 // ready-made Super-Agent presets (a goal template + a budget) you launch in
 // one click, plus save-your-own. A centered .grad-word hero, Community / My
 // Own tabs, category filter chips, a search box, a New Agent create dialog,
@@ -177,7 +177,7 @@ export default function AgentPresetsPage() {
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
           Launch a ready-made Super Agent in one click, or save your own. Each
-          preset carries a goal and a budget — press Use and a real agent run
+          preset carries a goal and a budget. Press Use and a real agent run
           plans, acts across tools, and reports back live.
         </p>
       </div>
@@ -421,7 +421,7 @@ function EmptyState({ tab, onCreate }: { tab: Tab; onCreate: () => void }) {
       <p className="max-w-xs text-xs text-muted">
         {tab === "mine"
           ? "Save a goal + budget as a custom agent and it will show up here, ready to launch in one click."
-          : "Try clearing the category or your search — or create your own agent."}
+          : "Try clearing the category or your search, or create your own agent."}
       </p>
       {tab === "mine" && (
         <Button size="sm" onClick={onCreate} className="mt-1">
@@ -553,7 +553,7 @@ function CreatePresetDialog({
             <code className="rounded bg-surface3 px-1 py-0.5 text-[11px] text-ink">
               {"{{input}}"}
             </code>{" "}
-            in the goal where a topic should go — you'll be asked for it on launch.
+            in the goal where a topic should go, and you'll be asked for it on launch.
           </DialogDescription>
         </DialogHeader>
 

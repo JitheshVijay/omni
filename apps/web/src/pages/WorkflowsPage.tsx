@@ -1,4 +1,4 @@
-// /workflows — Genspark-style automation home. A centered hero + a natural-
+// /workflows: Genspark-style automation home. A centered hero + a natural-
 // language builder (describe a task → POST /api/workflows/generate → the LLM
 // drafts a step chain → jump into the editor to review), a "Start from a
 // template" gallery (GET /api/workflows/templates → clone → editor), and the
@@ -151,7 +151,7 @@ export default function WorkflowsPage() {
             What would you like to <span className="grad-word">automate</span>?
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-            Describe a task in plain language and AI drafts the steps — searches, agents, and
+            Describe a task in plain language and AI drafts the steps: searches, agents, and
             generators, chained into a workflow you can review, tweak, and run.
           </p>
         </HeroBand>
@@ -174,7 +174,7 @@ export default function WorkflowsPage() {
                 void generate();
               }
             }}
-            placeholder="Describe what to automate and AI will build it — e.g. “Every morning, search the top AI news and write me a briefing doc.”"
+            placeholder="Describe what to automate and AI will build it, e.g. “Every morning, search the top AI news and write me a briefing doc.”"
             rows={3}
             maxLength={4000}
             disabled={generating}
@@ -288,7 +288,7 @@ export default function WorkflowsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Blank workflow</DialogTitle>
-            <DialogDescription>Name it — you'll add the steps in the editor next.</DialogDescription>
+            <DialogDescription>Name it, and you'll add the steps in the editor next.</DialogDescription>
           </DialogHeader>
           <Input
             value={name}

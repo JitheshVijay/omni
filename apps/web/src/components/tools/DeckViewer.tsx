@@ -126,7 +126,7 @@ export function DeckViewer({ deck, onRevise, className }: DeckViewerProps) {
     const label = slideLabel(current);
     onRevise(
       `On slide ${clampedIndex + 1} (${ARCHETYPE_LABEL[current.archetype]}${
-        label ? ` — “${label.slice(0, 60)}”` : ""
+        label ? `, “${label.slice(0, 60)}”` : ""
       }): `,
     );
   }

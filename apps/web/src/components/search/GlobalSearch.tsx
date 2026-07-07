@@ -6,7 +6,7 @@
 // affordance.
 //
 // Integration: mount <GlobalSearch /> ONCE (in AppShell). Place <SearchTrigger />
-// anywhere in a header — it dispatches a window event the mounted GlobalSearch
+// anywhere in a header; it dispatches a window event the mounted GlobalSearch
 // listens for, so the two don't need to share React state.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -274,7 +274,7 @@ export function GlobalSearch() {
           <span>
             {data?.mode === "keyword" ? (
               <span className="text-amber-500">
-                Keyword mode — embeddings unavailable
+                Keyword mode: embeddings unavailable
               </span>
             ) : (
               <span className="hidden sm:inline">

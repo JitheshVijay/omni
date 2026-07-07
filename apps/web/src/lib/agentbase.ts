@@ -70,7 +70,7 @@ export interface Tile {
   points: TilePoint[];
 }
 
-/** A row in the "My Systems" grid (list endpoint — no tables/records). */
+/** A row in the "My Systems" grid (list endpoint, no tables/records). */
 export interface SystemSummary {
   id: string;
   user_id: string;
@@ -190,7 +190,7 @@ export function deleteRecord(
 
 /** Format a cell value for display based on its column type. */
 export function formatCell(value: string | number | undefined, type: ColumnType): string {
-  if (value === undefined || value === null || value === "") return "—";
+  if (value === undefined || value === null || value === "") return "N/A";
   if (type === "currency") {
     const n = typeof value === "number" ? value : Number(value);
     if (!Number.isFinite(n)) return String(value);
@@ -209,7 +209,7 @@ export function formatCell(value: string | number | undefined, type: ColumnType)
 
 /** Compact number for a big stat tile (1.2k, 3.4M). */
 export function formatStat(n: number | null): string {
-  if (n === null || !Number.isFinite(n)) return "—";
+  if (n === null || !Number.isFinite(n)) return "N/A";
   const abs = Math.abs(n);
   if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
   if (abs >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}k`;

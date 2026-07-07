@@ -232,7 +232,7 @@ export function SystemTable({
 
 function CellValue({ value, column }: { value: string | number | undefined; column: Column }) {
   const empty = value === undefined || value === null || value === "";
-  if (empty) return <span className="text-muted/50">—</span>;
+  if (empty) return <span className="text-muted/50">–</span>;
 
   if (column.type === "url") {
     const href = String(value);

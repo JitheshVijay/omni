@@ -5,12 +5,12 @@
 // so the frame parser drops them naturally.
 //
 // Event contract (POST /api/generate/:name and /api/artifacts/:id/revise):
-//   {type:"status",  label}                       — human progress, 0..n
-//   {type:"delta",   channel:"markdown", data}    — doc only: streamed text
-//   {type:"artifact",artifact: ArtifactSummary}   — terminal success
-//   {type:"error",   message}                     — terminal failure
+//   {type:"status",  label}                       : human progress, 0..n
+//   {type:"delta",   channel:"markdown", data}    : doc-only streamed text
+//   {type:"artifact",artifact: ArtifactSummary}   : terminal success
+//   {type:"error",   message}                     : terminal failure
 //
-// Invalid input returns JSON 400 BEFORE the hijack — surfaced here as a
+// Invalid input returns JSON 400 BEFORE the hijack, surfaced here as a
 // thrown GenerateRequestError carrying the parsed envelope (message/status/
 // code), so form UIs can show the clean Zod message.
 
@@ -37,7 +37,7 @@ export type GenerateEvent =
   | { type: "artifact"; artifact: ArtifactSummary }
   | { type: "error"; message: string };
 
-// ParsedApiError as a throwable — instanceof-checkable and still matching
+// ParsedApiError as a throwable: instanceof-checkable and still matching
 // the {message, status, code} shape every error UI in the app expects.
 export class GenerateRequestError extends Error implements ParsedApiError {
   status: number;

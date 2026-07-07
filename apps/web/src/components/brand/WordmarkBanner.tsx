@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-// The giant terminal wordmark that signs off a long page — set enormous and
+// The giant terminal wordmark that signs off a long page, set enormous and
 // tinted toward the hairline so it reads as a faint stencil, not a heavy title.
 // Purely decorative (aria-hidden); scales fluidly with the viewport.
 export function WordmarkBanner({

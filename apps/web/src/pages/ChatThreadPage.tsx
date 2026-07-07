@@ -46,7 +46,7 @@ export default function ChatThreadPage() {
   useEffect(() => setModelOverride(null), [threadId]);
   const activeModel = modelOverride ?? thread?.model ?? null;
 
-  // ── Initial message handoff (from ChatIndexPage) — exactly once. ──────
+  // ── Initial message handoff (from ChatIndexPage), exactly once. ──────
   // The send is deferred one tick and the timer is cancelled on cleanup:
   // under StrictMode's throwaway mount the timer never fires (so the stream
   // isn't started-then-aborted), and the surviving mount sends once. The

@@ -1,4 +1,4 @@
-// /research — Deep Research. Enter a question; Omni fans out web searches,
+// /research: Deep Research. Enter a question; Omni fans out web searches,
 // reads the top sources, and synthesises a cited markdown report streamed
 // into a live preview. A progress panel tracks each step; on completion the
 // report persists as a doc artifact and opens in the editor. Recent research
@@ -209,7 +209,7 @@ export default function ResearchPage() {
               </div>
               <p className="text-sm font-medium text-ink">No research yet</p>
               <p className="max-w-xs text-xs text-muted">
-                Ask a question above — every report you run shows up here and in
+                Ask a question above, and every report you run shows up here and in
                 your Library.
               </p>
             </div>
@@ -261,7 +261,7 @@ function QuestionInput({
             onSubmit();
           }
         }}
-        placeholder="Ask anything — Omni will research it deeply..."
+        placeholder="Ask anything. Omni will research it deeply..."
         className="min-w-0 flex-1 bg-transparent py-2 text-[15px] text-ink outline-none placeholder:text-muted"
       />
       <Button

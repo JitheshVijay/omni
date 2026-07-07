@@ -1,5 +1,5 @@
 // Shared design-format + palette registry for the Design Studio pages. Mirrors
-// the backend FORMATS/PALETTES in apps/api/src/generators/design.ts — the two
+// the backend FORMATS/PALETTES in apps/api/src/generators/design.ts, and the two
 // MUST agree on ids and dimensions (the generated HTML canvas is sized to
 // width×height and the viewer scales/exports against those same numbers).
 
@@ -127,7 +127,7 @@ export const DESIGN_TEMPLATES: DesignTemplate[] = [
     category: "Social",
     description: "Square promo",
     prompt:
-      "A square Instagram post announcing a 48-hour flash sale: “48H FLASH SALE — up to 50% off”, a bold discount badge, brand name “NOVA”, and a small “tap the link in bio” line.",
+      "A square Instagram post announcing a 48-hour flash sale: “48H FLASH SALE, up to 50% off”, a bold discount badge, brand name “NOVA”, and a small “tap the link in bio” line.",
     format: "instagram-post",
     palette: "vibrant",
   },

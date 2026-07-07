@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 // shadcn-style Dialog on @radix-ui/react-dialog, themed to Omni tokens.
 // Mount animations use the custom anim-* classes from globals.css
-// (tailwindcss-animate is not installed); exit animations are skipped —
+// (tailwindcss-animate is not installed); exit animations are skipped, since
 // the overlay unmounts immediately, which reads fine at this scale.
 
 const Dialog = DialogPrimitive.Root;

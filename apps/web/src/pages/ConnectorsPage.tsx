@@ -1,4 +1,4 @@
-// /connectors — the app-connector store (Genspark-style): browse a catalog of
+// /connectors: the app-connector store (Genspark-style). Browse a catalog of
 // Composio-managed apps (Slack, Notion, GitHub, Linear, Google Drive/Sheets/
 // Docs, Airtable, HubSpot, X, Asana, Trello, Discord, Jira, …), connect them via
 // hosted OAuth (open the redirect, poll until active), and disconnect. Every
@@ -8,7 +8,7 @@
 // Fails soft without COMPOSIO_API_KEY: GET /api/connectors returns
 // configured:false and we show a setup banner; Connect buttons are disabled.
 // A best-effort "MCP servers" section is shown only if GET /api/mcp/servers
-// exists (guarded — hidden on any error).
+// exists (guarded, hidden on any error).
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -113,7 +113,7 @@ export default function ConnectorsPage() {
             return;
           }
         } catch {
-          /* transient — keep polling */
+          /* transient, keep polling */
         }
       }
       await invalidateApi(CONNECTORS_PATH);
@@ -155,7 +155,7 @@ export default function ConnectorsPage() {
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
             Link the tools you already use. Every connected app's actions become agent
-            tools automatically — reads run instantly, and anything that sends or changes
+            tools automatically. Reads run instantly, and anything that sends or changes
             something waits for your confirmation.
           </p>
         </div>
@@ -331,7 +331,7 @@ function ConnectorCard({
   );
 }
 
-// Read-only display of configured MCP servers. The endpoint may not exist yet —
+// Read-only display of configured MCP servers. The endpoint may not exist yet,
 // we fetch once, guard every failure, and simply render nothing on error/empty.
 function McpSection() {
   const [servers, setServers] = useState<McpServerInfo[] | null>(null);

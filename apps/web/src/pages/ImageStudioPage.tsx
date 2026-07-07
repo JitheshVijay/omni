@@ -1,4 +1,4 @@
-// /tools/images — Image Studio. Left: the generation form (prompt + aspect
+// /tools/images: Image Studio. Left: the generation form (prompt + aspect
 // ratio); right: a gallery of every kind=image artifact. While a generation
 // streams, the gallery's first tile is a shimmer placeholder narrated by the
 // generator's status labels. Clicking any image opens a detail dialog with
@@ -282,7 +282,7 @@ export default function ImageStudioPage() {
                 No images yet
               </p>
               <p className="max-w-xs text-sm text-muted">
-                Your generations appear here — try a prompt on the left to make
+                Your generations appear here. Try a prompt on the left to make
                 your first one.
               </p>
             </div>
@@ -340,7 +340,7 @@ export default function ImageStudioPage() {
         </div>
       </div>
 
-      {/* Skills that target images — seed the prompt above */}
+      {/* Skills that target images: seed the prompt above */}
       <GeneratorSkillsStrip output="image" onUse={seedPrompt} />
 
       {/* Template gallery */}
@@ -590,7 +590,7 @@ function ImageDetailDialog({
             <Input
               value={instruction}
               onChange={(e) => setInstruction(e.target.value)}
-              placeholder="Edit with AI — e.g. “make it nighttime, add fireflies”"
+              placeholder="Edit with AI, e.g. “make it nighttime, add fireflies”"
               className="pl-8"
               maxLength={2000}
               disabled={revising}

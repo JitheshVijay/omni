@@ -2,7 +2,7 @@
 // contracts the engine and this UI agree on:
 //   1. the agent SSE event protocol (the `AgentEvent` union below), and
 //   2. the agent_runs / agent_steps rows returned by the REST endpoints.
-// If the engine returns a different shape, reconcile HERE — every agent
+// If the engine returns a different shape, reconcile HERE. Every agent
 // component imports from this module.
 
 import type { ArtifactSummary } from "@/lib/types";
@@ -61,7 +61,7 @@ export interface AgentRun {
   last_event_seq?: number;
 }
 
-// GET /api/agent/runs/:id — the flat run with its steps attached.
+// GET /api/agent/runs/:id: the flat run with its steps attached.
 export interface AgentRunDetail extends AgentRun {
   steps: AgentStep[];
 }
@@ -182,7 +182,7 @@ export type AgentEvent =
 
 export type AgentEventType = AgentEvent["type"];
 
-// Statuses at which the run has stopped for good — the stream client stops
+// Statuses at which the run has stopped for good. The stream client stops
 // auto-reconnecting and the header hides in-flight controls.
 export const TERMINAL_STATUSES: ReadonlySet<AgentRunStatus> = new Set<AgentRunStatus>([
   "completed",

@@ -2,7 +2,7 @@
 // turn: the optimistic user bubble, the accumulating assistant draft, hub
 // citations, usage, and the AbortController. On done it revalidates the
 // thread (messages now persisted server-side) and the thread list (title /
-// updated_at bumps), and only THEN clears the draft state — so the finished
+// updated_at bumps), and only THEN clears the draft state, so the finished
 // reply never flickers out before the persisted copy arrives.
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -41,7 +41,7 @@ export function useChatStream(threadId: string | null): ChatStreamState {
   const [pendingUserMessage, setPendingUserMessage] = useState<PendingUserMessage | null>(null);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  // Accumulate deltas in a ref and mirror into state — avoids stale-closure
+  // Accumulate deltas in a ref and mirror into state, which avoids stale-closure
   // appends if React batches multiple deltas into one render.
   const textRef = useRef("");
 

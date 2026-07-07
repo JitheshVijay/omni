@@ -1,10 +1,10 @@
-// /hubs/:hubId — tabbed hub workspace:
-//   Overview  — name / description / instructions / default-model form.
-//   Files     — attached Drive files with live index_status (5s poll while
-//               anything is pending/extracting/embedding), attach-from-Drive
-//               dialog, detach.
-//   Threads   — chats living in this hub + "new chat in hub".
-//   Memory    — semantic search over the hub's indexed chunks.
+// /hubs/:hubId, a tabbed hub workspace:
+//   Overview: name / description / instructions / default-model form.
+//   Files:    attached Drive files with live index_status (5s poll while
+//             anything is pending/extracting/embedding), attach-from-Drive
+//             dialog, detach.
+//   Threads:  chats living in this hub + "new chat in hub".
+//   Memory:   semantic search over the hub's indexed chunks.
 
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -428,7 +428,7 @@ function AttachFromDriveDialog({
             </div>
           ) : candidates.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">
-              Nothing to attach — every Drive file is already in this hub, or your
+              Nothing to attach: every Drive file is already in this hub, or your
               Drive is empty.{" "}
               <Link to="/drive" className="text-accent underline">
                 Open Drive
@@ -581,7 +581,7 @@ function MemoryTab({ hubId }: { hubId: string }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted">
-        Semantic search over everything indexed into this hub — the same retrieval
+        Semantic search over everything indexed into this hub, the same retrieval
         chats use to ground their answers.
       </p>
       <form

@@ -1,7 +1,7 @@
 // A single Skill in the marketplace grid: an output-tinted preview tile, the
 // skill name, a clamped description, "from <publisher>", an output tag, and an
 // Add & Use button. Own (non-builtin) skills also get a delete affordance.
-// Purely presentational — the page owns run/delete via the passed callbacks.
+// Purely presentational: the page owns run/delete via the passed callbacks.
 
 import {
   FileText,
@@ -53,7 +53,7 @@ export function SkillCard({
       transition={{ duration: 0.2, delay: Math.min(index, 8) * 0.03 }}
       className="group relative flex h-full flex-col rounded-2xl border border-line bg-surface2 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
     >
-      {/* Preview tile — output-tinted gradient with the format icon. */}
+      {/* Preview tile: output-tinted gradient with the format icon. */}
       <div
         className={`relative mb-3 flex h-24 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${skill.accent}`}
       >

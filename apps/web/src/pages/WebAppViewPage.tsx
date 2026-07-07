@@ -1,4 +1,4 @@
-// /tools/apps/:artifactId — the AI Developer viewer. Loads a kind=webpage
+// /tools/apps/:artifactId: the AI Developer viewer. Loads a kind=webpage
 // artifact (content.html) and shows it two ways: a big LIVE preview in a
 // sandboxed iframe (allow-scripts + allow-forms; the doc is self-contained so
 // nothing else is granted) with a desktop/mobile width toggle, and a Code tab
@@ -343,7 +343,7 @@ export default function WebAppViewPage() {
           <Input
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
-            placeholder="Edit with AI — e.g. “add a dark-mode toggle” or “make the hero full-bleed”"
+            placeholder="Edit with AI, e.g. “add a dark-mode toggle” or “make the hero full-bleed”"
             className="pl-8"
             maxLength={2000}
             disabled={revising}

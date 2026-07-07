@@ -1,4 +1,4 @@
-// /drive — the AI Drive: drag-drop upload zone + file table (name, size,
+// /drive: the AI Drive. A drag-drop upload zone + file table (name, size,
 // mime icon, index status, download/rename/delete actions). The list polls
 // every 5s while any file is mid-indexing so status badges resolve without a
 // manual refresh. Downloads go through fetch (the API requires a Bearer
@@ -117,7 +117,7 @@ export default function DrivePage() {
             Drive
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Files live locally under your Omni data folder — uploads are chunked and
+            Files live locally under your Omni data folder. Uploads are chunked and
             embedded for hub memory.
           </p>
         </div>
@@ -155,7 +155,7 @@ export default function DrivePage() {
             <p className="max-w-sm text-sm text-muted">
               {query
                 ? "Try a different search."
-                : "Drop a PDF, doc, or text file above — it becomes searchable memory for any hub you attach it to."}
+                : "Drop a PDF, doc, or text file above, and it becomes searchable memory for any hub you attach it to."}
             </p>
           </div>
         ) : (

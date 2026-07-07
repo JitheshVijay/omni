@@ -1,4 +1,4 @@
-// /library — every generated artifact in one place, filterable by kind.
+// /library: every generated artifact in one place, filterable by kind.
 // Docs open the editor, images deep-link into Image Studio's detail dialog,
 // audio plays inline on its card.
 
@@ -23,7 +23,7 @@ const TABS: { value: KindFilter; label: string; icon?: typeof FileText }[] = [
 ];
 
 const EMPTY_COPY: Record<KindFilter, string> = {
-  all: "Everything you generate — docs, images, narrations — collects here.",
+  all: "Everything you generate (docs, images, narrations) collects here.",
   doc: "No documents yet. Draft one in AI Docs and it lands here.",
   image: "No images yet. Paint one in Image Studio and it lands here.",
   audio: "No narrations yet. Hit Listen on a doc and save it, or run the TTS generator.",
@@ -42,7 +42,7 @@ export default function LibraryPage() {
     if (a.kind === "doc") navigate(`/tools/docs/${a.id}`);
     else if (a.kind === "image")
       navigate("/tools/images", { state: { openId: a.id } });
-    // audio plays inline on its card — no viewer page.
+    // audio plays inline on its card, no viewer page.
   }
 
   return (

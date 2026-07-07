@@ -1,4 +1,4 @@
-// /tools/design — Design Studio. Describe a graphic (poster, social post, flyer,
+// /tools/design: Design Studio. Describe a graphic (poster, social post, flyer,
 // cover, logo…), pick a fixed-size format and a design-system palette, and the
 // design generator streams back ONE complete, self-contained HTML+SVG document
 // that renders a single static, print-quality graphic. While it streams we
@@ -182,8 +182,8 @@ export default function DesignStudioPage() {
           What would you like to <span className="grad-word">design</span>?
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Describe a graphic and get a finished, print-quality design — posters,
-          social posts, flyers, covers, logos — rendered live and exported to PNG.
+          Describe a graphic and get a finished, print-quality design (posters,
+          social posts, flyers, covers, logos) rendered live and exported to PNG.
         </p>
       </div>
 
@@ -249,7 +249,7 @@ export default function DesignStudioPage() {
                 void generate();
               }
             }}
-            placeholder="A bold poster for a summer rooftop jazz night — headline, date, venue, and a warm sunset palette…"
+            placeholder="A bold poster for a summer rooftop jazz night: headline, date, venue, and a warm sunset palette…"
             rows={3}
             maxLength={4000}
             disabled={generating}
@@ -273,7 +273,7 @@ export default function DesignStudioPage() {
                     <span className="flex items-center gap-2">
                       <SwatchDots swatch={p.swatch} />
                       <span>{p.label}</span>
-                      <span className="text-xs text-muted">— {p.description}</span>
+                      <span className="text-xs text-muted">{p.description}</span>
                     </span>
                   </SelectItem>
                 ))}
@@ -350,7 +350,7 @@ export default function DesignStudioPage() {
             </div>
             <p className="font-display text-lg font-semibold text-ink">No designs yet</p>
             <p className="max-w-xs text-sm text-muted">
-              Describe something above — or start from an example below — to create
+              Describe something above, or start from an example below, to create
               your first design.
             </p>
           </div>
@@ -420,7 +420,7 @@ function SwatchDots({ swatch }: { swatch: [string, string, string] }) {
   );
 }
 
-// ── Existing-design card (static palette-tinted tile — the list summary has no
+// ── Existing-design card (static palette-tinted tile; the list summary has no
 // html to render, so we sketch a cover keyed on the palette + aspect ratio). ──
 
 function DesignCard({

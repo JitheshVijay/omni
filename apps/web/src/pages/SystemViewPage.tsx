@@ -1,4 +1,4 @@
-// /agentbase/:id — a single system's dashboard. A header (name + category +
+// /agentbase/:id: a single system's dashboard. A header (name + category +
 // delete), a row of computed DASHBOARD TILES (stat / bar / donut), then each
 // TABLE rendered as an editable data grid (add / delete rows). Records mutate
 // through the agentbase client, then the whole system is revalidated so the

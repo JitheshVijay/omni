@@ -32,7 +32,7 @@ export function readStoredTheme(): Theme {
   } catch {
     // localStorage may be blocked
   }
-  // Default to light — the Together-inspired language is a white canvas with
+  // Default to light. The Together-inspired language is a white canvas with
   // near-black hero bands; dark is the toggle alternative.
   return "light";
 }

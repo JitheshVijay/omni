@@ -1,9 +1,9 @@
-// Curated, static template registry for the generator hubs — the data behind
+// Curated, static template registry for the generator hubs: the data behind
 // the Genspark-style template galleries on the Docs / Slides / Sheets / Images
 // pages. Each template is a preview-thumbnail card that, when used, seeds the
 // generator with a strong starting prompt (plus kind-specific knobs in `extra`).
 //
-// This is purely frontend data reusing the existing generator flows — no new
+// This is purely frontend data reusing the existing generator flows, with no new
 // routes, no backend, no generation happens from a template until the user
 // runs the seeded form.
 
@@ -415,7 +415,7 @@ const WEBAPP_TEMPLATES: GenTemplate[] = [
     kind: "webapp",
     title: "Todo app",
     category: "Productivity",
-    description: "Add, complete, filter, and clear tasks — with persistence.",
+    description: "Add, complete, filter, and clear tasks, with persistence.",
     prompt:
       "Build a fully working todo app. Let me add tasks, mark them complete, edit and delete them, filter by all/active/completed, and show a live count of remaining tasks. Persist everything to localStorage so it survives a reload, and animate items in and out.",
     accent: "from-violet-500 to-fuchsia-500",

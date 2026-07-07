@@ -1,9 +1,9 @@
-// /agentbase — AgentBase home ("Dashboards & CRM"). Turn a description into a
+// /agentbase: AgentBase home ("Dashboards & CRM"). Turn a description into a
 // custom "system" (a lightweight dashboard/CRM: typed tables + summary tiles),
 // or clone one from the template gallery.
 //
 // Layout: a left rail with the italic hero, four "source" options (three are
-// visual — clicking focuses the describe box with a hint — plus "Just describe
+// visual (clicking focuses the describe box with a hint), plus "Just describe
 // it"), and a describe box + Create. The main area toggles between "My Systems"
 // (the user's generated systems) and "All Templates" (the gallery), with
 // category filter chips. Creating from a prompt POSTs {prompt}; using a template
@@ -55,19 +55,19 @@ const SOURCES: {
   {
     id: "inbox",
     label: "From your inbox",
-    hint: "Describe the emails you want to track — e.g. “a CRM from my sales inbox with company, contact, and deal stage”.",
+    hint: "Describe the emails you want to track, e.g. “a CRM from my sales inbox with company, contact, and deal stage”.",
     icon: Inbox,
   },
   {
     id: "files",
     label: "From files",
-    hint: "Describe the spreadsheet or docs — e.g. “an inventory tracker from my product list with SKU, stock, and reorder point”.",
+    hint: "Describe the spreadsheet or docs, e.g. “an inventory tracker from my product list with SKU, stock, and reorder point”.",
     icon: FileText,
   },
   {
     id: "app",
     label: "From another app",
-    hint: "Describe what to pull in — e.g. “a project tracker like my Notion board with task, owner, status, and due date”.",
+    hint: "Describe what to pull in, e.g. “a project tracker like my Notion board with task, owner, status, and due date”.",
     icon: Blocks,
   },
   {
@@ -204,7 +204,7 @@ export default function AgentBasePage() {
             </h1>
             <p className="mt-3 text-sm text-muted">
               Describe what you want to track and AgentBase builds a working
-              system — typed tables of records with a live dashboard on top.
+              system: typed tables of records with a live dashboard on top.
             </p>
           </HeroBand>
 
@@ -267,7 +267,7 @@ export default function AgentBasePage() {
                   void handleCreate();
                 }
               }}
-              placeholder="e.g. A CRM to track freelance clients with company, contact, project status, and monthly retainer — plus tiles for total MRR and clients by status."
+              placeholder="e.g. A CRM to track freelance clients with company, contact, project status, and monthly retainer, plus tiles for total MRR and clients by status."
               rows={4}
               maxLength={4000}
               className="resize-none border-0 bg-transparent px-1 text-sm focus-visible:ring-0"

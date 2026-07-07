@@ -1,8 +1,8 @@
-// /secretary — the "Today" hub for the AI Secretary. Connect Gmail + Google
+// /secretary: the "Today" hub for the AI Secretary. Connect Gmail + Google
 // Calendar via Composio managed OAuth (hosted redirect + poll for activation),
 // then generate a "Today" briefing that runs as a normal Super Agent run
 // (navigates to /agent/:run_id). Reads run immediately; writes (send / create /
-// delete) are always staged behind confirmation cards in the agent — surfaced
+// delete) are always staged behind confirmation cards in the agent, surfaced
 // here as an explainer so the user knows nothing is sent without approval.
 //
 // Fails soft without COMPOSIO_API_KEY: /status returns configured:false and we
@@ -115,7 +115,7 @@ export default function SecretaryPage() {
             return;
           }
         } catch {
-          /* transient — keep polling */
+          /* transient: keep polling */
         }
       }
       await invalidateApi(STATUS_PATH);
@@ -269,7 +269,7 @@ export default function SecretaryPage() {
             <div>
               <h3 className="font-display text-base font-semibold text-ink">Today's brief</h3>
               <p className="mt-0.5 max-w-md text-sm text-muted">
-                A quick rundown of unread email since yesterday and today's schedule — with
+                A quick rundown of unread email since yesterday and today's schedule, with
                 what needs a reply or your attention.
               </p>
             </div>
@@ -294,7 +294,7 @@ export default function SecretaryPage() {
           <Capability
             icon={Eye}
             title="Read your inbox"
-            body="Search, summarize, and pull out what matters — runs instantly, no approval needed."
+            body="Search, summarize, and pull out what matters. Runs instantly, no approval needed."
           />
           <Capability
             icon={Send}

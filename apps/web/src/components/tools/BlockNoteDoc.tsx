@@ -60,7 +60,7 @@ const Citation = createReactInlineContentSpec(
         <button
           type="button"
           contentEditable={false}
-          title={`Source ${source_idx}${label ? ` — ${label}` : ""}`}
+          title={`Source ${source_idx}${label ? `: ${label}` : ""}`}
           onClick={() => {
             window.dispatchEvent(
               new CustomEvent<CitationClickDetail>(CITATION_CLICK_EVENT, {
@@ -89,7 +89,7 @@ const schema = BlockNoteSchema.create({
 
 const CITE_TOKEN_RE = /\[\[cite:(\d+):([^\]]*?)\]\]/g;
 
-// Minimal structural types for walking BlockNote block JSON — the real
+// Minimal structural types for walking BlockNote block JSON: the real
 // generics don't unify across schema instances, and the persistence layer
 // round-trips plain JSON anyway.
 interface InlineItemish {
@@ -181,7 +181,7 @@ export interface BlockNoteDocHandle {
   getBlocks: () => unknown[];
   /** Parse markdown (+ citation conversion) and replace the whole doc.
    *  Used for streaming re-parses and the final artifact load. Pass
-   *  `sources` when they were fetched in the same tick — the prop update
+   *  `sources` when they were fetched in the same tick; the prop update
    *  hasn't rendered yet, so the internal ref would be stale. */
   setMarkdown: (markdown: string, sources?: DocSource[]) => void;
   /** Replace the whole doc with saved block JSON. */
@@ -220,7 +220,7 @@ export function BlockNoteDoc({
   const { resolvedTheme } = useTheme();
 
   // Programmatic replaces (streaming, artifact load) must not read as user
-  // edits — the suppress flag gates the onChange → dirty pipeline.
+  // edits: the suppress flag gates the onChange → dirty pipeline.
   const suppressRef = useRef(false);
   const sourcesRef = useRef(sources);
   sourcesRef.current = sources;

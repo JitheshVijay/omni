@@ -37,7 +37,7 @@ export interface ComposerProps {
   disabled?: boolean;
   placeholder?: string;
   autoFocus?: boolean;
-  /** Seeds the textarea on mount — pair with a `key` to re-seed. */
+  /** Seeds the textarea on mount; pair with a `key` to re-seed. */
   initialValue?: string;
   /** Small slot rendered in the footer row (e.g. the thread's model chip). */
   modelIndicator?: ReactNode;
@@ -73,7 +73,7 @@ export function Composer({
   const { data: settings } = useApi<SettingsData>("/api/settings");
   const voiceConfigured = settings?.keys?.elevenlabs?.configured ?? true;
 
-  // Auto-grow with content, capped — long drafts scroll internally.
+  // Auto-grow with content, capped; long drafts scroll internally.
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -138,7 +138,7 @@ export function Composer({
   }
 
   // ── Dictation: MediaRecorder default mime (webm/opus on Chrome/Firefox,
-  // mp4 on Safari) — Scribe accepts all of them. ─────────────────────────
+  // mp4 on Safari). Scribe accepts all of them. ─────────────────────────
   async function startRecording() {
     if (recordingState !== "idle" || disabled) return;
     setLocalError(null);
@@ -151,7 +151,7 @@ export function Composer({
       };
       recorder.onstop = async () => {
         // Always release the mic immediately, regardless of transcription
-        // outcome — otherwise the browser shows the recording dot forever.
+        // outcome; otherwise the browser shows the recording dot forever.
         for (const track of stream.getTracks()) track.stop();
         if (chunksRef.current.length === 0) {
           setRecordingState("idle");
@@ -332,7 +332,7 @@ export function Composer({
             className="max-h-[240px] min-h-[36px] w-full flex-1 resize-none bg-transparent px-1.5 py-1.5 text-[15px] leading-relaxed text-ink outline-none placeholder:text-muted disabled:opacity-60 scrollbar-thin"
           />
 
-          {/* Mic — wrapped in a tooltip explaining the disabled state. */}
+          {/* Mic, wrapped in a tooltip explaining the disabled state. */}
           {voiceConfigured ? (
             micButton
           ) : (

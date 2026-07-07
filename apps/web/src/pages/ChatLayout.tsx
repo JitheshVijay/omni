@@ -1,4 +1,4 @@
-// Layout for /chat, /chat/new, /chat/:threadId — the persistent conversations
+// Layout for /chat, /chat/new, /chat/:threadId: the persistent conversations
 // column plus a slot for the active page. Owning the ThreadList here keeps it
 // mounted across thread switches (URL changes from /chat/a → /chat/b don't
 // unmount the sidebar, so no refetch flash).

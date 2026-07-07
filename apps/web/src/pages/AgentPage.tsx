@@ -1,4 +1,4 @@
-// /agent — the Super Agent launcher. A big goal box (optional hub grounding +
+// /agent: the Super Agent launcher. A big goal box (optional hub grounding +
 // budget), "Run agent" creates the run and hands off to /agent/:id where the
 // live timeline takes over. Below, the recent runs list links back into any
 // prior run.
@@ -104,7 +104,7 @@ export default function AgentPage() {
             Super <span className="grad-word">Agent</span>
           </h1>
           <p className="mt-3 max-w-md text-sm text-muted">
-            Give it a goal — it plans, acts across tools, and reports back live.
+            Give it a goal. It plans, acts across tools, and reports back live.
           </p>
         </HeroBand>
 
@@ -118,7 +118,7 @@ export default function AgentPage() {
                 void launch();
               }
             }}
-            placeholder="What should the agent accomplish? Be specific about the deliverable — e.g. “Research X and produce a 10-slide deck plus a one-page summary doc.”"
+            placeholder="What should the agent accomplish? Be specific about the deliverable: e.g. “Research X and produce a 10-slide deck plus a one-page summary doc.”"
             rows={4}
             maxLength={4000}
             autoFocus

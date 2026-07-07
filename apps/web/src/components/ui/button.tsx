@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 
 // Together-inspired Button. Primary CTAs are a crisp (4px) pill with an
 // UPPERCASE MONO label and no shadow: `bg-ink text-surface` auto-inverts by
-// theme — black-on-white in light, near-white-on-navy in dark. `mint` is the
+// theme: black-on-white in light, near-white-on-navy in dark. `mint` is the
 // hero secondary; `ghost` stays sentence-case for icon rows / low-emphasis.
-// (text-transform is visual only — accessible names / DOM text are unchanged.)
+// (text-transform is visual only; accessible names / DOM text are unchanged.)
 const CTA = "font-mono uppercase tracking-[0.03em]";
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",

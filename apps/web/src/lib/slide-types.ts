@@ -1,10 +1,10 @@
-// Slide-deck types — the web mirror of apps/api/src/generators/slides.ts.
+// Slide-deck types: the web mirror of apps/api/src/generators/slides.ts.
 // These MUST match the backend JSON shape byte-for-byte: they describe
 // artifacts.content for kind='slides' (DeckContent) and are consumed by the
 // SlideRenderer, the DeckViewer, and the .pptx export.
 //
 // The full Theme TOKEN SET is embedded in every deck's content, so the
-// renderer and export are self-contained — they read deck.theme directly and
+// renderer and export are self-contained. They read deck.theme directly and
 // never need a theme registry. THEME_PRESETS below is display-only, powering
 // the theme picker on the generation form.
 
@@ -76,7 +76,7 @@ export interface ImageTextSlide extends SlideBase {
   title: string;
   body: string[];
   image_prompt: string;
-  /** Child image artifact id — resolve via /api/artifacts/<id>/blob. */
+  /** Child image artifact id; resolve via /api/artifacts/<id>/blob. */
   image_artifact_id: string | null;
   image_side: "left" | "right";
   caption?: string;

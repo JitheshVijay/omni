@@ -1,4 +1,4 @@
-// /tools/slides — AI Slides home. A "New deck" panel (prompt + slide count +
+// /tools/slides: AI Slides home. A "New deck" panel (prompt + slide count +
 // theme + optional hub grounding) streams streamGenerate("slides") INLINE,
 // showing a live outline checklist as each slide is designed; on the terminal
 // artifact event it navigates to the deck editor (/tools/slides/:id). Below is
@@ -179,7 +179,7 @@ export default function SlidesPage() {
           Design a deck with <span className="grad-word">AI Slides</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Describe a talk — Omni designs a polished, on-brand deck with real
+          Describe a talk, and Omni designs a polished, on-brand deck with real
           charts and generated slide art.
         </p>
       </div>
@@ -326,7 +326,7 @@ export default function SlidesPage() {
         />
       )}
 
-      {/* Skills that target slides — seed the prompt above */}
+      {/* Skills that target slides: seed the prompt above */}
       <GeneratorSkillsStrip output="slides" onUse={seedPrompt} />
 
       {/* Template gallery */}
@@ -348,7 +348,7 @@ export default function SlidesPage() {
             </div>
             <p className="text-sm font-medium text-ink">No decks yet</p>
             <p className="max-w-xs text-xs text-muted">
-              Describe a talk above — Omni outlines it, then designs every slide
+              Describe a talk above, and Omni outlines it, then designs every slide
               with charts and art.
             </p>
           </div>

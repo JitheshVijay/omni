@@ -1,19 +1,19 @@
 // A single dashboard tile, rendered from a server-computed Tile. Three kinds:
-//   stat  — one big number (the tile's `value`)
-//   bar   — horizontal grouped bars from `points`, each directly labeled
-//   donut — an inline-SVG donut from `points` with a legend list
+//   stat  : one big number (the tile's `value`)
+//   bar   : horizontal grouped bars from `points`, each directly labeled
+//   donut : an inline-SVG donut from `points` with a legend list
 //
-// Charts are inline SVG / styled divs — no chart library. Grouped buckets use a
+// Charts are inline SVG / styled divs; no chart library. Grouped buckets use a
 // fixed-order categorical palette (validated dark categorical set from the
 // dataviz skill; CVD sits in the 8–12 floor band, so every mark is DIRECTLY
-// LABELLED as the required secondary encoding — identity is never colour-alone).
+// LABELLED as the required secondary encoding; identity is never colour-alone).
 // Numbers use tabular figures so they align.
 
 import type { Tile, TilePoint } from "@/lib/agentbase";
 import { formatStat } from "@/lib/agentbase";
 
 // Fixed-order categorical hues, stepped for a dark surface. Assigned by bucket
-// order and never cycled — a 9th bucket folds into a muted "Other"-style tone.
+// order and never cycled; a 9th bucket folds into a muted "Other"-style tone.
 const SERIES = [
   "#3987e5",
   "#199e70",
@@ -134,7 +134,7 @@ function DonutBody({ points }: { points: TilePoint[] }) {
           />
         ))}
       </svg>
-      {/* Legend — identity by label, so never colour-alone. */}
+      {/* Legend: identity by label, so never colour-alone. */}
       <ul className="flex min-w-0 flex-1 flex-col gap-1.5">
         {shown.map((p, i) => (
           <li key={p.label + i} className="flex items-center gap-2 text-xs">

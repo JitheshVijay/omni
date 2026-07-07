@@ -4,7 +4,7 @@
 // the scale correct as the container resizes.
 //
 // The iframe is same-origin (srcDoc + allow-same-origin) so the viewer can read
-// #design-canvas from contentDocument for PNG export — pass `iframeRef` to grab
+// #design-canvas from contentDocument for PNG export; pass `iframeRef` to grab
 // the element. `interactive={false}` (default) makes the preview inert.
 
 import { useEffect, useRef, useState } from "react";
@@ -48,7 +48,7 @@ export function ScaledDesignFrame({
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-    // onScale intentionally omitted — callers pass a fresh closure each render.
+    // onScale intentionally omitted, since callers pass a fresh closure each render.
   }, [width, height]);
 
   return (

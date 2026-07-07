@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-// A near-black (#010120) hero band — the brand's dark surface that opens a
+// A near-black (#010120) hero band: the brand's dark surface that opens a
 // landing page, with the three-stop gradient as a soft atmospheric ribbon in
 // the corner (the only decorative depth in the system). `.band-dark` flips all
 // token-based children to their dark values, so cards/muted text/hairlines

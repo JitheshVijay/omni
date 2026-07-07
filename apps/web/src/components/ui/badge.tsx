@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { IndexStatus } from "@/lib/types";
 
-// Hairline, crisp-cornered, uppercase-mono tags — the brand's technical label
+// Hairline, crisp-cornered, uppercase-mono tags: the brand's technical label
 // voice. Semantic colour variants are retained for the Drive/Hub index states.
 const badgeVariants = cva(
   "inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase leading-4 tracking-[0.05em] transition-colors",

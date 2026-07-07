@@ -118,7 +118,7 @@ export function VoiceCallModal({
           : speaking
             ? "Omni is speaking…"
             : listening
-              ? "Listening — go ahead."
+              ? "Listening. Go ahead."
               : "Connected.";
 
   return (
@@ -216,7 +216,7 @@ function Orb({
   const active = speaking || listening;
   return (
     <div className="relative flex size-36 items-center justify-center">
-      {/* Pulsing rings — only while actively talking/listening. */}
+      {/* Pulsing rings, only while actively talking/listening. */}
       {active && (
         <>
           <span

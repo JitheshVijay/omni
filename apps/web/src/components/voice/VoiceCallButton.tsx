@@ -1,5 +1,5 @@
 // Launcher for the voice call. Drops anywhere the integrator wants a "Talk"
-// affordance — a hub detail header, the chat header, etc. Reads the voice
+// affordance: a hub detail header, the chat header, etc. Reads the voice
 // configured flag from /api/voice/voices; when voice isn't set up it renders
 // a disabled button with an explanatory tooltip instead of a dead click.
 import { useState } from "react";

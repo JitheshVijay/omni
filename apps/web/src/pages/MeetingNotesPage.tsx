@@ -1,4 +1,4 @@
-// /tools/notes — AI Meeting Notes home. Paste a transcript (Zoom / Meet /
+// /tools/notes: AI Meeting Notes home. Paste a transcript (Zoom / Meet /
 // Teams / hand-typed) + an optional title, then "Generate notes" streams
 // streamGenerate("meeting") INLINE: status + the notes markdown streaming
 // into a live preview (MarkdownMessage). On the terminal artifact event it
@@ -100,7 +100,7 @@ export default function MeetingNotesPage() {
           Turn a transcript into <span className="grad-word">notes</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Paste a Zoom / Meet / Teams transcript, or any notes — Omni writes a
+          Paste a Zoom / Meet / Teams transcript, or any notes, and Omni writes a
           clean summary with key points, decisions, action items, and open
           questions.
         </p>
@@ -123,7 +123,7 @@ export default function MeetingNotesPage() {
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title (optional) — e.g. “Q3 Planning Sync”"
+          placeholder="Title (optional), e.g. “Q3 Planning Sync”"
           maxLength={200}
           disabled={generating}
           className="mb-3 bg-surface2"
@@ -204,7 +204,7 @@ export default function MeetingNotesPage() {
             </div>
             <p className="text-sm font-medium text-ink">No notes yet</p>
             <p className="max-w-xs text-xs text-muted">
-              Paste a transcript above — your structured notes show up here and in
+              Paste a transcript above, and your structured notes show up here and in
               your Library.
             </p>
           </div>

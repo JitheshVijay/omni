@@ -1,4 +1,4 @@
-// /tools/podcast — Podcast Studio. Left: the generation form (topic OR a
+// /tools/podcast: Podcast Studio. Left: the generation form (topic OR a
 // source doc, episode length, host voices); right: the episode being
 // generated (live script bubbles narrated by the generator's status labels)
 // above the list of past episodes. Each episode card expands into a
@@ -214,7 +214,7 @@ export default function PodcastStudioPage() {
             Podcast Studio
           </h1>
           <p className="mt-0.5 text-sm text-muted">
-            Two hosts, one topic — a curious host and an expert talk it through.
+            Two hosts, one topic: a curious host and an expert talk it through.
           </p>
         </div>
       </div>
@@ -252,7 +252,7 @@ export default function PodcastStudioPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">
-                  <span className="text-muted">None — use the topic</span>
+                  <span className="text-muted">None (use the topic)</span>
                 </SelectItem>
                 {docs.map((d) => (
                   <SelectItem key={d.id} value={d.id}>

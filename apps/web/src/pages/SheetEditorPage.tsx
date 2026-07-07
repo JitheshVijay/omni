@@ -1,4 +1,4 @@
-// /tools/sheets/:artifactId — spreadsheet viewer + editor. Loads the
+// /tools/sheets/:artifactId: spreadsheet viewer + editor. Loads the
 // kind=sheet artifact (content is SheetContent {columns, rows}), renders it
 // in a headless TanStack Table v8 grid with sortable typed columns and
 // editable cells (double-click → input, Enter/blur commits, Escape cancels),
@@ -7,10 +7,10 @@
 // Export .xlsx (exceljs in the browser, typed cells + bold header), "Edit
 // with AI" (streamRevise → navigate to the new revision), Export to Drive
 // (sheets have no server blob, so the CSV is built client-side and uploaded
-// via POST /api/drive/files multipart — same pattern as DeckEditorPage's
+// via POST /api/drive/files multipart, same pattern as DeckEditorPage's
 // .pptx export), and Delete.
 //
-// Grids >300 rows render a simple windowed slice (no virtualization lib) —
+// Grids >300 rows render a simple windowed slice (no virtualization lib);
 // plain rows are fine at this scale. The load is StrictMode-safe (cancelled
 // flag on the effect, mirroring DeckEditorPage / DocEditorPage).
 
@@ -85,7 +85,7 @@ const XLSX_MIME =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 interface GridRow {
-  /** Index into the underlying rows state — stable across sorting. */
+  /** Index into the underlying rows state, stable across sorting. */
   idx: number;
   cells: SheetCell[];
 }
@@ -259,7 +259,7 @@ export default function SheetEditorPage() {
     }
   }
 
-  // Cmd/Ctrl+S — registered once, dispatching through a ref to avoid a
+  // Cmd/Ctrl+S, registered once, dispatching through a ref to avoid a
   // stale closure over rows/dirty.
   const saveRef = useRef(save);
   saveRef.current = save;
@@ -302,7 +302,7 @@ export default function SheetEditorPage() {
     setExporting(true);
     setActionError(null);
     try {
-      // exceljs is heavy — load it only when the export is requested.
+      // exceljs is heavy, so load it only when the export is requested.
       const { Workbook } = await import("exceljs");
       const wb = new Workbook();
       const ws = wb.addWorksheet(sheetTabName(title));
@@ -372,7 +372,7 @@ export default function SheetEditorPage() {
     }
   }
 
-  // Revisions run against the SAVED content — flush pending edits first.
+  // Revisions run against the SAVED content, so flush pending edits first.
   async function openEdit() {
     if (dirty) await save();
     setEditOpen(true);
@@ -681,7 +681,7 @@ function EditableCell({
             commit();
           } else if (e.key === "Escape") {
             e.preventDefault();
-            setEditing(false); // cancel — no commit
+            setEditing(false); // cancel, no commit
           }
         }}
         inputMode={type === "number" ? "decimal" : undefined}
@@ -731,7 +731,7 @@ function EditableCell({
         type === "date" && "whitespace-nowrap text-ink/80",
       )}
     >
-      {value === null ? "—" : cellToDisplay(value)}
+      {value === null ? "–" : cellToDisplay(value)}
     </div>
   );
 }
@@ -805,7 +805,7 @@ function EditWithAiDialog({
             Edit with AI
           </DialogTitle>
           <DialogDescription>
-            Describe the change — Omni rebuilds the sheet as a new revision
+            Describe the change, and Omni rebuilds the sheet as a new revision
             (the original is kept).
           </DialogDescription>
         </DialogHeader>

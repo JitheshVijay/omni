@@ -9,7 +9,7 @@
 // and `close` frames carry no id.
 //
 // A run that suspends (awaiting_confirmation / paused) keeps the same
-// connection open — confirming/resuming republishes onto the same in-process
+// connection open, and confirming/resuming republishes onto the same in-process
 // bus, so no reconnect is needed. We only auto-reconnect on an *unexpected*
 // drop while the run is still non-terminal.
 
@@ -119,7 +119,7 @@ export function streamAgentRun(opts: StreamAgentRunOptions): AgentRunStream {
 
     const ctype = res.headers.get("content-type") ?? "";
     if (!res.ok || !res.body || !ctype.includes("text/event-stream")) {
-      // Hard error (404/500/…). Surface it and stop — retrying a hard error
+      // Hard error (404/500/…). Surface it and stop, because retrying a hard error
       // just loops.
       let message = `stream failed (${res.status})`;
       try {
@@ -184,7 +184,7 @@ export function streamAgentRun(opts: StreamAgentRunOptions): AgentRunStream {
       try {
         await connectOnce();
       } catch {
-        // network error / abort — fall through to the reconnect decision
+        // network error / abort: fall through to the reconnect decision
       }
       if (stopped || terminal) break;
       // Unexpected end while the run is still live → backoff and resume.
@@ -247,7 +247,7 @@ export interface ConfirmCardBody {
   answer?: string;
 }
 
-/** POST /api/agent/runs/:id/confirm — resolve the pending card, resume loop. */
+/** POST /api/agent/runs/:id/confirm: resolve the pending card, resume loop. */
 export function confirmCard(runId: string, body: ConfirmCardBody): Promise<unknown> {
   return authFetch(`/api/agent/runs/${runId}/confirm`, {
     method: "POST",
@@ -255,17 +255,17 @@ export function confirmCard(runId: string, body: ConfirmCardBody): Promise<unkno
   });
 }
 
-/** POST /api/agent/runs/:id/cancel — request cancellation. */
+/** POST /api/agent/runs/:id/cancel: request cancellation. */
 export function cancelRun(runId: string): Promise<unknown> {
   return authFetch(`/api/agent/runs/${runId}/cancel`, { method: "POST" });
 }
 
-/** POST /api/agent/runs/:id/pause — checkpoint at the next boundary. */
+/** POST /api/agent/runs/:id/pause: checkpoint at the next boundary. */
 export function pauseRun(runId: string): Promise<unknown> {
   return authFetch(`/api/agent/runs/${runId}/pause`, { method: "POST" });
 }
 
-/** POST /api/agent/runs/:id/resume — rehydrate + re-enter the loop
+/** POST /api/agent/runs/:id/resume: rehydrate + re-enter the loop
  *  (for paused or failed+resumable runs). */
 export function resumeRun(runId: string): Promise<unknown> {
   return authFetch(`/api/agent/runs/${runId}/resume`, { method: "POST" });

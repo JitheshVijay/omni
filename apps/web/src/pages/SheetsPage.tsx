@@ -1,4 +1,4 @@
-// /tools/sheets — AI Sheets home. A "New sheet" panel (prompt + row-count
+// /tools/sheets: AI Sheets home. A "New sheet" panel (prompt + row-count
 // slider + optional columns hint + optional hub grounding) streams
 // streamGenerate("sheet") INLINE with a live preview: the schema delta
 // renders the header row immediately, then each row delta appends for a
@@ -185,7 +185,7 @@ export default function SheetsPage() {
           Build data with <span className="grad-word">AI Sheets</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Describe the data you need — Omni designs typed columns and fills
+          Describe the data you need, and Omni designs typed columns and fills
           the rows, streaming into an editable spreadsheet.
         </p>
       </div>
@@ -298,7 +298,7 @@ export default function SheetsPage() {
         />
       )}
 
-      {/* Skills that target sheets — seed the prompt above */}
+      {/* Skills that target sheets: seed the prompt above */}
       <GeneratorSkillsStrip output="sheet" onUse={seedPrompt} />
 
       {/* Template gallery */}
@@ -320,7 +320,7 @@ export default function SheetsPage() {
             </div>
             <p className="text-sm font-medium text-ink">No sheets yet</p>
             <p className="max-w-xs text-xs text-muted">
-              Describe the data above — Omni designs the columns, then fills
+              Describe the data above, and Omni designs the columns, then fills
               every row for you.
             </p>
           </div>

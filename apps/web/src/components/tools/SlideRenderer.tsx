@@ -2,7 +2,7 @@
 // come entirely from the deck's embedded Theme (inline styles, since the
 // tokens are arbitrary hex from JSON); layout is plain flex geometry in
 // absolute px. The parent (DeckViewer / print page / thumbnail) scales the
-// whole canvas with a CSS transform — this component never scales itself.
+// whole canvas with a CSS transform; this component never scales itself.
 //
 // Charts are drawn as inline SVG (recharts is not a web dependency). Single
 // series → no legend box, direct value labels, thin marks with rounded ends,
@@ -77,7 +77,7 @@ function frameStyle(theme: Theme): React.CSSProperties {
   };
 }
 
-/** Decorative accent glow in the far corner — subtle brand texture. */
+/** Decorative accent glow in the far corner, a subtle brand texture. */
 function AccentGlow({ theme }: { theme: Theme }) {
   return (
     <div
@@ -754,7 +754,7 @@ function PieChart({ data, theme }: { data: ChartData; theme: Theme }) {
       {arcs.map((a, i) => (
         <path key={i} d={a.d} fill={a.color} stroke={theme.bg} strokeWidth={3} />
       ))}
-      {/* labelled legend — identity is never colour-alone */}
+      {/* labelled legend, so identity is never colour-alone */}
       <g transform={`translate(${cx + r + 90}, ${cy - values.length * 21})`}>
         {categories.map((c, i) => (
           <g key={i} transform={`translate(0, ${i * 42})`}>

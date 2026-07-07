@@ -1,4 +1,4 @@
-// /tools/slides/:id — deck viewer + editor. Loads the kind=slides artifact
+// /tools/slides/:id: deck viewer + editor. Loads the kind=slides artifact
 // (content is DeckContent), renders it in the paged DeckViewer, and offers a
 // toolbar: export .pptx (built from the slide JSON, native charts + embedded
 // art), print / PDF (DeckViewer's per-slide print frame), "Edit with AI"
@@ -418,7 +418,7 @@ function EditWithAiDialog({
             Edit with AI
           </DialogTitle>
           <DialogDescription>
-            Describe the change — Omni rebuilds the deck as a new revision (the
+            Describe the change, and Omni rebuilds the deck as a new revision (the
             original is kept). Reused slide art carries over.
           </DialogDescription>
         </DialogHeader>

@@ -99,12 +99,12 @@ export interface WorkflowRunStep {
   created_at: string;
 }
 
-/** GET /api/workflows/:id — flat workflow + recent runs. */
+/** GET /api/workflows/:id: flat workflow + recent runs. */
 export interface WorkflowDetail extends Workflow {
   runs: WorkflowRun[];
 }
 
-/** GET /api/workflows/templates — a curated starter template. */
+/** GET /api/workflows/templates: a curated starter template. */
 export interface WorkflowTemplate {
   id: string;
   name: string;
@@ -113,7 +113,7 @@ export interface WorkflowTemplate {
   graph: WorkflowGraph;
 }
 
-/** GET /api/workflows/runs/:runId — flat run + graph snapshot + steps. */
+/** GET /api/workflows/runs/:runId: flat run + graph snapshot + steps. */
 export interface WorkflowRunDetail extends WorkflowRun {
   workflow_name: string | null;
   graph: WorkflowGraph | null;
@@ -273,7 +273,7 @@ export function nodeConfigSummary(type: WorkflowNodeType | string, config: Recor
       const key = GENERATOR_PRIMARY_INPUT_KEY[generator] ?? "prompt";
       const prompt = typeof input[key] === "string" ? (input[key] as string) : "";
       const genLabel = GENERATOR_OPTIONS.find((g) => g.value === generator)?.label ?? generator;
-      return prompt ? `${genLabel} — ${prompt}` : genLabel;
+      return prompt ? `${genLabel}: ${prompt}` : genLabel;
     }
     case "search":
       return str("query") || "No query yet";

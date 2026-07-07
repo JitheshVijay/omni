@@ -1,4 +1,4 @@
-// Promise-based confirmation dialog — the in-app replacement for native
+// Promise-based confirmation dialog: the in-app replacement for native
 // window.confirm(), so destructive actions match the rest of the UI.
 // Adapted from Flo101's ConfirmDialog, rebuilt on the Radix Dialog primitive
 // (which brings focus trap + escape + portal for free).
@@ -75,13 +75,13 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       <Dialog
         open={!!opts}
         onOpenChange={(open) => {
-          // Radix fires onOpenChange(false) on Escape/backdrop — treat as cancel.
+          // Radix fires onOpenChange(false) on Escape/backdrop, so treat as cancel.
           if (!open) settle(false);
         }}
       >
         <DialogContent className="max-w-sm" hideClose>
           <DialogHeader>
-            {/* Radix requires a DialogTitle for a11y — fall back to "Confirm". */}
+            {/* Radix requires a DialogTitle for a11y, so fall back to "Confirm". */}
             <DialogTitle>{opts?.title ?? "Confirm"}</DialogTitle>
             <DialogDescription asChild>
               <div className="text-sm leading-relaxed text-muted">{opts?.message}</div>

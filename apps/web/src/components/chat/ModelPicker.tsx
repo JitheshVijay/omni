@@ -1,6 +1,6 @@
 // Model selector fed by GET /api/models (curated registry ∩ live OpenRouter
 // availability). Grouped by provider, pricing hint on each row, unavailable
-// models disabled. Controlled component — the parent decides what a change
+// models disabled. Controlled component: the parent decides what a change
 // means (PATCH the thread, PATCH settings, or set a hub default).
 
 import { useMemo } from "react";

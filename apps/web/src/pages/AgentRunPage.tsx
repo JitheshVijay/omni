@@ -1,4 +1,4 @@
-// /agent/:id — the live run view.
+// /agent/:id: the live run view.
 //
 // On mount we GET the run snapshot (flat run + steps + plan + any pending
 // confirmation) to seed the UI instantly, THEN open the SSE stream from
@@ -9,7 +9,7 @@
 //
 // Lifecycle controls (cancel/pause/resume) and card confirmation POST and then
 // resync: they stop the stream, re-fetch the snapshot, and reopen from the new
-// high-water seq — which is how a failed→Resume run (whose stream had stopped)
+// high-water seq, which is how a failed→Resume run (whose stream had stopped)
 // picks the timeline back up.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -50,7 +50,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Normalise a persisted SSE event into a timeline step. Non-persisted events
-// (delta/close/run_status/plan_updated) return null — they're handled directly.
+// (delta/close/run_status/plan_updated) return null; they're handled directly.
 function stepFromEvent(evt: AgentEvent): AgentStep | null {
   switch (evt.type) {
     case "assistant_message":
@@ -132,7 +132,7 @@ function stepFromEvent(evt: AgentEvent): AgentStep | null {
         kind: "budget_warning",
         tool_name: null,
         status: null,
-        content: `Approaching budget — ${evt.cost_usd.toFixed(2)} of ${evt.budget_usd.toFixed(2)} used.`,
+        content: `Approaching budget: ${evt.cost_usd.toFixed(2)} of ${evt.budget_usd.toFixed(2)} used.`,
         summary: null,
         duration_ms: null,
       };

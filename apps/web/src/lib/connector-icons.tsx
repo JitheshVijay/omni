@@ -67,7 +67,7 @@ function monogram(name: string): string {
   return name.slice(0, 2).toUpperCase();
 }
 
-/** The brand glyph for a connector — its official logo, or a coloured monogram. */
+/** The brand glyph for a connector: its official logo, or a coloured monogram. */
 export function ConnectorGlyph({ toolkit, name }: { toolkit: string; name: string }) {
   const Icon = ICONS[toolkit];
   // color="default" uses each icon's official brand hex; without it the icons

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-// A pastel-tinted stat tile — a big display number over an uppercase-mono
+// A pastel-tinted stat tile: a big display number over an uppercase-mono
 // label, on one of the brand's non-gradient accent tints. Breaks up the white
 // middle bands. Always dark ink on the pastel fill.
 const TINTS = {

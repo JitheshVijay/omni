@@ -28,7 +28,7 @@ export function timeAgo(iso: string): string {
 
 // Human-readable byte size ("1.2 MB").
 export function formatBytes(n: number): string {
-  if (!Number.isFinite(n) || n < 0) return "—";
+  if (!Number.isFinite(n) || n < 0) return "N/A";
   if (n < 1024) return `${n} B`;
   const units = ["KB", "MB", "GB", "TB"];
   let v = n;
@@ -47,7 +47,7 @@ export function prettyModel(id: string | null | undefined): string {
   return tail.replace(/:online$/, " (online)");
 }
 
-// "$0.0042" — trims to a sensible precision for per-message costs.
+// "$0.0042", trimmed to a sensible precision for per-message costs.
 export function formatCost(usd: number | null | undefined): string {
   if (usd == null || !Number.isFinite(usd)) return "";
   if (usd === 0) return "$0.00";

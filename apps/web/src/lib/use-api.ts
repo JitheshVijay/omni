@@ -82,7 +82,7 @@ export function useApi<T = unknown>(
 
 // Invalidate a cached endpoint from outside the React tree (e.g. after a
 // POST/PATCH that should bust the cache for a related GET). The returned
-// promise resolves AFTER revalidation completes — callers can await it to
+// promise resolves AFTER revalidation completes, so callers can await it to
 // sequence UI state changes against fresh data.
 export function invalidateApi(path: string): Promise<unknown> {
   return globalMutate(resolveUrl(path));
@@ -114,7 +114,7 @@ export async function authFetch<T = unknown>(
 }
 
 // Raw variant for callers that need the Response itself (blob downloads,
-// SSE handshakes). Does NOT throw on !ok — the caller decides.
+// SSE handshakes). Does NOT throw on !ok; the caller decides.
 export async function authFetchRaw(
   path: string,
   init: RequestInit = {},

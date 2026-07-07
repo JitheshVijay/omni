@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 // Together-inspired Card: white surface, hairline border, crisp corners, and
-// NO shadow — elevation comes from surface contrast and the hairline, not blur.
+// NO shadow: elevation comes from surface contrast and the hairline, not blur.
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div

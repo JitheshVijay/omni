@@ -1,7 +1,7 @@
 // Shared API payload types for @omni/web. These mirror the SQLite schema in
 // /migrations/*.sql and the API envelope conventions ({success:true, data}).
-// The `data` payload shapes below are the web app's single source of truth —
-// if the API returns a different wrapper, reconcile here.
+// The `data` payload shapes below are the web app's single source of truth.
+// If the API returns a different wrapper, reconcile here.
 
 export interface TokenUsage {
   input_tokens: number;
@@ -144,7 +144,7 @@ export interface AgentRun {
 
 export type ArtifactKind = "doc" | "image" | "audio";
 
-// Returned by list endpoints and SSE `artifact` events — never carries
+// Returned by list endpoints and SSE `artifact` events. Never carries
 // `content` (docs can be large; fetch the detail endpoint for it).
 export interface ArtifactSummary {
   id: string;
@@ -180,14 +180,14 @@ export interface AudioContent {
   text_chars: number;
 }
 
-// GET /api/artifacts/:id — flat artifact with content/meta JSON-parsed.
+// GET /api/artifacts/:id: flat artifact with content/meta JSON-parsed.
 export interface Artifact extends ArtifactSummary {
   content: DocContent | AudioContent | Record<string, unknown> | null;
   drive_file_id?: string | null;
   updated_at?: string;
 }
 
-// GET /api/voice/voices — curated ElevenLabs catalog entry.
+// GET /api/voice/voices: curated ElevenLabs catalog entry.
 export interface Voice {
   id: string;
   name: string;

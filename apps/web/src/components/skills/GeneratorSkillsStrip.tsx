@@ -1,7 +1,7 @@
 // In-generator Skills (Genspark's "Skills inside generators"). Each generator
 // hub renders this strip of community Skills that target its output format;
 // clicking "Add & Use" resolves the skill's prompt (POST /api/skills/:id/run)
-// and seeds the hub's own generation form via onUse(prompt) — the same seeding
+// and seeds the hub's own generation form via onUse(prompt), the same seeding
 // mechanism the template gallery uses. Hidden entirely when no skills match.
 
 import { useState } from "react";

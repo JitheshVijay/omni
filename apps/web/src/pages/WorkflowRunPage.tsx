@@ -1,7 +1,7 @@
-// /workflows/:id/runs/:runId — the live run view. GET the snapshot (flat run
+// /workflows/:id/runs/:runId: the live run view. GET the snapshot (flat run
 // + graph + steps) to seed instantly, then live-tail the SSE stream while
 // the run is active. Steps update in place on the server (running → ok /
-// error / skipped), so both the replay and the tail upsert by seq — a
+// error / skipped), so both the replay and the tail upsert by seq; a
 // refresh replays cleanly. Styled to mirror the agent StepTimeline's rail +
 // card look, with artifact chips linking by kind and agent_task steps
 // linking into /agent/<agent_run_id>.

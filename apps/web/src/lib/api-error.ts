@@ -3,7 +3,7 @@
 // pattern that dumps raw JSON into error UI.
 //
 // The Omni API envelope is `{success:false, error, code?}` where `error` is
-// usually a string but may be a Zod issues array on 400s — both are handled.
+// usually a string but may be a Zod issues array on 400s, and both are handled.
 
 export interface ParsedApiError {
   message: string;

@@ -1,6 +1,6 @@
 // Read-aloud infrastructure. useReadAloud() turns any text source into
 // queued ElevenLabs audio: the text is stripped of markdown, chunked at
-// sentence boundaries (~2500 chars — under the /api/voice/tts 4000 limit),
+// sentence boundaries (~2500 chars, under the /api/voice/tts 4000 limit),
 // and each chunk is POSTed to /api/voice/tts sequentially. Chunk 1 starts
 // playing while chunk 2 is still fetching, so long documents feel instant.
 // The companion <MiniPlayer/> is a fixed bottom-right dock with play/pause,
@@ -32,7 +32,7 @@ export interface VoiceCatalog {
   voices: Voice[];
 }
 
-/** GET /api/voice/voices — `configured` is null while the request is in
+/** GET /api/voice/voices: `configured` is null while the request is in
  *  flight so buttons can render optimistically instead of flashing off. */
 export function useVoiceCatalog(): { configured: boolean | null; voices: Voice[] } {
   const { data } = useApi<VoiceCatalog>("/api/voice/voices");
@@ -388,7 +388,7 @@ export function MiniPlayer({
                     <SelectItem key={v.id} value={v.id} className="text-xs">
                       {v.name}
                       {v.description ? (
-                        <span className="text-muted"> — {v.description}</span>
+                        <span className="text-muted"> ({v.description})</span>
                       ) : null}
                     </SelectItem>
                   ))}

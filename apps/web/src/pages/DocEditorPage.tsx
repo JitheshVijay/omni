@@ -1,4 +1,4 @@
-// /tools/docs/new AND /tools/docs/:id — one component, two modes.
+// /tools/docs/new AND /tools/docs/:id: one component, two modes.
 //
 // /new: reads {prompt, hub_id, length} from router state (handed off by
 // DocsListPage) and immediately starts streamGenerate("doc"). Streamed
@@ -6,7 +6,7 @@
 // BlockNote editor every ~500ms or on a double-newline boundary. On the
 // terminal artifact event the URL is swapped in place via
 // history.replaceState (no remount), the artifact is fetched, and the final
-// full parse — WITH [[cite:..]] → citation-pill conversion — unlocks editing.
+// full parse (WITH [[cite:..]] → citation-pill conversion) unlocks editing.
 // The initial stream start is guarded against StrictMode's double mount with
 // the cancellable setTimeout(0) pattern from ChatThreadPage.
 //
@@ -141,7 +141,7 @@ export default function DocEditorPage() {
     if (Array.isArray(content.blocks) && content.blocks.length > 0) {
       docRef.current?.setBlocks(content.blocks);
     } else {
-      // Pass sources explicitly — the setSources state update above hasn't
+      // Pass sources explicitly, since the setSources state update above hasn't
       // rendered into the editor's props yet.
       docRef.current?.setMarkdown(content.markdown ?? "", srcs);
     }
@@ -205,7 +205,7 @@ export default function DocEditorPage() {
 
   async function finishGeneration(artifact: ArtifactSummary) {
     flushParse();
-    // Swap the URL in place — no router navigation, so the editor (and the
+    // Swap the URL in place with no router navigation, so the editor (and the
     // streamed content already in it) never remounts.
     window.history.replaceState(null, "", `/tools/docs/${artifact.id}`);
     setArtifactId(artifact.id);
@@ -594,7 +594,7 @@ function SourceCard({ source, highlighted }: { source: DocSource; highlighted: b
           <Link
             to="/drive"
             className="min-w-0 truncate text-xs font-medium text-ink transition hover:text-accent"
-            title={`${source.label} — open Drive`}
+            title={`${source.label}: open Drive`}
           >
             {source.label}
           </Link>
@@ -681,7 +681,7 @@ function EditWithAiDialog({
             Edit with AI
           </DialogTitle>
           <DialogDescription>
-            Describe the change — Omni rewrites the whole document as a new
+            Describe the change, and Omni rewrites the whole document as a new
             version (the original is kept).
           </DialogDescription>
         </DialogHeader>

@@ -1,4 +1,4 @@
-// /tools/design/:artifactId — the Design Studio viewer. Loads a design
+// /tools/design/:artifactId: the Design Studio viewer. Loads a design
 // artifact (kind=webpage, meta.subtype "design"; content {html, format,
 // width, height}) and shows the graphic in a sandboxed iframe rendered at its
 // exact pixel size, scaled with a CSS transform to fit the viewport. Toolbar:
@@ -130,7 +130,7 @@ export default function DesignViewPage() {
       const node =
         (doc?.getElementById("design-canvas") as HTMLElement | null) ??
         (doc?.body as HTMLElement | null);
-      if (!node) throw new Error("Preview not ready — try again in a moment.");
+      if (!node) throw new Error("Preview not ready. Try again in a moment.");
       const dataUrl = await toPng(node, {
         width,
         height,
@@ -385,7 +385,7 @@ export default function DesignViewPage() {
               placeholder={
                 revising
                   ? reviseStatus ?? "Redesigning…"
-                  : 'Edit with AI — e.g. "warmer palette" or "make the headline bigger"'
+                  : 'Edit with AI, e.g. "warmer palette" or "make the headline bigger"'
               }
               className="pl-9"
             />

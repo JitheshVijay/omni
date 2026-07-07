@@ -1,4 +1,4 @@
-// /tools — the generator suite hub. Hero grid of tool cards (Image Studio,
+// /tools: the generator suite hub. Hero grid of tool cards (Image Studio,
 // AI Docs, Read Aloud explainer, Phase-3 teaser) plus a "Recent creations"
 // strip of the latest artifacts across all kinds.
 
@@ -45,7 +45,7 @@ export default function ToolsPage() {
       navigate(a.meta?.subtype === "design" ? `/tools/design/${a.id}` : `/tools/apps/${a.id}`);
     else if (a.kind === "audio" && a.meta?.subtype === "podcast")
       navigate("/tools/podcast", { state: { openId: a.id } });
-    // plain TTS audio plays inline on its card — no viewer page.
+    // plain TTS audio plays inline on its card, no viewer page.
   }
 
   return (
@@ -56,7 +56,7 @@ export default function ToolsPage() {
           What would you like to <span className="grad-word">make</span>?
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm text-muted">
-          Generators that turn a prompt into something you can keep — everything
+          Generators that turn a prompt into something you can keep, and everything
           lands in your Library.
         </p>
       </HeroBand>
@@ -67,34 +67,34 @@ export default function ToolsPage() {
           to="/tools/images"
           icon={Images}
           title="Image Studio"
-          text="Generate images from a prompt, then refine them with follow-up edits — full lineage kept."
+          text="Generate images from a prompt, then refine them with follow-up edits. Full lineage kept."
           index={0}
         />
         <ToolCard
           to="/tools/docs"
           icon={FileText}
           title="AI Docs"
-          text="Draft full documents that stream into a rich editor — grounded in your hub memory with citations."
+          text="Draft full documents that stream into a rich editor, grounded in your hub memory with citations."
           index={1}
         />
         <ToolCard
           to="/tools/apps"
           icon={Code2}
           title="AI Developer"
-          text="Describe an app or page and get a complete, working single-file web app — live sandboxed preview with the code in reach."
+          text="Describe an app or page and get a complete, working single-file web app. Live sandboxed preview with the code in reach."
           index={2}
         />
         <ToolCard
           to="/tools/design"
           icon={Palette}
           title="Design Studio"
-          text="Describe a poster, social post, flyer, or cover — get a print-quality graphic you can export as PNG."
+          text="Describe a poster, social post, flyer, or cover, and get a print-quality graphic you can export as PNG."
           index={2}
         />
         <ExplainerCard
           icon={AudioLines}
           title="Read Aloud"
-          text="Every doc and chat reply has a Listen button — narrated with ElevenLabs voices, chunk by chunk."
+          text="Every doc and chat reply has a Listen button, narrated with ElevenLabs voices, chunk by chunk."
           badge={
             configured === false ? (
               <Badge variant="warning" title={VOICE_UNCONFIGURED_HINT}>
@@ -110,34 +110,34 @@ export default function ToolsPage() {
           to="/tools/slides"
           icon={Presentation}
           title="AI Slides"
-          text="Outline-first slide decks across seven layouts — export a real .pptx with editable charts."
+          text="Outline-first slide decks across seven layouts. Export a real .pptx with editable charts."
           index={3}
         />
         <ToolCard
           to="/tools/sheets"
           icon={Table2}
           title="AI Sheets"
-          text="Spreadsheets that stream in row by row — edit any cell, export CSV or .xlsx."
+          text="Spreadsheets that stream in row by row. Edit any cell, export CSV or .xlsx."
           index={4}
         />
         <ToolCard
           to="/tools/podcast"
           icon={Podcast}
           title="Podcast"
-          text="Two hosts discuss any topic or document — narrated with contrasting voices, script-synced playback."
+          text="Two hosts discuss any topic or document, narrated with contrasting voices, script-synced playback."
           index={5}
         />
         <ToolCard
           to="/tools/notes"
           icon={NotebookPen}
           title="Meeting Notes"
-          text="Paste a Zoom/Meet/Teams transcript and get structured notes — summary, key points, decisions, action items with owners, and open questions."
+          text="Paste a Zoom/Meet/Teams transcript and get structured notes: summary, key points, decisions, action items with owners, and open questions."
           index={6}
         />
         <ExplainerCard
           icon={Sparkles}
           title="Workflows"
-          text="Chain the agent, generators, and search into scheduled automations — find them in the sidebar."
+          text="Chain the agent, generators, and search into scheduled automations. Find them in the sidebar."
           badge={<Badge variant="success">new</Badge>}
           index={6}
         />
@@ -159,7 +159,7 @@ export default function ToolsPage() {
             </div>
             <p className="text-sm font-medium text-ink">Nothing generated yet</p>
             <p className="max-w-xs text-xs text-muted">
-              Start with an image or a document — everything you create shows up
+              Start with an image or a document, and everything you create shows up
               here and in your Library.
             </p>
           </div>

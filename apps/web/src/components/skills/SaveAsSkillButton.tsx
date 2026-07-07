@@ -1,4 +1,4 @@
-// "Save as Skill" — the artifact/prompt → reusable Skill handoff (Genspark's
+// "Save as Skill": the artifact/prompt → reusable Skill handoff (Genspark's
 // "save as template"). Drops into a generator editor's toolbar as a small,
 // unobtrusive button; opening it seeds a create-Skill dialog with the
 // artifact's source prompt already filled in. Mirrors the New Skill create
@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-/** The formats an artifact editor can save from — a subset of SkillOutput. */
+/** The formats an artifact editor can save from, a subset of SkillOutput. */
 export type SaveSkillTarget = "doc" | "slides" | "sheet" | "image" | "chat";
 
 const OUTPUT_LABEL: Record<SkillOutput, string> = {
@@ -173,7 +173,7 @@ function SaveSkillDialog({
             <code className="rounded bg-surface3 px-1 py-0.5 text-[11px] text-ink">
               {"{{input}}"}
             </code>{" "}
-            in the template where the running text should go — leave it out to
+            in the template where the running text should go. Leave it out to
             reuse the prompt as-is.
           </DialogDescription>
         </DialogHeader>

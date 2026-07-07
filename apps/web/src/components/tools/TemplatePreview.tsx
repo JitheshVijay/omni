@@ -1,4 +1,4 @@
-// A pure CSS/SVG MOCK preview of a template's output — kind-aware and static.
+// A pure CSS/SVG MOCK preview of a template's output: kind-aware and static.
 // It stands in for Genspark's rendered thumbnails: NO real generation happens
 // here. Each kind gets a distinct, tasteful ~16:10 mock:
 //   doc    → a mini document (colored title bar + gray text lines)

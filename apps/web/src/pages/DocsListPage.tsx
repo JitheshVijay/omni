@@ -1,4 +1,4 @@
-// /tools/docs — AI Docs home: a "New document" panel (prompt + optional hub
+// /tools/docs: AI Docs home. A "New document" panel (prompt + optional hub
 // grounding + length) and the list of existing kind=doc artifacts. Generate
 // navigates to /tools/docs/new with the request in router state; the editor
 // page starts the stream (mirrors the ChatIndexPage → ChatThreadPage handoff).
@@ -104,7 +104,7 @@ export default function DocsListPage() {
           Write anything with <span className="grad-word">AI Docs</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Full documents, streamed into a rich editor — grounded in your hubs
+          Full documents, streamed into a rich editor and grounded in your hubs
           with inline citations.
         </p>
       </div>
@@ -138,7 +138,7 @@ export default function DocsListPage() {
         />
         <div className="mt-3 flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
-            Ground in a hub <span className="font-normal">(optional — adds citations)</span>
+            Ground in a hub <span className="font-normal">(optional, adds citations)</span>
             <Select value={hubId} onValueChange={setHubId}>
               <SelectTrigger className="h-9 w-56" aria-label="Hub">
                 <FolderKanban className="size-3.5 shrink-0 text-muted" />
@@ -185,7 +185,7 @@ export default function DocsListPage() {
         </div>
       </motion.div>
 
-      {/* Skills that target docs — seed the prompt above */}
+      {/* Skills that target docs, seeding the prompt above */}
       <GeneratorSkillsStrip output="doc" onUse={setPrompt} />
 
       {/* Template gallery */}
@@ -207,7 +207,7 @@ export default function DocsListPage() {
             </div>
             <p className="text-sm font-medium text-ink">No documents yet</p>
             <p className="max-w-xs text-xs text-muted">
-              Describe what you need above — the draft streams straight into an
+              Describe what you need above, and the draft streams straight into an
               editable page.
             </p>
           </div>

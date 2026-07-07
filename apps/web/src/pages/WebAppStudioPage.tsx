@@ -1,7 +1,7 @@
-// /tools/apps — AI Developer ("Build an app with AI"). Describe an app, pick a
+// /tools/apps: AI Developer ("Build an app with AI"). Describe an app, pick a
 // visual style, and the webapp generator streams back a COMPLETE, single-file
 // HTML document. While it streams we live-preview the accumulating markup in a
-// sandboxed iframe (allow-scripts only — the doc is fully self-contained). On
+// sandboxed iframe (allow-scripts only, the doc is fully self-contained). On
 // the terminal artifact event we navigate to the viewer at /tools/apps/:id.
 //
 // Below the composer: a template gallery (browser-mock tiles rendered locally,
@@ -121,7 +121,7 @@ export default function WebAppStudioPage() {
             setStatusLabel(e.label);
           } else if (e.type === "delta" && e.channel === "html") {
             accRef.current += e.data;
-            // Throttle iframe srcDoc churn — a full re-parse per token is janky.
+            // Throttle iframe srcDoc churn; a full re-parse per token is janky.
             if (!flushTimerRef.current) {
               flushTimerRef.current = setTimeout(() => {
                 flushTimerRef.current = null;
@@ -163,7 +163,7 @@ export default function WebAppStudioPage() {
           Build an app with <span className="grad-word">AI</span>
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-          Describe a page or app and get a complete, working single-file web app —
+          Describe a page or app and get a complete, working single-file web app,
           previewed live, with the code in reach.
         </p>
       </div>
@@ -279,7 +279,7 @@ export default function WebAppStudioPage() {
             </div>
             <p className="font-display text-lg font-semibold text-ink">No apps yet</p>
             <p className="max-w-xs text-sm text-muted">
-              Describe something above — or start from a template below — to build
+              Describe something above, or start from a template below, to build
               your first web app.
             </p>
           </div>

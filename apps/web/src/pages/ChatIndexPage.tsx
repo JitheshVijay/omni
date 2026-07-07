@@ -1,6 +1,6 @@
-// Home / empty state for /chat (and /chat/new): a Genspark-style hero — a
+// Home / empty state for /chat (and /chat/new): a Genspark-style hero with a
 // centered title, one big composer, and a row of colorful tool shortcuts.
-// The thread doesn't exist yet — on first send we POST a new thread, then
+// The thread doesn't exist yet. On first send we POST a new thread, then
 // navigate to /chat/:id passing the message via router state; ChatThreadPage
 // sends it on mount (exactly once), keeping all streaming logic in one place.
 
@@ -93,7 +93,7 @@ export default function ChatIndexPage() {
           What can I help you <span className="grad-word">build</span>?
         </h1>
         <p className="mt-3 max-w-md text-center text-sm text-muted">
-          Ask anything, or start with a tool — chat across models, ground answers
+          Ask anything, or start with a tool. Chat across models, ground answers
           in your Hubs, and turn ideas into docs, decks, and more.
         </p>
 

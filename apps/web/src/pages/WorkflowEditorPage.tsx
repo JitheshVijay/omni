@@ -1,4 +1,4 @@
-// /workflows/:id — the visual chain editor. v1 builds LINEAR chains on an
+// /workflows/:id: the visual chain editor. v1 builds LINEAR chains on an
 // @xyflow/react canvas: "+ Add step" appends a node auto-edged from the tail
 // and nodes are laid out left-to-right automatically (the runner executes
 // any DAG; the editor just doesn't author branches yet). Clicking a node
@@ -341,7 +341,7 @@ export default function WorkflowEditorPage() {
             }}
             placeholder="cron, e.g. 0 9 * * 1"
             aria-label="Cron schedule"
-            title={`node-cron expression — leave empty for manual-only. ${scheduleInvalid ? "Looks invalid." : ""}`}
+            title={`node-cron expression, leave empty for manual-only. ${scheduleInvalid ? "Looks invalid." : ""}`}
             className={cn(
               "h-9 w-44 pl-8 font-mono text-xs",
               scheduleInvalid && "border-rose-500/60 focus-visible:ring-rose-500/40",
@@ -404,7 +404,7 @@ export default function WorkflowEditorPage() {
         <div className="flex items-center gap-2 border-b border-accent/30 bg-accent/[0.06] px-4 py-1.5 text-[12px] text-ink">
           <Sparkles className="size-3.5 shrink-0 text-accent" />
           <span>
-            <span className="font-medium">Draft — review the steps.</span> Click a step to tweak
+            <span className="font-medium">Draft: review the steps.</span> Click a step to tweak
             it, then Save and turn it on to schedule or run.
           </span>
         </div>
@@ -450,7 +450,7 @@ export default function WorkflowEditorPage() {
               <WorkflowIcon className="size-8 text-muted/50" />
               <p className="text-sm font-medium text-ink">Empty workflow</p>
               <p className="max-w-xs text-xs text-muted">
-                Add your first step below — steps run left to right, each feeding{" "}
+                Add your first step below. Steps run left to right, each feeding{" "}
                 <code className="rounded bg-ink/5 px-1">{"{{previous}}"}</code> to the next.
               </p>
             </div>

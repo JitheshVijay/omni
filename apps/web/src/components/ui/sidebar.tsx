@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-// Focused subset of shadcn's sidebar, adapted from Flo101 — fixed rail on
+// Focused subset of shadcn's sidebar, adapted from Flo101: fixed rail on
 // desktop, overlay drawer on mobile. Collapse toggle is desktop-only; the
 // mobile drawer always renders full-label. Collapsed state persists to
 // localStorage. The mobile drawer is a lightweight inline overlay (backdrop
@@ -112,7 +112,7 @@ export function Sidebar({
 
   return (
     <>
-      {/* Desktop rail — hidden under lg, where the mobile drawer takes over. */}
+      {/* Desktop rail, hidden under lg, where the mobile drawer takes over. */}
       <aside
         data-collapsed={collapsed}
         className={cn(
@@ -124,7 +124,7 @@ export function Sidebar({
         {children}
       </aside>
 
-      {/* Mobile drawer — same children inside an override provider that
+      {/* Mobile drawer: same children inside an override provider that
           forces collapsed=false so labels always render. */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true">

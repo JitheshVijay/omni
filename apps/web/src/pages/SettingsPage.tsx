@@ -1,4 +1,4 @@
-// /settings — default model, theme, API key status (configured + tail only,
+// /settings: default model, theme, API key status (configured + tail only,
 // never full keys), and a storage debug block (data dir, db path, sqlite-vec
 // availability, table list).
 
@@ -144,7 +144,7 @@ export default function SettingsPage() {
           <Eyebrow>Keys</Eyebrow>
           <CardTitle className="text-base">API keys</CardTitle>
           <CardDescription>
-            Set in your <code className="font-mono text-xs">.env</code> — only status
+            Set in your <code className="font-mono text-xs">.env</code>. Only status
             and the last characters are shown here.
           </CardDescription>
         </CardHeader>

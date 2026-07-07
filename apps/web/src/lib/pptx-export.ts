@@ -413,7 +413,7 @@ function buildQuote(
     lineSpacingMultiple: 1.2,
   });
   if (slide_.attribution) {
-    slide.addText(`—  ${slide_.attribution}`, {
+    slide.addText(`by  ${slide_.attribution}`, {
       x: IN(128),
       y: IN(516),
       w: IN(SLIDE_W - 256),

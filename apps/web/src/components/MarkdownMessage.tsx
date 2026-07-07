@@ -1,5 +1,5 @@
 // The markdown body of a chat turn: GFM + math (KaTeX) + syntax-highlighted
-// fenced code. Memoized on `content` — parsing markdown and Prism-
+// fenced code. Memoized on `content`, since parsing markdown and Prism-
 // highlighting code is the heavy part of a turn, and the composer's input
 // lives on the page component, so every keystroke re-renders the page.
 // Keying on the content string means typing never re-parses finished

@@ -1,5 +1,5 @@
 /* @import statements MUST come before everything else (incl. @tailwind
-   directives) per CSS spec — Vite's PostCSS pipeline enforces this strictly. */
+   directives) per CSS spec - Vite's PostCSS pipeline enforces this strictly. */
 @import "katex/dist/katex.min.css";
 
 @tailwind base;
@@ -7,7 +7,7 @@
 @tailwind utilities;
 
 /* ── Omni color tokens ──────────────────────────────────────────────────
-   Raw RGB triplets — required for Tailwind's opacity-modifier syntax
+   Raw RGB triplets - required for Tailwind's opacity-modifier syntax
    (`bg-surface/60`, see tailwind.config.ts). Same token names in both
    themes so every className works in either.
 
@@ -26,20 +26,20 @@
    Brand + dark tokens (shared across themes) drive gradient chrome and the
    near-black hero bands regardless of the active light/dark theme. */
 :root {
-  --color-surface: 255 255 255;   /* page bg — clean white */
-  --color-surface2: 250 250 250;  /* cards — faint off-white */
-  --color-surface3: 235 235 235;  /* inputs / hover / rails — #ebebeb */
-  --color-ink: 0 0 0;             /* primary text — pure black */
-  --color-muted: 149 148 148;     /* secondary text — #959494 */
+  --color-surface: 255 255 255;   /* page bg - clean white */
+  --color-surface2: 250 250 250;  /* cards - faint off-white */
+  --color-surface3: 235 235 235;  /* inputs / hover / rails - #ebebeb */
+  --color-ink: 0 0 0;             /* primary text - pure black */
+  --color-muted: 149 148 148;     /* secondary text - #959494 */
   --color-accent: 214 25 168;     /* brand magenta (text-safe on white) */
   --color-accent2: 189 187 255;   /* brand periwinkle */
-  --color-line: 224 224 224;      /* hairline border — #e0e0e0 */
+  --color-line: 224 224 224;      /* hairline border - #e0e0e0 */
 
-  /* Brand + dark surfaces — identical in both themes so gradient chrome and
+  /* Brand + dark surfaces - identical in both themes so gradient chrome and
      dark hero bands are stable when nested on either canvas. */
-  --canvas-dark: 1 1 32;          /* #010120 — hero / research band */
-  --dark-soft: 49 54 65;          /* #313641 — lifted fill on dark */
-  --dark-line: 38 38 58;          /* #26263a — hairline on dark */
+  --canvas-dark: 1 1 32;          /* #010120 - hero / research band */
+  --dark-soft: 49 54 65;          /* #313641 - lifted fill on dark */
+  --dark-line: 38 38 58;          /* #26263a - hairline on dark */
   --brand-orange: 252 76 2;       /* #fc4c02 */
   --brand-magenta: 239 44 193;    /* #ef2cc1 */
   --brand-periwinkle: 189 187 255;/* #bdbbff */
@@ -48,17 +48,17 @@
 
 .dark {
   --color-surface: 0 0 0;         /* true black canvas */
-  --color-surface2: 13 13 15;     /* #0d0d0f — cards, barely lifted */
-  --color-surface3: 26 26 28;     /* #1a1a1c — inputs / hover / lifted */
+  --color-surface2: 13 13 15;     /* #0d0d0f - cards, barely lifted */
+  --color-surface3: 26 26 28;     /* #1a1a1c - inputs / hover / lifted */
   --color-ink: 255 255 255;       /* white */
   --color-muted: 148 148 150;     /* neutral grey (no blue tint) */
-  --color-accent: 239 44 193;     /* brand magenta — vivid on black */
+  --color-accent: 239 44 193;     /* brand magenta - vivid on black */
   --color-accent2: 189 187 255;   /* brand periwinkle */
-  --color-line: 39 39 42;         /* #27272a — neutral hairline on black */
+  --color-line: 39 39 42;         /* #27272a - neutral hairline on black */
 }
 
 /* A local dark scope: any element (e.g. a hero band on a white page) that sets
-   these vars flips ALL token-based children — cards, muted text, hairlines —
+   these vars flips ALL token-based children - cards, muted text, hairlines -
    without hardcoding, so a dark band nests cleanly inside a light page. */
 .band-dark {
   --color-surface: 1 1 32;
@@ -70,7 +70,7 @@
   background: rgb(var(--color-surface));
   color: rgb(var(--color-ink));
 }
-/* The inverse — a white band nested inside dark mode (doc / preview surfaces). */
+/* The inverse - a white band nested inside dark mode (doc / preview surfaces). */
 .band-light {
   --color-surface: 255 255 255;
   --color-surface2: 250 250 250;
@@ -100,7 +100,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
-  /* The Together display face reads slightly compressed — a hair of negative
+  /* The Together display face reads slightly compressed - a hair of negative
      tracking on body copy lands closer to that "poured-on-the-page" feel. */
   letter-spacing: -0.011em;
 }
@@ -111,7 +111,7 @@ body {
 
 /* The single piece of brand chrome: a three-stop gradient accent word inside a
    heading (e.g. "What can I help you <span class='grad-word'>build</span>?").
-   Orange → magenta → periwinkle, in fixed order — never recolour or reorder. */
+   Orange → magenta → periwinkle, in fixed order - never recolour or reorder. */
 .grad-word {
   background: linear-gradient(
     100deg,
@@ -124,7 +124,7 @@ body {
   color: transparent;
 }
 
-/* Uppercase mono eyebrow / label — the brand's technical voice. Section
+/* Uppercase mono eyebrow / label - the brand's technical voice. Section
    headers, table-header cells, stat labels, "NEW" tags all ride this. */
 .eyebrow {
   font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -147,7 +147,7 @@ body {
   );
 }
 
-/* Giant terminal wordmark — tinted toward the hairline so it reads as a faint
+/* Giant terminal wordmark - tinted toward the hairline so it reads as a faint
    stencil sign-off, never a heavy footer title. */
 .wordmark {
   font-family: "Inter", system-ui, sans-serif;
@@ -156,7 +156,7 @@ body {
   letter-spacing: -0.05em;
 }
 
-/* ── Thin scrollbar — webkit + Firefox. Transparent track, subtle thumb
+/* ── Thin scrollbar - webkit + Firefox. Transparent track, subtle thumb
    that brightens on hover so the affordance stays discoverable without
    dominating. ─────────────────────────────────────────────────────── */
 .scrollbar-thin {
@@ -191,7 +191,7 @@ body {
   display: none;
 }
 
-/* ── Entrance keyframes — tailwindcss-animate is not installed, so the
+/* ── Entrance keyframes - tailwindcss-animate is not installed, so the
    Radix overlays use these tiny custom classes for their mount animation
    (exit animations are skipped; contents unmount immediately). ──────── */
 @keyframes omni-fade-in {
@@ -232,7 +232,7 @@ body {
   animation: omni-caret-blink 1s ease-in-out infinite;
 }
 
-/* ── Markdown prose for chat messages (.omni-prose) — spacing tuned for
+/* ── Markdown prose for chat messages (.omni-prose) - spacing tuned for
    conversational density, not article density. Code blocks are handled by
    the CodeBlock component; inline code gets a subtle chip. ───────────── */
 .omni-prose > :first-child {
@@ -339,7 +339,7 @@ body {
   animation: omni-shimmer 1.4s linear infinite;
 }
 
-/* ── BlockNote doc editor (.omni-doc-shell) — merge the Mantine editor into
+/* ── BlockNote doc editor (.omni-doc-shell) - merge the Mantine editor into
    the Omni surface instead of a boxed white card, and align typography with
    the app (Sora display headings, Inter body). Adapted from Flo101's
    thread-editor-shell overrides. ─────────────────────────────────────── */
@@ -363,7 +363,7 @@ body {
   padding-left: 0 !important;
   padding-right: 0 !important;
   font-family: "Inter", system-ui, sans-serif;
-  /* Set ONCE here so it inherits — putting `color` directly on p/li/h*
+  /* Set ONCE here so it inherits - putting `color` directly on p/li/h*
      out-specifies BlockNote's [data-text-color] rule and breaks the text
      color picker (see Flo101 forensic note). */
   color: rgb(var(--color-ink));
@@ -389,7 +389,7 @@ body {
 .omni-doc-shell .ProseMirror h3 {
   font-size: 1.25rem;
 }
-/* Slash / suggestion menu — retheme BlockNote's Mantine popover to Omni
+/* Slash / suggestion menu - retheme BlockNote's Mantine popover to Omni
    tokens so it reads correctly in both light and dark modes. */
 .bn-suggestion-menu {
   background: rgb(var(--color-surface2)) !important;

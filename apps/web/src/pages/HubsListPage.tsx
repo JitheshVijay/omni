@@ -1,4 +1,4 @@
-// /hubs — grid of hub cards (name, description, file/thread counts) plus a
+// /hubs: grid of hub cards (name, description, file/thread counts) plus a
 // create dialog. Hubs are project workspaces: custom instructions, attached
 // Drive files, and persistent memory that grounds every thread inside them.
 
@@ -56,7 +56,7 @@ export default function HubsListPage() {
           </div>
           <p className="font-display text-lg font-semibold text-ink">No hubs yet</p>
           <p className="max-w-sm text-sm text-muted">
-            Create a hub to give your chats a home — attach files, add custom
+            Create a hub to give your chats a home. Attach files, add custom
             instructions, and let Omni answer from your own documents.
           </p>
           <CreateHubDialog triggerLabel="Create your first hub" />

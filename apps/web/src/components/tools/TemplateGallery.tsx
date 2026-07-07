@@ -1,7 +1,7 @@
 // Genspark-style template gallery that leads each generator hub. Category tab
 // pills filter a responsive grid of template cards; each card shows a mock
 // TemplatePreview and, on click, calls onUse(template) to seed the page's
-// generation form (or, for docs, navigate into the editor). Pure frontend —
+// generation form (or, for docs, navigate into the editor). Pure frontend:
 // no generation happens here.
 
 import { useState } from "react";

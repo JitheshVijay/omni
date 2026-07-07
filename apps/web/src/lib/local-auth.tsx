@@ -1,4 +1,4 @@
-// Local-mode auth stub. Omni v1 has no real auth — the API's onRequest hook
+// Local-mode auth stub. Omni v1 has no real auth, so the API's onRequest hook
 // injects a fixed LOCAL_USER_ID whenever the Bearer token is "local". This
 // provider keeps the exact interface shape of Flo101's useAuth() so use-api
 // (and anything else copied from Flo101) drops in unchanged: `user` object +

@@ -2,7 +2,7 @@
 // `plan_updated`, so this is a pure render of {id,title,status,note}[]. Status
 // drives the leading icon: pending (hollow), in_progress (spinner), done
 // (check), failed (x), skipped (dash + strike). It's meant to be pinned at the
-// top of the run view — the page decides stickiness.
+// top of the run view; the page decides stickiness.
 
 import { motion } from "motion/react";
 import {

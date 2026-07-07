@@ -1,7 +1,7 @@
 // The scrolling conversation. Renders persisted messages plus the in-flight
 // optimistic pair (pending user bubble + streaming assistant draft).
 // Auto-scroll stays pinned to the bottom while new content arrives, but
-// "escapes" as soon as the user scrolls up — a floating "jump to latest"
+// "escapes" as soon as the user scrolls up; a floating "jump to latest"
 // button brings them back. Assistant turns get a footer row: copy, model
 // chip, cost chip, and citation pills.
 
@@ -55,7 +55,7 @@ export function MessageList({
   const pinnedRef = useRef(true);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
 
-  // One read-aloud queue for the whole list — each assistant turn's Listen
+  // One read-aloud queue for the whole list; each assistant turn's Listen
   // button feeds its own text into it; the MiniPlayer docks bottom-right.
   const readAloud = useReadAloud();
 
@@ -106,7 +106,7 @@ export function MessageList({
                 Start the conversation
               </p>
               <p className="max-w-xs text-sm text-muted">
-                Ask anything — switch models mid-thread, attach files from Drive, or
+                Ask anything: switch models mid-thread, attach files from Drive, or
                 dictate with the mic.
               </p>
             </div>
@@ -360,7 +360,7 @@ function TurnCopyButton({ text }: { text: string }) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          /* clipboard blocked — no-op */
+          /* clipboard blocked; no-op */
         }
       }}
       className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-muted transition hover:bg-ink/5 hover:text-ink"

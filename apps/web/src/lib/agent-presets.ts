@@ -79,7 +79,7 @@ export function deletePreset(id: string): Promise<{ deleted: boolean }> {
   return authFetch<{ deleted: boolean }>(`/api/agent-presets/${id}`, { method: "DELETE" });
 }
 
-/** Launch a preset — starts a real agent run and returns its id. */
+/** Launch a preset: starts a real agent run and returns its id. */
 export function launchPreset(id: string, input?: string): Promise<{ run_id: string }> {
   return authFetch<{ run_id: string }>(`/api/agent-presets/${id}/launch`, {
     method: "POST",

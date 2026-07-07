@@ -1,9 +1,9 @@
-// SSE client for the workflow run stream — a trimmed cousin of
+// SSE client for the workflow run stream, a trimmed cousin of
 // lib/agent-stream.ts (same fetch + getReader/TextDecoder frame parser as
 // lib/chat/api.ts; the server's 2KB ":" pad and ": ping" heartbeats carry no
 // data line so they drop out). Workflow steps update in place and the server
 // replays every current step row on connect, so reconnects simply replay
-// from scratch and the consumer upserts steps by seq — no Last-Event-ID
+// from scratch and the consumer upserts steps by seq, so no Last-Event-ID
 // bookkeeping needed.
 
 import { API_BASE } from "@/lib/use-api";
@@ -87,7 +87,7 @@ export function streamWorkflowRun(opts: StreamWorkflowRunOptions): WorkflowRunSt
 
     const ctype = res.headers.get("content-type") ?? "";
     if (!res.ok || !res.body || !ctype.includes("text/event-stream")) {
-      // Hard error (404/500/…) — retrying just loops.
+      // Hard error (404/500/…). Retrying just loops.
       let message = `stream failed (${res.status})`;
       try {
         message = (await parseApiError(res)).message || message;
@@ -158,7 +158,7 @@ export function streamWorkflowRun(opts: StreamWorkflowRunOptions): WorkflowRunSt
       try {
         await connectOnce();
       } catch {
-        /* network error / abort — fall through to the reconnect decision */
+        /* network error / abort: fall through to the reconnect decision */
       }
       if (stopped || terminal) break;
       attempt += 1;

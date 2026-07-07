@@ -1,6 +1,6 @@
 // Syntax-highlighted code block for chat markdown. Uses react-syntax-
-// highlighter's PrismAsyncLight with a curated set of registered languages —
-// the FULL PrismAsync build bundles every Prism grammar (8000+ modules) and
+// highlighter's PrismAsyncLight with a curated set of registered languages.
+// The FULL PrismAsync build bundles every Prism grammar (8000+ modules) and
 // blows up build memory, so we register only the common ones. The theme is
 // LOCKED dark regardless of the app's light/dark mode (deliberate:
 // IDE-style token contrast in both themes). A header shows the detected
@@ -129,7 +129,7 @@ function InlineCopyButton({ text }: { text: string }) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         } catch {
-          /* clipboard blocked (insecure context / permissions) — no-op */
+          /* clipboard blocked (insecure context / permissions); no-op */
         }
       }}
       className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium text-white/50 transition-colors hover:bg-white/10 hover:text-white"

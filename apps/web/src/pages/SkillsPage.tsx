@@ -1,10 +1,10 @@
-// /skills — the Skills library marketplace: "reusable AI tools for specific
+// /skills, the Skills library marketplace: "reusable AI tools for specific
 // jobs". A centered hero, a New Skill create flow, Community / My Own tabs,
 // Role + Output filter chips, a search box, and a responsive Discover grid of
 // SkillCards.
 //
 // Add & Use handoff: every skill resolves its prompt via POST /api/skills/:id/
-// run, then hands the resolved prompt off to a BRAND-NEW chat thread — the
+// run, then hands the resolved prompt off to a BRAND-NEW chat thread, the
 // same handoff ChatIndexPage uses (POST /api/chat/threads, then navigate to
 // /chat/:id with router state { initialMessage }). ChatThreadPage sends it on
 // mount. This is the simplest robust v1: it works identically for every skill
@@ -338,7 +338,7 @@ function EmptyState({ tab, onCreate }: { tab: Tab; onCreate: () => void }) {
       <p className="max-w-xs text-xs text-muted">
         {tab === "mine"
           ? "Save a reusable prompt as a skill and it will show up here, ready to run in one click."
-          : "Try clearing a filter or your search — or create your own skill."}
+          : "Try clearing a filter or your search, or create your own skill."}
       </p>
       {tab === "mine" && (
         <Button size="sm" onClick={onCreate} className="mt-1">
