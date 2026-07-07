@@ -58,8 +58,10 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "memory", label: "Memory" },
 ];
 
-interface HubPayload {
-  hub: Hub;
+// GET /api/hubs/:id returns a FLAT detail payload — the hub's own fields plus
+// its files and threads (matching the app's flat detail-payload convention,
+// e.g. thread detail is {...thread, messages}).
+interface HubPayload extends Hub {
   files: DriveFile[];
   threads: ChatThread[];
 }
@@ -93,7 +95,7 @@ export default function HubDetailPage() {
     );
   }
 
-  const hub = data?.hub ?? null;
+  const hub = data ?? null;
   const files = data?.files ?? [];
   const threads = data?.threads ?? [];
 
