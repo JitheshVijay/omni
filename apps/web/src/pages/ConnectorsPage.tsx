@@ -44,15 +44,7 @@ import { Eyebrow } from "@/components/brand/Eyebrow";
 import { HeroBand } from "@/components/brand/HeroBand";
 import { WordmarkBanner } from "@/components/brand/WordmarkBanner";
 import { cn } from "@/lib/utils";
-
-// A short monogram for the avatar tile: initials of the first two words, or the
-// first two letters for a single-word name. "Google Drive" → "GD", "Slack" → "S".
-function monogram(name: string): string {
-  const words = name.replace(/[()]/g, "").trim().split(/\s+/).filter(Boolean);
-  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
-  const w = words[0] ?? "?";
-  return w.slice(0, 2).toUpperCase();
-}
+import { ConnectorGlyph } from "@/lib/connector-icons";
 
 function statusBadge(status: ConnectorStatus) {
   switch (status) {
@@ -298,8 +290,8 @@ function ConnectorCard({
       className="flex flex-col rounded-lg border border-line bg-surface2 p-5 transition hover:border-accent/40"
     >
       <div className="flex items-start justify-between">
-        <div className="grid size-11 place-items-center rounded-lg bg-ink font-display text-sm font-semibold text-surface">
-          {monogram(connector.name)}
+        <div className="grid size-11 place-items-center rounded-lg border border-line bg-white">
+          <ConnectorGlyph toolkit={connector.toolkit} name={connector.name} />
         </div>
         {configured && badge && (
           <Badge variant={badge.variant}>
