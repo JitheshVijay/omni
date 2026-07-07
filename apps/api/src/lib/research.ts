@@ -215,6 +215,10 @@ async function streamReport(
       messages,
       stream: true,
       max_tokens: 4000,
+      // Disable extended thinking; otherwise the report budget is spent on
+      // reasoning tokens and the synthesis comes back empty after all the
+      // (already-paid-for) search + fetch work.
+      reasoning: { enabled: false },
       ...providerRoutingForCache(model),
     },
     { ...LLM_REQUEST_OPTS, signal: ctx.signal },

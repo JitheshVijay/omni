@@ -331,6 +331,9 @@ export const WORKFLOW_RUN_TERMINAL = new Set(["completed", "failed", "cancelled"
 const PREVIEW_CHARS = 240;
 const AGENT_POLL_MS = 2_000;
 const AGENT_CAP_MS = 10 * 60_000;
+// A single generate node must not run unbounded — a stalled LLM/image/TTS
+// provider would otherwise wedge the whole workflow run at 'running' forever.
+const GEN_CAP_MS = 8 * 60_000;
 const READ_URL_MAX_CHARS = 12_000;
 const AGENT_TEXT_MAX_CHARS = 4_000;
 
@@ -447,13 +450,16 @@ async function runGenerateNode(
   }
   const usageBefore = getLastUsage();
   const ac = new AbortController();
-  const artifact = await gen.run(parsed.data, {
-    userId: ctx.userId,
-    signal: ac.signal,
-    emit: (e) => {
-      if (e.type === "status") ctx.onProgress(e.label);
-    },
-  });
+  const timer = setTimeout(() => ac.abort(), GEN_CAP_MS);
+  const artifact = await gen
+    .run(parsed.data, {
+      userId: ctx.userId,
+      signal: ac.signal,
+      emit: (e) => {
+        if (e.type === "status") ctx.onProgress(e.label);
+      },
+    })
+    .finally(() => clearTimeout(timer));
   // Best-effort cost: getLastUsage() reflects the most recent LLM call; only
   // count it when the generator actually produced a new usage record.
   const usageAfter = getLastUsage();
@@ -610,6 +616,7 @@ export async function executeWorkflowRun(
   let firstError: string | null = null;
   let seq = 0;
 
+  try {
   for (const nodeId of order) {
     const node = nodeById.get(nodeId)!;
     seq += 1;
@@ -694,4 +701,11 @@ export async function executeWorkflowRun(
   }
 
   finishRun(firstError ? "failed" : "completed", firstError, cost);
+  } catch (err) {
+    // Any throw outside per-node handling (DB write, publish, unexpected) must
+    // still terminate the run; otherwise it stays 'running' forever — nothing
+    // reclaims a workflow_run during the process lifetime.
+    logger.error({ err, runId }, "[workflow] run crashed unexpectedly");
+    finishRun("failed", (err as Error).message || "Workflow run crashed", cost);
+  }
 }

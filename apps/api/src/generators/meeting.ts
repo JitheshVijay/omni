@@ -130,6 +130,9 @@ async function streamMarkdown(opts: {
       messages,
       stream: true,
       max_tokens: 3500,
+      // Disable extended thinking so the whole budget goes to the notes, not
+      // to reasoning tokens (which would stream zero content -> "empty notes").
+      reasoning: { enabled: false },
       ...providerRoutingForCache(opts.model),
     },
     { ...LLM_REQUEST_OPTS, signal: ctx.signal },

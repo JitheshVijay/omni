@@ -682,9 +682,9 @@ async function runSlides(input: SlidesInput, ctx: GenCtx): Promise<ArtifactSumma
     const archetype = normalizeArchetype(o.archetype);
     ctx.emit({ type: "status", label: `Designing slide ${i + 1}/${total}` });
     slides.push(await fillSlide(o, archetype, deckTitle, model, ctx));
+    saveDeckContent(deckId, { theme, slides }); // persist each slide as it lands
     ctx.emit({ type: "delta", channel: "slide_done", data: JSON.stringify({ index: i }) });
   }
-  saveDeckContent(deckId, { theme, slides });
 
   // ── Pass 2b: generate art for image slides, re-saving the deck after each. ──
   for (let i = 0; i < total; i++) {

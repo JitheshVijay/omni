@@ -77,11 +77,22 @@ async function guardedFetch(
   init: RequestInit = {},
 ): Promise<Response> {
   const signal = AbortSignal.any([ctx.signal, AbortSignal.timeout(timeoutMs)]);
-  return fetch(url, {
-    ...init,
-    signal,
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; OmniBot/1.0)", ...(init.headers ?? {}) },
-  });
+  const headers = { "User-Agent": "Mozilla/5.0 (compatible; OmniBot/1.0)", ...(init.headers ?? {}) };
+  // Follow redirects MANUALLY, re-running the SSRF gate on the initial URL and
+  // every redirect target. fetch's default redirect:"follow" would silently
+  // chase a 3xx to an internal address (169.254.169.254, 127.0.0.1, the local
+  // API port), defeating a guard that only ran on the first URL.
+  let current = url;
+  for (let hop = 0; hop <= 5; hop++) {
+    await assertSafeUrl(current);
+    const res = await fetch(current, { ...init, signal, headers, redirect: "manual" });
+    if (res.status < 300 || res.status >= 400) return res;
+    const loc = res.headers.get("location");
+    if (!loc) return res;
+    void res.body?.cancel().catch(() => {});
+    current = new URL(loc, current).toString();
+  }
+  throw new Error("too many redirects");
 }
 
 // ─── update_plan (intercepted) ──────────────────────────────────────

@@ -19,7 +19,7 @@ import {
 } from "@omni/sdk";
 import { authMiddleware } from "./middleware/auth.js";
 import { startDriveIndexLoop } from "./lib/drive-index.js";
-import { startAgentRecoverySweep } from "./agent/recovery.js";
+import { startAgentRecoverySweep, startWorkflowRecoverySweep } from "./agent/recovery.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { startWorkflowCron } from "./lib/workflow-cron.js";
 import { secretaryRoutes } from "./routes/secretary.js";
@@ -269,7 +269,9 @@ async function main() {
   startAgentRecoverySweep();
   startWorkspaceSweep();
 
-  // Workflows: rehydrate cron schedules (missed-while-closed runs are missed).
+  // Workflows: fail any run left mid-flight by a restart, then rehydrate cron
+  // schedules (missed-while-closed runs are missed).
+  startWorkflowRecoverySweep();
   startWorkflowCron();
 
   // MCP host: connect to configured MCP servers so their tools become agent tools.

@@ -5,7 +5,17 @@
 import { existsSync } from "node:fs";
 import { mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { DATA_DIR, logger } from "@omni/sdk";
+import { DATA_DIR, logger, one } from "@omni/sdk";
+
+// Runs in these states may still resume and read their workspace files, so the
+// sweep must never delete their dirs regardless of age.
+const RESUMABLE_RUN_STATUSES = new Set([
+  "queued",
+  "planning",
+  "running",
+  "awaiting_confirmation",
+  "paused",
+]);
 
 export const SPILL_THRESHOLD_BYTES = 64 * 1024;
 
@@ -90,6 +100,14 @@ export async function sweepOldRunDirs(maxAgeMs = SWEEP_MAX_AGE_MS): Promise<numb
       if (!e.isDirectory()) continue;
       const dir = join(base, e.name);
       try {
+        // Skip runs that can still resume (suspended/active) — deleting their
+        // workspace would drop run_code files + spilled tool results a resume
+        // needs. Orphaned dirs (no run row) and terminal runs are fair game.
+        const row = one<{ status: string }>(
+          "SELECT status FROM agent_runs WHERE id = ?",
+          e.name,
+        );
+        if (row && RESUMABLE_RUN_STATUSES.has(row.status)) continue;
         const s = await stat(dir);
         if (s.mtimeMs < cutoff) {
           await rm(dir, { recursive: true, force: true });

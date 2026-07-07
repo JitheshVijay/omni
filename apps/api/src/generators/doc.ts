@@ -169,6 +169,10 @@ async function streamMarkdown(opts: {
       messages,
       stream: true,
       max_tokens: opts.maxTokens,
+      // CRITICAL: disable extended thinking. A reasoning-enabled Claude model
+      // spends the whole (capped) max_tokens budget "thinking" and streams zero
+      // content deltas, surfacing as "Model produced an empty document".
+      reasoning: { enabled: false },
       ...providerRoutingForCache(opts.model),
     },
     { ...LLM_REQUEST_OPTS, signal: ctx.signal },
