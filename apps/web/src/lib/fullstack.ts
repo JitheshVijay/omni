@@ -4,6 +4,8 @@
 // fullstack-specific event union.
 
 import { streamSse } from "@/lib/generate";
+import { authFetch, authFetchRaw } from "@/lib/use-api";
+import { parseApiError } from "@/lib/api-error";
 
 // Lifecycle of a build. The five in-flight states drive the progress list;
 // the three terminal states decide what the viewer renders.
@@ -136,4 +138,43 @@ export function langForPath(path: string): string {
     rb: "ruby",
   };
   return map[ext] ?? "text";
+}
+
+// Sanitize a project name into a bare (extension-less) download filename.
+function safeZipName(name: string): string {
+  const base = (name || "app").slice(0, 60).replace(/[^\w\s-]/g, "").trim();
+  return base || "app";
+}
+
+/** Download the project's source as a .zip.
+ *  GET /api/fullstack/projects/:id/export requires the auth Bearer, so a plain
+ *  <a href> can't reach it. We fetch it as a blob (authFetchRaw attaches the
+ *  header), then synthesize a temporary <a download> click. The server sets the
+ *  filename via Content-Disposition; we still pass a sensible download attr. */
+export async function exportProjectZip(id: string, name: string): Promise<void> {
+  const res = await authFetchRaw(`/api/fullstack/projects/${id}/export`);
+  if (!res.ok) throw await parseApiError(res);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${safeZipName(name)}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/** Push the project to GitHub and hand back a Render deploy link.
+ *  POST /api/fullstack/projects/:id/deploy. authFetch unwraps the success
+ *  envelope; on a failure envelope it throws a ParsedApiError carrying the
+ *  `code` ("github_unconfigured" | "deploy_failed" | "empty") and message, so
+ *  we let it propagate for the page to branch on. */
+export async function deployProject(
+  id: string,
+): Promise<{ repoUrl: string; renderDeployUrl: string; branch: string }> {
+  return authFetch<{ repoUrl: string; renderDeployUrl: string; branch: string }>(
+    `/api/fullstack/projects/${id}/deploy`,
+    { method: "POST" },
+  );
 }

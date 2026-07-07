@@ -13,27 +13,39 @@ import {
   ArrowLeft,
   Boxes,
   Code2,
+  Download,
   ExternalLink,
   Eye,
   FileCode,
   KeyRound,
   Loader2,
+  Rocket,
   TriangleAlert,
   WandSparkles,
 } from "lucide-react";
 import { useApi, invalidateApi } from "@/lib/use-api";
 import {
   STATUS_META,
+  deployProject,
+  exportProjectZip,
   isBuildingStatus,
   langForPath,
   streamFullstackEdit,
   type FullstackProjectDetail,
 } from "@/lib/fullstack";
+import type { ParsedApiError } from "@/lib/api-error";
 import { cn, timeAgo } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CodeBlock } from "@/components/CodeBlock";
 
 type Tab = "preview" | "code";
@@ -62,6 +74,21 @@ export default function FullstackViewPage() {
   const [previewNonce, setPreviewNonce] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
 
+  // Export / deploy actions. `deployResult` opens the success dialog;
+  // `actionError` is an inline note shared by both actions (its `code` lets
+  // the deploy path show the "github_unconfigured" friendly note).
+  const [exporting, setExporting] = useState(false);
+  const [deploying, setDeploying] = useState(false);
+  const [deployResult, setDeployResult] = useState<{
+    repoUrl: string;
+    renderDeployUrl: string;
+    branch: string;
+  } | null>(null);
+  const [actionError, setActionError] = useState<{
+    message: string;
+    code: string | null;
+  } | null>(null);
+
   useEffect(() => () => abortRef.current?.abort(), []);
 
   // Reset the bar when the route swaps to a different project id.
@@ -70,6 +97,42 @@ export default function FullstackViewPage() {
     lastIdRef.current = id;
     if (instruction) setInstruction("");
     if (editError) setEditError(null);
+    if (actionError) setActionError(null);
+    if (deployResult) setDeployResult(null);
+  }
+
+  async function exportZip() {
+    if (!id || exporting) return;
+    setExporting(true);
+    setActionError(null);
+    try {
+      await exportProjectZip(id, project?.name || "app");
+    } catch (err) {
+      const parsed = err as Partial<ParsedApiError> | undefined;
+      setActionError({ message: parsed?.message || "Export failed.", code: null });
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function deploy() {
+    if (!id || deploying) return;
+    setDeploying(true);
+    setActionError(null);
+    setDeployResult(null);
+    try {
+      setDeployResult(await deployProject(id));
+    } catch (err) {
+      // authFetch throws a ParsedApiError (plain object, not an Error), so read
+      // message/code off it directly; fall back for a bare network error.
+      const parsed = err as Partial<ParsedApiError> | undefined;
+      setActionError({
+        message: parsed?.message || "Deploy failed.",
+        code: parsed?.code ?? null,
+      });
+    } finally {
+      setDeploying(false);
+    }
   }
 
   async function applyEdit() {
@@ -138,6 +201,12 @@ export default function FullstackViewPage() {
 
   const meta = STATUS_META[project.status] ?? STATUS_META.queued;
   const building = isBuildingStatus(project.status);
+  // The app has generated code once it reaches a terminal status; export +
+  // deploy act on that code, so gate them on it (not mid-build).
+  const hasCode =
+    project.status === "ready" ||
+    project.status === "no_sandbox" ||
+    project.status === "failed";
   const files = project.files ?? [];
   const selected = files.find((f) => f.path === selectedPath) ?? files[0] ?? null;
 
@@ -179,17 +248,60 @@ export default function FullstackViewPage() {
           </TabButton>
         </div>
 
-        {project.status === "ready" && project.preview_url && (
-          <div className="ml-auto flex items-center gap-2">
-            <Button variant="secondary" size="sm" asChild>
-              <a href={project.preview_url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink />
-                <span className="hidden sm:inline">Open</span>
-              </a>
+        {hasCode && (
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            {project.status === "ready" && project.preview_url && (
+              <Button variant="secondary" size="sm" asChild>
+                <a href={project.preview_url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink />
+                  <span className="hidden sm:inline">Open</span>
+                </a>
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => void exportZip()}
+              disabled={exporting}
+            >
+              {exporting ? <Loader2 className="animate-spin" /> : <Download />}
+              <span className="hidden sm:inline">Export .zip</span>
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => void deploy()}
+              disabled={deploying}
+            >
+              {deploying ? <Loader2 className="animate-spin" /> : <Rocket />}
+              <span className="hidden sm:inline">Deploy</span>
             </Button>
           </div>
         )}
       </div>
+
+      {/* Deploy / export error note (kept usable: buttons stay enabled). */}
+      {actionError &&
+        (actionError.code === "github_unconfigured" ? (
+          <div className="mb-3 flex items-start gap-2 rounded-lg border border-line bg-surface2 px-3 py-2 text-sm text-muted">
+            <KeyRound className="mt-0.5 size-4 shrink-0" />
+            <span>
+              Add{" "}
+              <code className="rounded bg-ink/5 px-1 py-0.5 font-mono text-[12px]">
+                GITHUB_TOKEN
+              </code>{" "}
+              (repo scope) to{" "}
+              <code className="rounded bg-ink/5 px-1 py-0.5 font-mono text-[12px]">
+                ~/omni/.env
+              </code>{" "}
+              and restart the API to deploy, or use Export .zip.
+            </span>
+          </div>
+        ) : (
+          <p className="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/5 px-3 py-2 text-sm text-rose-600 dark:text-rose-400">
+            {actionError.message}
+          </p>
+        ))}
 
       {/* Body */}
       <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-line bg-surface2">
@@ -243,6 +355,54 @@ export default function FullstackViewPage() {
           )}
         </>
       )}
+
+      {/* Deploy result: repo link + a prominent Deploy to Render hand-off. */}
+      <Dialog
+        open={deployResult !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeployResult(null);
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <div className="mb-1 grid size-10 place-items-center rounded-lg bg-ink text-surface">
+              <Rocket className="size-5" />
+            </div>
+            <DialogTitle className="font-display">Pushed to GitHub</DialogTitle>
+            <DialogDescription>
+              Pushed to GitHub. Click Deploy to Render, then pick your account, it
+              reads render.yaml.
+            </DialogDescription>
+          </DialogHeader>
+          {deployResult && (
+            <div className="flex flex-col gap-3">
+              <a
+                href={deployResult.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink transition hover:bg-surface3"
+              >
+                <Code2 className="size-4 shrink-0 text-muted" />
+                <span className="min-w-0 flex-1 truncate">View repo</span>
+                <span className="shrink-0 font-mono text-[11px] text-muted">
+                  {deployResult.branch}
+                </span>
+                <ExternalLink className="size-3.5 shrink-0 text-muted" />
+              </a>
+              <Button asChild className="w-full">
+                <a
+                  href={deployResult.renderDeployUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Rocket />
+                  Deploy to Render
+                </a>
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
