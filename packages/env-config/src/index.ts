@@ -76,6 +76,12 @@ const envSchema = z.object({
   APIFY_API_KEY: z.string().optional(),
   APIFY_LINKEDIN_ACTOR: z.string().default("supreme_coder~linkedin-profile-scraper"),
 
+  // E2B — cloud sandboxes for the full-stack App Builder (run generated apps in
+  // a managed VM with a public preview URL). No-op until set; sandboxes cost
+  // per-use. E2B_TEMPLATE overrides the base image (must have Node).
+  E2B_API_KEY: z.string().optional(),
+  E2B_TEMPLATE: z.string().optional(),
+
   // ── LangSmith tracing (off by default) ─────────────────────────────
   LANGSMITH_TRACING: z.string().optional(),
   LANGSMITH_API_KEY: z.string().optional(),

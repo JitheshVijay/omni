@@ -32,6 +32,7 @@ import { mcpRoutes } from "./routes/mcp.js";
 import { startMcp, stopMcp } from "./agent/tools/mcp.js";
 import { researchRoutes } from "./routes/research.js";
 import { agentPresetRoutes } from "./routes/agent-presets.js";
+import { fullstackRoutes } from "./routes/fullstack.js";
 import { seedAgentPresets } from "./lib/agent-presets-seed.js";
 import { seedBuiltinSkills } from "./lib/skills-seed.js";
 import { ensureSearchVecIndex, reindexAll } from "./lib/search-index.js";
@@ -252,6 +253,7 @@ async function main() {
   await app.register(mcpRoutes);
   await app.register(researchRoutes);
   await app.register(agentPresetRoutes);
+  await app.register(fullstackRoutes);
 
   // ── Start ──
   const port = parseInt(env.PORT, 10);

@@ -1,0 +1,60 @@
+// Full-stack App Builder routes: generate a multi-file app, run it in an E2B
+// sandbox, and stream progress. Falls back to codegen-only (status 'no_sandbox')
+// when E2B_API_KEY is absent — the request still succeeds with the saved code.
+import type { FastifyInstance } from "fastify";
+import { z } from "zod";
+import { openSSE } from "../lib/sse.js";
+import type { AuthenticatedRequest } from "../middleware/auth.js";
+import {
+  buildApp,
+  createProjectRow,
+  getProject,
+  listProjects,
+  type BuildEvent,
+} from "../lib/app-builder.js";
+
+const BuildSchema = z.object({ prompt: z.string().min(1).max(4000) });
+
+export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
+  app.get("/api/fullstack/projects", async (request) => {
+    return { success: true, data: { projects: listProjects((request as AuthenticatedRequest).userId) } };
+  });
+
+  app.get("/api/fullstack/projects/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const row = getProject((request as AuthenticatedRequest).userId, id);
+    if (!row) {
+      return reply
+        .status(404)
+        .send({ success: false, error: "Project not found", code: "not_found" });
+    }
+    let files: unknown;
+    try {
+      files = JSON.parse(row.files);
+    } catch {
+      files = [];
+    }
+    return { success: true, data: { ...row, files } };
+  });
+
+  // SSE: create a project and stream the build. Validate before hijacking so a
+  // bad body still gets a plain JSON 400.
+  app.post("/api/fullstack/build", async (request, reply) => {
+    const parsed = BuildSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ success: false, error: parsed.error.issues });
+    }
+    const project = createProjectRow((request as AuthenticatedRequest).userId, parsed.data.prompt);
+    const sse = openSSE(request, reply);
+    const ac = new AbortController();
+    sse.onClose(() => ac.abort());
+    // Tell the client the id immediately so it can navigate/poll if it wants.
+    sse.send({ type: "created", id: project.id });
+    try {
+      await buildApp(project.id, (request as AuthenticatedRequest).userId, (e: BuildEvent) => sse.send(e), ac.signal);
+    } catch (err) {
+      sse.send({ type: "error", message: (err as Error).message });
+    }
+    sse.close();
+  });
+}
