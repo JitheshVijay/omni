@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   AudioLines,
+  Boxes,
   Code2,
   FileText,
   Palette,
@@ -82,6 +83,13 @@ export default function ToolsPage() {
           icon={Code2}
           title="AI Developer"
           text="Describe an app or page and get a complete, working single-file web app. Live sandboxed preview with the code in reach."
+          index={2}
+        />
+        <ToolCard
+          to="/tools/fullstack"
+          icon={Boxes}
+          title="Full-Stack App Builder"
+          text="Describe a full app, frontend, backend, and database, and run it live in a cloud sandbox."
           index={2}
         />
         <ToolCard

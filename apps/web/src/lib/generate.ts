@@ -50,17 +50,24 @@ export class GenerateRequestError extends Error implements ParsedApiError {
   }
 }
 
-interface StreamSseOptions {
+export interface StreamSseOptions<E> {
   path: string;
   body: unknown;
   signal?: AbortSignal;
-  onEvent: (evt: GenerateEvent) => void;
+  onEvent: (evt: E) => void;
 }
 
 // Resolves when the stream closes (after artifact/error events have been
 // delivered). Throws GenerateRequestError on a non-SSE response (400/404),
-// and rethrows AbortError if the caller cancels.
-async function streamSse({ path, body, signal, onEvent }: StreamSseOptions): Promise<void> {
+// and rethrows AbortError if the caller cancels. Generic over the event
+// shape so other SSE endpoints (e.g. the full-stack builder) can reuse the
+// exact same wire mechanics with their own event union.
+export async function streamSse<E = GenerateEvent>({
+  path,
+  body,
+  signal,
+  onEvent,
+}: StreamSseOptions<E>): Promise<void> {
   const token = await getLocalAccessToken();
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
@@ -94,7 +101,7 @@ async function streamSse({ path, body, signal, onEvent }: StreamSseOptions): Pro
         const line = frame.split("\n").find((l) => l.startsWith("data:"));
         if (!line) continue;
         try {
-          onEvent(JSON.parse(line.slice(5).trim()) as GenerateEvent);
+          onEvent(JSON.parse(line.slice(5).trim()) as E);
         } catch {
           // skip malformed frames
         }
