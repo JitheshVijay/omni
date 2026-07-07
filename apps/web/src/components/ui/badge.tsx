@@ -4,13 +4,15 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { IndexStatus } from "@/lib/types";
 
+// Hairline, crisp-cornered, uppercase-mono tags — the brand's technical label
+// voice. Semantic colour variants are retained for the Drive/Hub index states.
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-4 transition-colors",
+  "inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase leading-4 tracking-[0.05em] transition-colors",
   {
     variants: {
       variant: {
         default: "border-transparent bg-accent/10 text-accent",
-        secondary: "border-line bg-surface2 text-muted",
+        secondary: "border-line bg-surface3 text-muted",
         outline: "border-line bg-transparent text-muted",
         success:
           "border-transparent bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",

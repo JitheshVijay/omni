@@ -1,13 +1,14 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// shadcn Card, themed to Omni tokens (border-line / bg-surface2 / text-ink).
+// Together-inspired Card: white surface, hairline border, crisp corners, and
+// NO shadow — elevation comes from surface contrast and the hairline, not blur.
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-line bg-surface2 text-ink shadow-sm",
+        "rounded-lg border border-line bg-surface text-ink",
         className,
       )}
       {...props}

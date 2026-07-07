@@ -11,35 +11,75 @@
    (`bg-surface/60`, see tailwind.config.ts). Same token names in both
    themes so every className works in either.
 
-   The Omni look is modeled on Genspark: a near-black canvas, barely-there
-   borders, big rounded surfaces, and colour carried by the tool icons +
-   gradient heading accents rather than a single loud brand hue. Dark is the
-   default (see theme.tsx); light is a refined toggle alternative.
+   The Omni look adopts a Together-AI-inspired language: a bright WHITE canvas
+   as the default product surface, alternating with near-black (#010120) hero
+   bands; a single three-stop brand gradient (orange→magenta→periwinkle) as the
+   only decorative chrome; crisp ~4px radii with hairline borders instead of
+   shadows; and a two-face type system (Inter display + JetBrains uppercase mono
+   eyebrows/labels). Light is the default (see theme.tsx); dark is the toggle.
 
-   surface  = page canvas
-   surface2 = cards / panels / sidebar
-   surface3 = inputs, hovers, lifted chips
-   accent   = links, focus, streaming, small highlights (indigo-blue) */
+   surface  = page canvas (white)
+   surface2 = cards / panels / sidebar (faint off-white)
+   surface3 = inputs, hovers, rails, table headers (hairline soft)
+   ink      = primary text (near-black); muted = secondary text
+   accent   = links, focus, streaming (brand magenta)
+   Brand + dark tokens (shared across themes) drive gradient chrome and the
+   near-black hero bands regardless of the active light/dark theme. */
 :root {
   --color-surface: 255 255 255;   /* page bg — clean white */
-  --color-surface2: 250 250 251;  /* cards — faint off-white */
-  --color-surface3: 244 244 246;  /* inputs / hover */
-  --color-ink: 24 24 27;          /* primary text — zinc-900 */
-  --color-muted: 113 113 122;     /* secondary text — zinc-500 */
-  --color-accent: 99 102 241;     /* indigo-500 */
-  --color-accent2: 139 92 246;    /* violet-500 — gradients */
-  --color-line: 231 231 234;      /* subtle border */
+  --color-surface2: 250 250 250;  /* cards — faint off-white */
+  --color-surface3: 235 235 235;  /* inputs / hover / rails — #ebebeb */
+  --color-ink: 0 0 0;             /* primary text — pure black */
+  --color-muted: 149 148 148;     /* secondary text — #959494 */
+  --color-accent: 214 25 168;     /* brand magenta (text-safe on white) */
+  --color-accent2: 189 187 255;   /* brand periwinkle */
+  --color-line: 224 224 224;      /* hairline border — #e0e0e0 */
+
+  /* Brand + dark surfaces — identical in both themes so gradient chrome and
+     dark hero bands are stable when nested on either canvas. */
+  --canvas-dark: 1 1 32;          /* #010120 — hero / research band */
+  --dark-soft: 49 54 65;          /* #313641 — lifted fill on dark */
+  --dark-line: 38 38 58;          /* #26263a — hairline on dark */
+  --brand-orange: 252 76 2;       /* #fc4c02 */
+  --brand-magenta: 239 44 193;    /* #ef2cc1 */
+  --brand-periwinkle: 189 187 255;/* #bdbbff */
+  --brand-mint: 200 246 249;      /* #c8f6f9 */
 }
 
 .dark {
-  --color-surface: 9 9 11;        /* #09090b — near-black canvas */
-  --color-surface2: 22 22 26;     /* #16161a — cards / rail */
-  --color-surface3: 32 32 37;     /* #202025 — inputs / hover / lifted */
-  --color-ink: 244 244 246;       /* near-white */
-  --color-muted: 138 138 148;     /* balanced gray */
-  --color-accent: 129 140 248;    /* indigo-400 — brighter on black */
-  --color-accent2: 167 139 250;   /* violet-400 */
-  --color-line: 38 38 44;         /* #26262c — barely-there border */
+  --color-surface: 1 1 32;        /* #010120 — near-black navy canvas */
+  --color-surface2: 12 12 34;     /* slightly lifted card */
+  --color-surface3: 49 54 65;     /* #313641 — inputs / hover / lifted */
+  --color-ink: 255 255 255;       /* white */
+  --color-muted: 149 148 148;     /* #959494 */
+  --color-accent: 239 44 193;     /* brand magenta — vivid on navy */
+  --color-accent2: 189 187 255;   /* brand periwinkle */
+  --color-line: 38 38 58;         /* #26263a — hairline on dark */
+}
+
+/* A local dark scope: any element (e.g. a hero band on a white page) that sets
+   these vars flips ALL token-based children — cards, muted text, hairlines —
+   without hardcoding, so a dark band nests cleanly inside a light page. */
+.band-dark {
+  --color-surface: 1 1 32;
+  --color-surface2: 12 12 34;
+  --color-surface3: 49 54 65;
+  --color-ink: 255 255 255;
+  --color-muted: 156 156 170;
+  --color-line: 38 38 58;
+  background: rgb(var(--color-surface));
+  color: rgb(var(--color-ink));
+}
+/* The inverse — a white band nested inside dark mode (doc / preview surfaces). */
+.band-light {
+  --color-surface: 255 255 255;
+  --color-surface2: 250 250 250;
+  --color-surface3: 235 235 235;
+  --color-ink: 0 0 0;
+  --color-muted: 149 148 148;
+  --color-line: 224 224 224;
+  background: rgb(var(--color-surface));
+  color: rgb(var(--color-ink));
 }
 
 html,
@@ -60,23 +100,60 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
+  /* The Together display face reads slightly compressed — a hair of negative
+     tracking on body copy lands closer to that "poured-on-the-page" feel. */
+  letter-spacing: -0.011em;
 }
 
 ::selection {
-  background: rgb(var(--color-accent) / 0.25);
+  background: rgb(var(--color-accent) / 0.22);
 }
 
-/* Genspark-style gradient accent word inside a heading
-   (e.g. "What would you like to <span class='grad-word'>build</span>?"). */
+/* The single piece of brand chrome: a three-stop gradient accent word inside a
+   heading (e.g. "What can I help you <span class='grad-word'>build</span>?").
+   Orange → magenta → periwinkle, in fixed order — never recolour or reorder. */
 .grad-word {
   background: linear-gradient(
     100deg,
-    rgb(var(--color-accent)),
-    rgb(var(--color-accent2))
+    rgb(var(--brand-orange)),
+    rgb(var(--brand-magenta)) 52%,
+    rgb(var(--brand-periwinkle))
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Uppercase mono eyebrow / label — the brand's technical voice. Section
+   headers, table-header cells, stat labels, "NEW" tags all ride this. */
+.eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: rgb(var(--color-muted));
+}
+
+/* The brand gradient as a fill (hero ribbon / atmospheric blob), not clipped
+   to text. Used behind dark hero bands as the only decorative depth. */
+.brand-ribbon {
+  background: linear-gradient(
+    120deg,
+    rgb(var(--brand-orange)),
+    rgb(var(--brand-magenta)) 50%,
+    rgb(var(--brand-periwinkle))
+  );
+}
+
+/* Giant terminal wordmark — tinted toward the hairline so it reads as a faint
+   stencil sign-off, never a heavy footer title. */
+.wordmark {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 0.78;
+  letter-spacing: -0.05em;
 }
 
 /* ── Thin scrollbar — webkit + Firefox. Transparent track, subtle thumb
@@ -172,8 +249,9 @@ body {
 .omni-prose h2,
 .omni-prose h3,
 .omni-prose h4 {
-  font-family: "Sora", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   font-weight: 600;
+  letter-spacing: -0.02em;
   color: rgb(var(--color-ink));
   margin: 1.1em 0 0.45em;
   line-height: 1.3;
@@ -298,8 +376,9 @@ body {
 .omni-doc-shell .ProseMirror h1,
 .omni-doc-shell .ProseMirror h2,
 .omni-doc-shell .ProseMirror h3 {
-  font-family: "Sora", "Inter", system-ui, sans-serif;
-  letter-spacing: -0.015em;
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.022em;
 }
 .omni-doc-shell .ProseMirror h1 {
   font-size: 1.875rem;
