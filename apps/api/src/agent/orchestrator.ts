@@ -301,6 +301,11 @@ function buildSystemPrompt(run: RunRow): string {
       parts.push(hubParts.join("\n"));
     }
   }
+  if (run.interactive === 0) {
+    parts.push(
+      "UNATTENDED MODE: You are running as an automated workflow step. There is no user available to answer questions, and the ask_user tool is unavailable. If the goal is ambiguous or details are missing, state the single most reasonable assumption in one line and proceed. Never stop to ask; always produce a best-effort final result from what you can gather.",
+    );
+  }
   return parts.join("\n\n");
 }
 
@@ -448,6 +453,17 @@ async function drive(
     emit: (evt) => publish(runId, evt as AgentEvent),
   };
 
+  // Unattended (workflow) runs have no user to answer, so drop ask_user; the
+  // system prompt tells the model to assume-and-proceed instead of suspending.
+  const toolMap = await getToolMapForUser(run.user_id);
+  let toolSpecs = await getToolSpecsForUser(run.user_id);
+  if (run.interactive === 0) {
+    toolMap.delete("ask_user");
+    toolSpecs = toolSpecs.filter(
+      (s) => (s as { function?: { name?: string } }).function?.name !== "ask_user",
+    );
+  }
+
   const state: LoopState = {
     runId,
     userId: run.user_id,
@@ -456,8 +472,8 @@ async function drive(
     budget: run.budget_usd,
     signal: controller.signal,
     baseCtx,
-    toolMap: await getToolMapForUser(run.user_id),
-    toolSpecs: await getToolSpecsForUser(run.user_id),
+    toolMap,
+    toolSpecs,
     messages,
     iter: startIter,
     budgetWarned: false,

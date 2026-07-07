@@ -107,6 +107,52 @@ test("workflow: create -> run chain (search -> doc) -> steps + artifact", async 
   await request.delete(`/api/workflows/${wf.id}`, { headers: AUTH_HEADERS });
 });
 
+test("workflow: unattended agent_task with a vague goal completes (no ask_user suspend)", async ({
+  request,
+}) => {
+  test.setTimeout(300_000);
+  // Regression: a workflow agent_task used to call ask_user on an ambiguous
+  // goal and suspend, which the runner reported as "Agent run suspended for
+  // user input - not supported inside workflows". Unattended runs now drop
+  // ask_user and assume-and-proceed, so an ambiguous goal completes instead.
+  const wf = await postData(request, "/api/workflows", {
+    name: `Unattended agent ${Date.now()}`,
+    graph: {
+      nodes: [
+        {
+          id: "a1",
+          type: "agent_task",
+          config: {
+            goal: "Summarize the most important updates and decisions from the past week.",
+            budget_usd: 0.4,
+            max_iterations: 8,
+          },
+        },
+      ],
+      edges: [],
+    },
+  });
+  expect(wf.id).toBeTruthy();
+
+  const run = await postData(request, `/api/workflows/${wf.id}/run`, {});
+  let detail: any;
+  const deadline = Date.now() + 280_000;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 4_000));
+    detail = await getData(request, `/api/workflows/runs/${run.id}`);
+    if (["completed", "failed", "cancelled"].includes(detail.status)) break;
+  }
+  // The whole point of the fix: it must never fail by suspending for input.
+  expect(detail.error ?? "").not.toContain("suspended for user input");
+  expect(detail.status, JSON.stringify({ status: detail.status, error: detail.error })).toBe(
+    "completed",
+  );
+  const step = detail.steps.find((s: any) => s.node_type === "agent_task");
+  expect(step?.status).toBe("ok");
+
+  await request.delete(`/api/workflows/${wf.id}`, { headers: AUTH_HEADERS });
+});
+
 test("workflow validation: bad cron rejected, cycle rejected", async ({ request }) => {
   const badCron = await request.post("/api/workflows", {
     headers: AUTH_HEADERS,

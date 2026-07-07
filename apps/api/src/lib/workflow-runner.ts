@@ -380,8 +380,10 @@ async function runAgentTaskNode(
   // Same insert shape as POST /api/agent/runs (routes/agent.ts), plus the
   // node's max_iterations cap.
   dbRun(
-    `INSERT INTO agent_runs (id, user_id, hub_id, thread_id, title, goal, status, model, budget_usd, max_iterations, created_at)
-     VALUES (?, ?, NULL, NULL, ?, ?, 'queued', NULL, ?, ?, ?)`,
+    // interactive = 0: unattended, so the agent gets no ask_user and is told to
+    // assume-and-proceed rather than suspend (which a workflow can't answer).
+    `INSERT INTO agent_runs (id, user_id, hub_id, thread_id, title, goal, status, model, budget_usd, max_iterations, interactive, created_at)
+     VALUES (?, ?, NULL, NULL, ?, ?, 'queued', NULL, ?, ?, 0, ?)`,
     agentRunId,
     ctx.userId,
     title,

@@ -131,6 +131,7 @@ export default function WorkflowRunPage() {
     if (!runId) return;
     let cancelled = false;
     let stream: ReturnType<typeof streamWorkflowRun> | null = null;
+    let pollTimer: ReturnType<typeof setTimeout> | undefined;
     setLoading(true);
     setLoadError(null);
     stepsMapRef.current = new Map();
@@ -150,6 +151,39 @@ export default function WorkflowRunPage() {
             onConnectionChange: setConnection,
           });
           stream.start();
+          // Safety net: the SSE can miss the terminal event if the run finishes
+          // between the snapshot fetch and the subscription, or never attaches
+          // (e.g. the API was restarted). Poll the snapshot until the run is
+          // terminal, then reconcile status/steps and stop streaming — so a
+          // finished run never sits on "Running / Connecting…" indefinitely.
+          const poll = async () => {
+            if (cancelled) return;
+            try {
+              const latest = await authFetch<WorkflowRunDetail>(`/api/workflows/runs/${runId}`);
+              if (cancelled) return;
+              for (const s of latest.steps ?? []) stepsMapRef.current.set(s.seq, s);
+              flushSteps();
+              setRun((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      status: latest.status,
+                      cost_usd: latest.cost_usd,
+                      error: latest.error,
+                      finished_at: latest.finished_at,
+                    }
+                  : latest,
+              );
+              if (isTerminalRunStatus(latest.status)) {
+                stream?.stop();
+                return;
+              }
+            } catch {
+              /* transient — keep polling */
+            }
+            pollTimer = setTimeout(poll, 4000);
+          };
+          pollTimer = setTimeout(poll, 4000);
         } else {
           setConnection("closed");
         }
@@ -162,6 +196,7 @@ export default function WorkflowRunPage() {
     return () => {
       cancelled = true;
       stream?.stop();
+      if (pollTimer) clearTimeout(pollTimer);
     };
   }, [runId, handleEvent, flushSteps]);
 

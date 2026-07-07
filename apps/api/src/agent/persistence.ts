@@ -101,6 +101,8 @@ export interface RunRow {
   model: string | null;
   iter_count: number;
   max_iterations: number;
+  /** 0 for unattended workflow-spawned runs (no ask_user, assume-and-proceed). */
+  interactive: number;
   budget_usd: number;
   cost_usd: number;
   input_tokens: number;
