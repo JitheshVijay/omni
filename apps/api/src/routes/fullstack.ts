@@ -14,8 +14,20 @@ import {
   type BuildEvent,
 } from "../lib/app-builder.js";
 
+import { zipName, zipProject } from "../lib/project-export.js";
+import { deployProject, githubConfigured } from "../lib/deploy.js";
+import type { ProjectFile } from "../lib/e2b.js";
+
 const BuildSchema = z.object({ prompt: z.string().min(1).max(4000) });
 const EditSchema = z.object({ instruction: z.string().min(1).max(4000) });
+
+function projectFiles(filesJson: string): ProjectFile[] {
+  try {
+    return JSON.parse(filesJson) as ProjectFile[];
+  } catch {
+    return [];
+  }
+}
 
 export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/fullstack/projects", async (request) => {
@@ -80,5 +92,52 @@ export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
       sse.send({ type: "error", message: (err as Error).message });
     }
     sse.close();
+  });
+
+  // Download the project as a .zip (no external service needed).
+  app.get("/api/fullstack/projects/:id/export", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const row = getProject((request as AuthenticatedRequest).userId, id);
+    if (!row) {
+      return reply.status(404).send({ success: false, error: "Project not found", code: "not_found" });
+    }
+    const files = projectFiles(row.files);
+    if (files.length === 0) {
+      return reply.status(400).send({ success: false, error: "Nothing to export yet", code: "empty" });
+    }
+    const buf = await zipProject(files);
+    return reply
+      .header("Content-Type", "application/zip")
+      .header("Content-Disposition", `attachment; filename="${zipName(row.name)}"`)
+      .send(buf);
+  });
+
+  // Push the project to GitHub and return a one-click Render deploy link.
+  app.post("/api/fullstack/projects/:id/deploy", async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const row = getProject((request as AuthenticatedRequest).userId, id);
+    if (!row) {
+      return reply.status(404).send({ success: false, error: "Project not found", code: "not_found" });
+    }
+    const files = projectFiles(row.files);
+    if (files.length === 0) {
+      return reply.status(400).send({ success: false, error: "Build the app before deploying", code: "empty" });
+    }
+    if (!githubConfigured()) {
+      return reply.status(400).send({
+        success: false,
+        error:
+          "Deploy needs a GitHub token. Add GITHUB_TOKEN (repo scope) to ~/omni/.env and restart the API, or use Export .zip.",
+        code: "github_unconfigured",
+      });
+    }
+    try {
+      const result = await deployProject({ name: row.name, files, idSuffix: row.id });
+      return { success: true, data: result };
+    } catch (err) {
+      return reply
+        .status(502)
+        .send({ success: false, error: (err as Error).message, code: "deploy_failed" });
+    }
   });
 }

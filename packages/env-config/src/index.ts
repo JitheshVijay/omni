@@ -82,6 +82,12 @@ const envSchema = z.object({
   E2B_API_KEY: z.string().optional(),
   E2B_TEMPLATE: z.string().optional(),
 
+  // GitHub — deploying a generated app: Omni pushes the project to a repo in
+  // this token's account, then hands you a one-click "Deploy to Render" link
+  // (no Render key needed). Optional; deploy fails soft (offer zip export) if
+  // unset. Needs the `repo` scope.
+  GITHUB_TOKEN: z.string().optional(),
+
   // ── LangSmith tracing (off by default) ─────────────────────────────
   LANGSMITH_TRACING: z.string().optional(),
   LANGSMITH_API_KEY: z.string().optional(),
