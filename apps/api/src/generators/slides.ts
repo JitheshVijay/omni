@@ -670,33 +670,40 @@ async function runSlides(input: SlidesInput, ctx: GenCtx): Promise<ArtifactSumma
     }),
   });
 
-  // ── Pass 2: fill + art, slide by slide ──
+  // ── Pass 2a: fill every slide's text, then persist the COMPLETE deck before
+  // generating any art. Art is added in pass 2b and the deck is re-saved after
+  // each image, so if the run is slow or aborted the deck still holds all its
+  // slides (image slides fall back to a themed placeholder) and no generated
+  // image is ever left orphaned outside the deck. ──
   const slides: SlideSpec[] = [];
   for (let i = 0; i < total; i++) {
     if (ctx.signal.aborted) throw new Error("aborted");
     const o = outlineSlides[i];
     const archetype = normalizeArchetype(o.archetype);
     ctx.emit({ type: "status", label: `Designing slide ${i + 1}/${total}` });
-    const slide = await fillSlide(o, archetype, deckTitle, model, ctx);
-
-    if (slide.archetype === "image+text") {
-      ctx.emit({ type: "status", label: `Generating art for slide ${i + 1}/${total}` });
-      slide.image_artifact_id = await generateSlideArt(
-        deckId,
-        i,
-        theme,
-        slide.image_prompt,
-        deckTitle,
-        ctx,
-      );
-    }
-
-    slides.push(slide);
+    slides.push(await fillSlide(o, archetype, deckTitle, model, ctx));
     ctx.emit({ type: "delta", channel: "slide_done", data: JSON.stringify({ index: i }) });
   }
+  saveDeckContent(deckId, { theme, slides });
 
-  const content: DeckContent = { theme, slides };
-  saveDeckContent(deckId, content);
+  // ── Pass 2b: generate art for image slides, re-saving the deck after each. ──
+  for (let i = 0; i < total; i++) {
+    if (ctx.signal.aborted) throw new Error("aborted");
+    const slide = slides[i];
+    if (slide.archetype !== "image+text" || slide.image_artifact_id) continue;
+    ctx.emit({ type: "status", label: `Generating art for slide ${i + 1}/${total}` });
+    slide.image_artifact_id = await generateSlideArt(
+      deckId,
+      i,
+      theme,
+      slide.image_prompt,
+      deckTitle,
+      ctx,
+    );
+    saveDeckContent(deckId, { theme, slides });
+  }
+
+  saveDeckContent(deckId, { theme, slides });
   const finalRow =
     one<ArtifactRow>("SELECT * FROM artifacts WHERE id = ?", deckId) ?? deckRow;
   return toArtifactSummary(finalRow);
@@ -787,6 +794,10 @@ async function reviseSlides(
   }
 
   const total = draftSlides.length;
+  // Pass 1: build every slide's text (reusing the parent's art id when the
+  // image_prompt is unchanged), then persist the complete deck. Pass 2 fills in
+  // any missing art, re-saving after each — so an interruption still yields a
+  // complete deck and never orphans a freshly generated image.
   const slides: SlideSpec[] = [];
   for (let i = 0; i < total; i++) {
     if (ctx.signal.aborted) throw new Error("aborted");
@@ -799,26 +810,28 @@ async function reviseSlides(
     };
     ctx.emit({ type: "status", label: `Updating slide ${i + 1}/${total}` });
     const slide = buildSlide(outlineLike, archetype, draft, deckTitle);
-
     if (slide.archetype === "image+text") {
-      const reuse = artByPrompt.get(slide.image_prompt.trim());
-      if (reuse) {
-        slide.image_artifact_id = reuse;
-      } else {
-        ctx.emit({ type: "status", label: `Generating art for slide ${i + 1}/${total}` });
-        slide.image_artifact_id = await generateSlideArt(
-          deckId,
-          i,
-          theme,
-          slide.image_prompt,
-          deckTitle,
-          ctx,
-        );
-      }
+      slide.image_artifact_id = artByPrompt.get(slide.image_prompt.trim()) ?? null;
     }
-
     slides.push(slide);
     ctx.emit({ type: "delta", channel: "slide_done", data: JSON.stringify({ index: i }) });
+  }
+  saveDeckContent(deckId, { theme, slides });
+
+  for (let i = 0; i < total; i++) {
+    if (ctx.signal.aborted) throw new Error("aborted");
+    const slide = slides[i];
+    if (slide.archetype !== "image+text" || slide.image_artifact_id) continue;
+    ctx.emit({ type: "status", label: `Generating art for slide ${i + 1}/${total}` });
+    slide.image_artifact_id = await generateSlideArt(
+      deckId,
+      i,
+      theme,
+      slide.image_prompt,
+      deckTitle,
+      ctx,
+    );
+    saveDeckContent(deckId, { theme, slides });
   }
 
   saveDeckContent(deckId, { theme, slides });
