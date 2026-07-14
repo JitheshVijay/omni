@@ -35,6 +35,11 @@ export interface GenTemplate {
       | "checklist"
       | "comparison"
       | "study_notes"
+      | "resume"
+      | "release_notes"
+      | "case_study"
+      | "one_pager"
+      | "press_release"
       | "essay";
     theme?: string; // slides theme preset id
     slide_count?: number;
@@ -133,6 +138,61 @@ const DOC_TEMPLATES: GenTemplate[] = [
       "Write a tailored, one-page cover letter for a job application. Open with a strong hook, connect my most relevant experience and achievements to the role's requirements, convey genuine enthusiasm for the company, and close with a confident call to action.",
     accent: "from-emerald-500 to-teal-500",
     extra: { length: "short", doc_type: "letter" },
+  },
+  {
+    id: "doc-resume",
+    kind: "doc",
+    title: "Resume / CV",
+    category: "Career",
+    description: "ATS-friendly resume with quantified achievements.",
+    prompt:
+      "Write a professional, ATS-friendly resume for a role and industry I specify. Include a contact header, a concise professional summary, a grouped skills section, work experience in reverse-chronological order with achievement bullets that quantify impact, education, and relevant certifications.",
+    accent: "from-slate-500 to-gray-600",
+    extra: { length: "medium", doc_type: "resume" },
+  },
+  {
+    id: "doc-release-notes",
+    kind: "doc",
+    title: "Release notes",
+    category: "Product",
+    description: "User-facing changelog: features, fixes, breaking changes.",
+    prompt:
+      "Write release notes for a new product version. Include the version and date, a one-line summary, and user-facing sections for new features, improvements, bug fixes, and any breaking changes or deprecations, with a short bullet describing each change.",
+    accent: "from-violet-500 to-purple-500",
+    extra: { length: "short", doc_type: "release_notes" },
+  },
+  {
+    id: "doc-case-study",
+    kind: "doc",
+    title: "Case study",
+    category: "Marketing",
+    description: "Customer success story: challenge, solution, results.",
+    prompt:
+      "Write a customer success case study for a B2B SaaS scenario I describe. Cover the client overview, the challenge they faced, the solution delivered, and quantified results with headline metrics, include a customer quote, and end with a short call to action.",
+    accent: "from-emerald-500 to-green-600",
+    extra: { length: "medium", doc_type: "case_study" },
+  },
+  {
+    id: "doc-one-pager",
+    kind: "doc",
+    title: "One-pager",
+    category: "Business",
+    description: "A single-page pitch: problem, solution, traction, ask.",
+    prompt:
+      "Write a one-page overview (one-pager) for a startup or product. Include a headline and tagline, the problem, the solution, key features and benefits, traction and metrics, the market opportunity, and a clear ask or next step. Keep it dense and scannable.",
+    accent: "from-sky-500 to-cyan-500",
+    extra: { length: "short", doc_type: "one_pager" },
+  },
+  {
+    id: "doc-press-release",
+    kind: "doc",
+    title: "Press release",
+    category: "Marketing",
+    description: "AP-style announcement with dateline, quotes, boilerplate.",
+    prompt:
+      "Write a press release in standard AP style announcing a product launch or company milestone. Include the FOR IMMEDIATE RELEASE line, a headline and subheadline, a dateline and lead paragraph, body paragraphs with a spokesperson quote, an 'About' boilerplate, and a media contact.",
+    accent: "from-rose-500 to-red-500",
+    extra: { length: "short", doc_type: "press_release" },
   },
 ];
 

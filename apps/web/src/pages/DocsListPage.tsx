@@ -52,6 +52,11 @@ export type DocType =
   | "checklist"
   | "comparison"
   | "study_notes"
+  | "resume"
+  | "release_notes"
+  | "case_study"
+  | "one_pager"
+  | "press_release"
   | "essay";
 
 // Handed to DocEditorPage (/tools/docs/new) via router state.
@@ -82,6 +87,11 @@ const DOC_TYPES: { value: DocType; label: string }[] = [
   { value: "checklist", label: "Checklist / SOP" },
   { value: "comparison", label: "Comparison" },
   { value: "study_notes", label: "Study notes" },
+  { value: "resume", label: "Resume / CV" },
+  { value: "release_notes", label: "Release notes" },
+  { value: "case_study", label: "Case study" },
+  { value: "one_pager", label: "One-pager" },
+  { value: "press_release", label: "Press release" },
   { value: "essay", label: "Essay / prose" },
 ];
 

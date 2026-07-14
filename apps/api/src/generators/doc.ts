@@ -92,6 +92,31 @@ const DOC_TYPES = {
     guidance:
       "Write STUDY NOTES: organized by topic under H2/H3 headings, **key terms in bold** with crisp definitions, bulleted explanations, worked examples where relevant, and a **Key takeaways** summary list at the end. Optimized for review and recall.",
   },
+  resume: {
+    label: "Resume / CV",
+    guidance:
+      "Write a RESUME/CV (ATS-friendly): the name as the H1, then a role + contact line; a 2-3 sentence **Professional summary**; a **Skills** section (grouped); **Experience** in reverse-chronological order (each role: **Title**, Company — Location, dates; then 3-5 achievement bullets that lead with a strong verb and quantify impact with metrics); **Education**; and optional **Certifications / Projects**. No first-person pronouns; concise and results-driven.",
+  },
+  release_notes: {
+    label: "Release notes",
+    guidance:
+      "Write RELEASE NOTES: an H1 with product + version and the release date, a one-line summary, then user-facing sections labelled **✨ New features**, **🚀 Improvements**, **🐛 Bug fixes**, and **⚠️ Breaking changes / Deprecations** (omit any that don't apply). Each item is a short bullet describing the user-visible change, not the code. End with any upgrade notes.",
+  },
+  case_study: {
+    label: "Case study",
+    guidance:
+      "Write a CASE STUDY (customer success story, the way Genspark structures them): an **Overview** (client, industry, one-line result), **Challenge** (problem and stakes), **Solution** (what was done and why), and **Results** with quantified outcomes presented as metric tiles — a compact table such as | Metric | Before | After | or bold stat callouts. Include a realistic **customer quote** as a blockquote, and close with a short **Conclusion / call to action**.",
+  },
+  one_pager: {
+    label: "One-pager",
+    guidance:
+      "Write a ONE-PAGER: a bold headline + one-line tagline, then tight, scannable sections — **Problem**, **Solution**, **Key features / benefits** (bullets), **Traction / metrics** (a short stat row or table), **Market / opportunity**, **Team** (if relevant), and a clear **Ask / next step**. Dense and confident; everything fits on a single page.",
+  },
+  press_release: {
+    label: "Press release",
+    guidance:
+      "Write a PRESS RELEASE in standard AP style: start with **FOR IMMEDIATE RELEASE**, then the H1 headline and an italic subheadline; open the lead paragraph with a dateline (CITY, State — Month Day, Year —) answering who/what/when/where/why; 2-3 body paragraphs including at least one **quote** from a named spokesperson (blockquote); a **Boilerplate** 'About [Company]' paragraph; a media **Contact** block; and end with a centered '###' to mark the close.",
+  },
   essay: {
     label: "Essay / prose",
     guidance:
@@ -375,7 +400,7 @@ export const docGenerator: GeneratorService<DocInput> = {
   name: "doc",
   inputSchema: DocInputSchema,
   toolDescription:
-    "Write a document from a prompt as rich markdown. Set doc_type to shape the structure: report, how_to (step-by-step guide), prd (product spec), meeting_notes, proposal, blog_post, letter (letter/email), faq, checklist (checklist/SOP), comparison, study_notes, essay, or auto to infer. Optionally grounded in a hub's files with inline citations.",
+    "Write a document from a prompt as rich markdown. Set doc_type to shape the structure: report, how_to (step-by-step guide), prd (product spec), meeting_notes, proposal, blog_post, letter (letter/email), faq, checklist (checklist/SOP), comparison, study_notes, resume (resume/CV), release_notes, case_study, one_pager, press_release, essay, or auto to infer. Optionally grounded in a hub's files with inline citations.",
   run: runDoc,
   revise: reviseDoc,
 };
