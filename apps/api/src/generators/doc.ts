@@ -27,6 +27,81 @@ import {
   type GeneratorService,
 } from "./types.js";
 
+// ─── Document types ─────────────────────────────────────────────────
+// Each type steers STRUCTURE (sections, tables, checklists, Q&A, ...) so the
+// output is a genuine document of that kind, not a generic essay. "auto" lets
+// the model infer the best structure from the request.
+const DOC_TYPES = {
+  auto: {
+    label: "Auto",
+    guidance:
+      "Infer the most fitting document type from the request and structure it with that type's conventions (report, step-by-step guide, spec, meeting notes, proposal, article, letter, FAQ, checklist, comparison, study notes, ...). Choose the structure that best serves the content rather than defaulting to a flat essay.",
+  },
+  report: {
+    label: "Report",
+    guidance:
+      "Write a REPORT: after the H1, open with a brief **Executive summary**, then themed sections under H2 headings, put comparative or quantitative data in Markdown tables, and close with **Findings** and **Recommendations / Next steps**. Objective and information-dense.",
+  },
+  how_to: {
+    label: "How-to guide",
+    guidance:
+      "Write a STEP-BY-STEP GUIDE: a one-line statement of the outcome, a **Prerequisites** list, then clear numbered steps (H2 per step or an ordered list) with the exact actions; call out tips and warnings as blockquotes; end with a short **Result / Verification** section.",
+  },
+  prd: {
+    label: "Product spec (PRD)",
+    guidance:
+      "Write a PRD: sections for **Problem**, **Goals / Non-goals**, **Users & jobs-to-be-done**, **Requirements** (a table of requirement + priority, plus edge cases), **Rollout plan**, and **Success metrics**. Precise and testable, not marketing prose.",
+  },
+  meeting_notes: {
+    label: "Meeting notes",
+    guidance:
+      "Write MEETING NOTES: a header (date, attendees, purpose), a time-boxed **Agenda** list, **Discussion** bullets per topic, a **Decisions** list, and an **Action items** TABLE (Owner | Task | Due). Scannable, not prose.",
+  },
+  proposal: {
+    label: "Proposal",
+    guidance:
+      "Write a PROPOSAL: **Overview**, **Objectives**, **Scope & deliverables** (bulleted), a **Timeline** with milestones (table), an **Investment / Pricing** table, **Terms**, and a clear **Next steps** call to action. Persuasive but concrete.",
+  },
+  blog_post: {
+    label: "Article / blog post",
+    guidance:
+      "Write an ARTICLE: a compelling title, a hook opening on why this matters, subheaded sections (H2/H3) with concrete examples and the occasional list, and a conclusion with a takeaway or call to action. Engaging, conversational, skimmable.",
+  },
+  letter: {
+    label: "Letter / email",
+    guidance:
+      "Write a LETTER/EMAIL: after the H1 document title, write it as correspondence — an optional date line, a salutation (Dear …,), well-structured body paragraphs that make the ask or point, and a sign-off. Match tone to the audience; no headings inside the body.",
+  },
+  faq: {
+    label: "FAQ",
+    guidance:
+      "Write an FAQ: a one-line intro, then a series of questions each as an H3 (`### Question?`) followed by a concise, self-contained answer. Order from most to least common. No filler.",
+  },
+  checklist: {
+    label: "Checklist / SOP",
+    guidance:
+      "Write a CHECKLIST / standard operating procedure: a short **Purpose** line, then actionable items as GitHub-style checkboxes (`- [ ] do X`), grouped under phase headings where useful. Each item is a concrete, verifiable action.",
+  },
+  comparison: {
+    label: "Comparison",
+    guidance:
+      "Write a COMPARISON: a one-paragraph framing, a central Markdown TABLE comparing the options across the criteria that matter, short pros/cons per option, and a **Recommendation** stating which to pick and when.",
+  },
+  study_notes: {
+    label: "Study notes",
+    guidance:
+      "Write STUDY NOTES: organized by topic under H2/H3 headings, **key terms in bold** with crisp definitions, bulleted explanations, worked examples where relevant, and a **Key takeaways** summary list at the end. Optimized for review and recall.",
+  },
+  essay: {
+    label: "Essay / prose",
+    guidance:
+      "Write flowing PROSE: a clear thesis, well-developed paragraphs under light headings, and a conclusion. Keep lists minimal — carry the argument in the writing.",
+  },
+} as const;
+
+export type DocType = keyof typeof DOC_TYPES;
+const DOC_TYPE_KEYS = Object.keys(DOC_TYPES) as [DocType, ...DocType[]];
+
 // ─── Input ──────────────────────────────────────────────────────────
 
 const DocInputSchema = z.object({
@@ -34,6 +109,8 @@ const DocInputSchema = z.object({
   title: z.string().max(200).optional(),
   hub_id: z.string().nullable().optional(),
   length: z.enum(["short", "medium", "long"]).default("medium"),
+  // Document type steers the structure (report, guide, PRD, letter, FAQ, ...).
+  doc_type: z.enum(DOC_TYPE_KEYS).default("auto"),
   // Override mainly for tests; defaults to the registry default.
   model: z.string().optional(),
 });
@@ -88,7 +165,11 @@ const LENGTH_GUIDANCE: Record<DocInput["length"], { words: number; maxTokens: nu
   long: { words: 2000, maxTokens: 6000 },
 };
 
-function buildSystemPrompt(length: DocInput["length"], hasSources: boolean): string {
+function buildSystemPrompt(
+  length: DocInput["length"],
+  hasSources: boolean,
+  docType: DocType,
+): string {
   const parts = [
     "You are an expert document writer. Write the requested document as GitHub-flavored Markdown.",
     [
@@ -98,6 +179,9 @@ function buildSystemPrompt(length: DocInput["length"], hasSources: boolean): str
       `- Target length: about ${LENGTH_GUIDANCE[length].words} words.`,
       "- Use headings, lists, and tables where they genuinely help; tight prose, no filler.",
     ].join("\n"),
+    // Type-specific structure: this is what makes a report a report and a
+    // checklist a checklist rather than a generic essay.
+    DOC_TYPES[docType].guidance,
   ];
   if (hasSources) {
     parts.push(
@@ -217,7 +301,7 @@ async function runDoc(input: DocInput, ctx: GenCtx): Promise<ArtifactSummary> {
   }
 
   const markdown = await streamMarkdown({
-    system: buildSystemPrompt(input.length, sources.length > 0),
+    system: buildSystemPrompt(input.length, sources.length > 0, input.doc_type),
     contextBlock,
     prompt: input.prompt,
     model,
@@ -291,7 +375,7 @@ export const docGenerator: GeneratorService<DocInput> = {
   name: "doc",
   inputSchema: DocInputSchema,
   toolDescription:
-    "Write a document (report, guide, memo...) as markdown from a prompt; optionally grounded in a hub's files with inline citations.",
+    "Write a document from a prompt as rich markdown. Set doc_type to shape the structure: report, how_to (step-by-step guide), prd (product spec), meeting_notes, proposal, blog_post, letter (letter/email), faq, checklist (checklist/SOP), comparison, study_notes, essay, or auto to infer. Optionally grounded in a hub's files with inline citations.",
   run: runDoc,
   revise: reviseDoc,
 };

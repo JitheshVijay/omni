@@ -178,6 +178,7 @@ export default function DocEditorPage() {
         body: {
           prompt: state.prompt,
           length: state.length,
+          ...(state.doc_type ? { doc_type: state.doc_type } : {}),
           ...(state.hub_id ? { hub_id: state.hub_id } : {}),
         },
         signal: ctrl.signal,

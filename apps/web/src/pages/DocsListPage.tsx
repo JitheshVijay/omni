@@ -39,17 +39,50 @@ const LIST_PATH = "/api/artifacts?kind=doc&limit=50";
 
 export type DocLength = "short" | "medium" | "long";
 
+export type DocType =
+  | "auto"
+  | "report"
+  | "how_to"
+  | "prd"
+  | "meeting_notes"
+  | "proposal"
+  | "blog_post"
+  | "letter"
+  | "faq"
+  | "checklist"
+  | "comparison"
+  | "study_notes"
+  | "essay";
+
 // Handed to DocEditorPage (/tools/docs/new) via router state.
 export interface DocGenNavState {
   prompt: string;
   hub_id?: string | null;
   length: DocLength;
+  doc_type?: DocType;
 }
 
 const LENGTHS: { value: DocLength; label: string; hint: string }[] = [
   { value: "short", label: "Short", hint: "~400 words" },
   { value: "medium", label: "Medium", hint: "~1000 words" },
   { value: "long", label: "Long", hint: "~2000 words" },
+];
+
+// Structural document types (mirrors the backend doc generator's DOC_TYPES).
+const DOC_TYPES: { value: DocType; label: string }[] = [
+  { value: "auto", label: "Auto (infer)" },
+  { value: "report", label: "Report" },
+  { value: "how_to", label: "How-to guide" },
+  { value: "prd", label: "Product spec (PRD)" },
+  { value: "meeting_notes", label: "Meeting notes" },
+  { value: "proposal", label: "Proposal" },
+  { value: "blog_post", label: "Article / blog" },
+  { value: "letter", label: "Letter / email" },
+  { value: "faq", label: "FAQ" },
+  { value: "checklist", label: "Checklist / SOP" },
+  { value: "comparison", label: "Comparison" },
+  { value: "study_notes", label: "Study notes" },
+  { value: "essay", label: "Essay / prose" },
 ];
 
 const NO_HUB = "__none__";
@@ -64,6 +97,7 @@ export default function DocsListPage() {
   const [prompt, setPrompt] = useState("");
   const [hubId, setHubId] = useState<string>(NO_HUB);
   const [length, setLength] = useState<DocLength>("medium");
+  const [docType, setDocType] = useState<DocType>("auto");
 
   function generate() {
     const trimmed = prompt.trim();
@@ -73,11 +107,12 @@ export default function DocsListPage() {
         prompt: trimmed,
         hub_id: hubId === NO_HUB ? null : hubId,
         length,
+        doc_type: docType,
       } satisfies DocGenNavState,
     });
   }
 
-  // Template → straight into the editor with the seeded prompt + length,
+  // Template → straight into the editor with the seeded prompt + length + type,
   // reusing the same router-state handoff as manual generation.
   function useTemplate(t: GenTemplate) {
     navigate("/tools/docs/new", {
@@ -85,6 +120,7 @@ export default function DocsListPage() {
         prompt: t.prompt,
         hub_id: hubId === NO_HUB ? null : hubId,
         length: (t.extra?.length as DocLength) ?? "medium",
+        doc_type: (t.extra?.doc_type as DocType) ?? "auto",
       } satisfies DocGenNavState,
     });
   }
@@ -149,6 +185,24 @@ export default function DocsListPage() {
                 {hubs.map((h) => (
                   <SelectItem key={h.id} value={h.id}>
                     {h.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+
+          {/* Document type */}
+          <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+            Type
+            <Select value={docType} onValueChange={(v) => setDocType(v as DocType)}>
+              <SelectTrigger className="h-9 w-48" aria-label="Document type">
+                <FileText className="size-3.5 shrink-0 text-muted" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DOC_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
                   </SelectItem>
                 ))}
               </SelectContent>

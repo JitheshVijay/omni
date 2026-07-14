@@ -21,6 +21,21 @@ export interface GenTemplate {
   accent: string;
   extra?: {
     length?: "short" | "medium" | "long";
+    // doc structural type (mirrors the backend doc generator's DOC_TYPES)
+    doc_type?:
+      | "auto"
+      | "report"
+      | "how_to"
+      | "prd"
+      | "meeting_notes"
+      | "proposal"
+      | "blog_post"
+      | "letter"
+      | "faq"
+      | "checklist"
+      | "comparison"
+      | "study_notes"
+      | "essay";
     theme?: string; // slides theme preset id
     slide_count?: number;
     rows_hint?: number;
@@ -40,7 +55,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Write a one-page project brief for an upcoming initiative. Cover the objective and background, in-scope and out-of-scope items, key milestones with a timeline, primary risks with mitigations, and the success metrics we'll track.",
     accent: "from-sky-500 to-indigo-500",
-    extra: { length: "medium" },
+    extra: { length: "medium", doc_type: "report" },
   },
   {
     id: "doc-prd",
@@ -51,7 +66,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Draft a product requirements document for a new feature. Include the problem statement, target users and their jobs-to-be-done, goals and non-goals, functional requirements, edge cases, a rollout plan, and the metrics that define success.",
     accent: "from-indigo-500 to-violet-500",
-    extra: { length: "long" },
+    extra: { length: "long", doc_type: "prd" },
   },
   {
     id: "doc-meeting-notes",
@@ -62,7 +77,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Create a structured meeting agenda and notes template for a weekly team sync. Include the agenda with time boxes, discussion topics, decisions made, action items with owners and due dates, and a parking-lot section.",
     accent: "from-cyan-500 to-sky-500",
-    extra: { length: "short" },
+    extra: { length: "short", doc_type: "meeting_notes" },
   },
   {
     id: "doc-status-update",
@@ -73,7 +88,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Write a concise weekly status update for stakeholders. Summarize progress against goals, what shipped this week, current blockers with the help needed, key metrics, and the plan for next week.",
     accent: "from-teal-500 to-emerald-500",
-    extra: { length: "short" },
+    extra: { length: "short", doc_type: "report" },
   },
   {
     id: "doc-lesson-plan",
@@ -84,7 +99,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Design a 60-minute lesson plan for a chosen topic and grade level. Include learning objectives, required materials, a warm-up, the main activity with timing, differentiation for varied learners, and an assessment to check understanding.",
     accent: "from-amber-500 to-orange-500",
-    extra: { length: "medium" },
+    extra: { length: "medium", doc_type: "how_to" },
   },
   {
     id: "doc-study-guide",
@@ -95,7 +110,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Produce a comprehensive study guide for an exam on a given subject. Summarize the key concepts and definitions, include worked examples, highlight common mistakes, and finish with a set of practice questions and answers.",
     accent: "from-orange-500 to-rose-500",
-    extra: { length: "long" },
+    extra: { length: "long", doc_type: "study_notes" },
   },
   {
     id: "doc-blog-post",
@@ -106,7 +121,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Write an engaging, SEO-friendly blog post on a topic of my choice. Use a compelling hook, clear headings and subheadings, practical examples, and a conclusion with a call to action. Aim for a friendly, authoritative tone.",
     accent: "from-fuchsia-500 to-pink-500",
-    extra: { length: "medium" },
+    extra: { length: "medium", doc_type: "blog_post" },
   },
   {
     id: "doc-cover-letter",
@@ -117,7 +132,7 @@ const DOC_TEMPLATES: GenTemplate[] = [
     prompt:
       "Write a tailored, one-page cover letter for a job application. Open with a strong hook, connect my most relevant experience and achievements to the role's requirements, convey genuine enthusiasm for the company, and close with a confident call to action.",
     accent: "from-emerald-500 to-teal-500",
-    extra: { length: "short" },
+    extra: { length: "short", doc_type: "letter" },
   },
 ];
 
