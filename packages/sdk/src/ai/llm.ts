@@ -68,6 +68,11 @@ export interface LLMRequest {
   prompt: string;
   model?: string;
   maxTokens?: number;
+  // Per-request overrides for slow/large calls. The shared LLM_REQUEST_OPTS
+  // (120s, 2 retries) is too short for very large single-shot generations
+  // (e.g. full-app codegen), which legitimately run several minutes.
+  timeout?: number;
+  maxRetries?: number;
   // Optional SECOND cached block, placed right after `system` and before
   // the (uncached) date + user prompt. Use for content that's stable
   // across a burst of calls but not across all calls. Must be
@@ -195,6 +200,8 @@ async function callLLMImpl(req: LLMRequest): Promise<string> {
     model = DEFAULT_MODEL,
     maxTokens = 4096,
     cachedContext,
+    timeout,
+    maxRetries,
   } = req;
 
   const messages: OpenAI.ChatCompletionMessageParam[] = [];
@@ -234,7 +241,12 @@ async function callLLMImpl(req: LLMRequest): Promise<string> {
     ...providerRoutingForCache(model),
   } as unknown as OpenAI.ChatCompletionCreateParamsNonStreaming;
 
-  const res = await openai.chat.completions.create(body, LLM_REQUEST_OPTS);
+  const requestOpts = {
+    ...LLM_REQUEST_OPTS,
+    ...(timeout !== undefined ? { timeout } : {}),
+    ...(maxRetries !== undefined ? { maxRetries } : {}),
+  };
+  const res = await openai.chat.completions.create(body, requestOpts);
 
   recordUsage(model, (res as unknown as { usage?: OpenRouterUsage }).usage);
 

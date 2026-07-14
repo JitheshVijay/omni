@@ -43,6 +43,8 @@ const IMMUTABLE_PATHS = new Set([
   "src/main.jsx",
   "src/lib/utils.js",
   "server/ai.js",
+  "public/manifest.webmanifest",
+  "public/icon.svg",
   ".gitignore",
   "render.yaml",
   "README.md",
@@ -53,9 +55,12 @@ export function isEditable(path: string): boolean {
 }
 
 // ── design brief ─────────────────────────────────────────────────────────────
+type Platform = "web" | "mobile";
+
 interface Brief {
   name: string;
   summary: string;
+  platform: Platform;
   theme: { primary: string; vibe: string };
   pages: string[];
   dataModel: string[];
@@ -65,6 +70,7 @@ interface Brief {
 interface RawBrief {
   name?: string;
   summary?: string;
+  platform?: string;
   theme?: { primary?: string; vibe?: string };
   pages?: unknown;
   dataModel?: unknown;
@@ -72,8 +78,9 @@ interface RawBrief {
 }
 
 const PLAN_SYSTEM = [
-  "You are a senior product designer and full-stack architect. Given an app idea, produce a tight build brief that a strong engineer can execute: a name, a one-line summary, a color theme, the screens, the data model, and the core features.",
+  "You are a senior product designer and full-stack architect. Given an app idea, produce a tight build brief that a strong engineer can execute: a name, a one-line summary, the target platform, a color theme, the screens, the data model, and the core features.",
   "Pick a color palette that fits the product's domain and feels modern and premium — the bar is a well-designed Linear / Vercel / Stripe / Cal.com app. Prefer a confident, saturated primary color with real personality over a generic gray.",
+  'Choose the platform that fits how the app is really used: "mobile" for anything primarily used on a phone (camera/photo capture, food/nutrition, fitness/health, habit/mood trackers, social feeds, check-ins, POS, field/on-the-go tools); "web" for dashboards, admin panels, editors, tables, B2B tools, and content sites. When in doubt, prefer web.',
   "Scope a focused, genuinely useful MVP: a few real screens with real data, not a kitchen sink.",
 ].join("\n");
 
@@ -86,6 +93,7 @@ function defaultBrief(prompt: string): Brief {
   return {
     name: "omni-app",
     summary: prompt.slice(0, 140),
+    platform: "web",
     theme: { primary: "240 5.9% 10%", vibe: "clean and modern" },
     pages: [],
     dataModel: [],
@@ -98,6 +106,7 @@ function normalizeBrief(raw: RawBrief, prompt: string): Brief {
   return {
     name: (raw.name || "omni-app").replace(/[^a-z0-9-]/gi, "-").toLowerCase().slice(0, 40) || "omni-app",
     summary: raw.summary?.trim() || prompt.slice(0, 140),
+    platform: raw.platform?.trim().toLowerCase() === "mobile" ? "mobile" : "web",
     theme: {
       primary: /^\d/.test(primary) ? primary : "240 5.9% 10%",
       vibe: raw.theme?.vibe?.trim() || "clean and modern",
@@ -118,6 +127,7 @@ async function planApp(prompt: string): Promise<Brief> {
         'Respond with JSON: {' +
         '"name": string (kebab-case, short), ' +
         '"summary": string (one sentence), ' +
+        '"platform": "web" | "mobile" (see the platform guidance), ' +
         '"theme": {"primary": "an HSL triplet WITHOUT the hsl() wrapper and WITHOUT commas, e.g. \\"160 84% 39%\\" for emerald or \\"221 83% 53%\\" for blue", "vibe": string (2-4 words on the visual mood)}, ' +
         '"pages": string[] (each: screen name + one-line purpose), ' +
         '"dataModel": string[] (each: table name + columns), ' +
@@ -132,7 +142,11 @@ async function planApp(prompt: string): Promise<Brief> {
 }
 
 function briefBlock(brief: Brief): string {
-  const lines = [`Product: ${brief.summary}`, `Visual mood: ${brief.theme.vibe}`];
+  const lines = [
+    `Product: ${brief.summary}`,
+    `Platform: ${brief.platform === "mobile" ? "mobile (phone-first web app)" : "web"}`,
+    `Visual mood: ${brief.theme.vibe}`,
+  ];
   if (brief.pages.length) lines.push(`Screens:\n${brief.pages.map((p) => `  - ${p}`).join("\n")}`);
   if (brief.dataModel.length) lines.push(`Data model:\n${brief.dataModel.map((d) => `  - ${d}`).join("\n")}`);
   if (brief.features.length) lines.push(`Core features:\n${brief.features.map((f) => `  - ${f}`).join("\n")}`);
@@ -146,12 +160,60 @@ function primaryForeground(primary: string): string {
   return Number.isFinite(l) && l >= 62 ? "240 10% 3.9%" : "0 0% 98%";
 }
 
+// Convert an "H S% L%" token to a #rrggbb hex, for places that need a real color
+// value rather than a CSS var (PWA theme-color, manifest, generated icon).
+function hslToHex(hsl: string): string {
+  const p = hsl.trim().split(/\s+/);
+  const h = parseFloat(p[0]);
+  const s = parseFloat(p[1]) / 100;
+  const l = parseFloat(p[2]) / 100;
+  if (![h, s, l].every(Number.isFinite)) return "#111827";
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  if (h < 60) [r, g] = [c, x];
+  else if (h < 120) [r, g] = [x, c];
+  else if (h < 180) [g, b] = [c, x];
+  else if (h < 240) [g, b] = [x, c];
+  else if (h < 300) [r, b] = [x, c];
+  else [r, b] = [c, x];
+  const to = (v: number) => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+  return `#${to(r)}${to(g)}${to(b)}`;
+}
+
 // index.css carries the whole design system: Tailwind layers + the HSL token set
 // (light + dark), themed with the brief's primary color so every app has its own
-// identity out of the box. The model may edit this to refine the palette.
-function themedIndexCss(theme: { primary: string }): string {
+// identity out of the box. The model may edit this to refine the palette. For
+// mobile, extra base rules make it feel native (full-height, safe areas, no
+// overscroll/tap-highlight) plus dvh + safe-area utility classes.
+function themedIndexCss(theme: { primary: string }, platform: Platform): string {
   const primary = theme.primary;
   const pfg = primaryForeground(primary);
+  const mobileBase =
+    platform === "mobile"
+      ? `
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    overscroll-behavior-y: none;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input, textarea, [contenteditable] { -webkit-user-select: auto; user-select: auto; }
+}
+
+@layer utilities {
+  /* h-dvh / min-h-dvh are built into Tailwind 3.4; only safe-area insets need defining. */
+  .pt-safe { padding-top: max(env(safe-area-inset-top), 0.5rem); }
+  .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
+}
+`
+      : "";
   return `@tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -213,7 +275,7 @@ function themedIndexCss(theme: { primary: string }): string {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 }
-`;
+${mobileBase}`;
 }
 
 const TAILWIND_CONFIG = `/** @type {import('tailwindcss').Config} */
@@ -450,10 +512,157 @@ const AI_GUIDE = [
   '  For photo features: capture the image in the browser (an <input type="file" accept="image/*"> or the camera), read it as a base64 data URL, POST it to your backend, and call askAIVision there. Set express.json({ limit: "12mb" }) so image payloads fit.',
 ].join("\n");
 
+// ── mobile form factor ───────────────────────────────────────────────────────
+// A native-feeling phone shell (editable primitive) plus PWA assets. Same
+// Vite/React/Tailwind toolchain — no separate mobile build system.
+const MOBILE_JS = `import { cn } from "../../lib/utils.js";
+
+// Native-feeling mobile shell. Wrap the whole app in <Screen>. On a phone it
+// fills the viewport; on a wide screen it centers as a phone-sized frame.
+export function Screen({ className, children }) {
+  return (
+    <div className="flex min-h-dvh w-full justify-center bg-muted">
+      <div
+        className={cn(
+          "relative flex h-dvh w-full max-w-md flex-col overflow-hidden bg-background sm:border-x sm:border-border sm:shadow-xl",
+          className,
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Scrollable content area between the app bar and the tab bar.
+export function ScreenContent({ className, ...props }) {
+  return <main className={cn("flex-1 overflow-y-auto overscroll-contain", className)} {...props} />;
+}
+
+// Sticky top bar; handles the top safe area.
+export function AppBar({ className, ...props }) {
+  return (
+    <header
+      className={cn(
+        "shrink-0 border-b border-border bg-background/80 px-4 pb-3 pt-safe backdrop-blur-md",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+// Bottom tab bar; handles the bottom safe area.
+export function TabBar({ className, ...props }) {
+  return (
+    <nav
+      className={cn(
+        "flex shrink-0 items-stretch border-t border-border bg-background/90 pb-safe backdrop-blur-md",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+// A single tab. Pass a lucide icon component as \`icon\`, plus \`label\` and \`active\`.
+export function TabItem({ className, active, icon: Icon, label, ...props }) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-transform active:scale-95",
+        active ? "text-primary" : "text-muted-foreground",
+        className,
+      )}
+      {...props}
+    >
+      {Icon ? <Icon className="size-6" /> : null}
+      {label ? <span>{label}</span> : null}
+    </button>
+  );
+}
+`;
+
+const MOBILE_GUIDE = [
+  "MOBILE APP MODE: build a MOBILE-FIRST app that looks and feels like a polished native iOS/Android app on a phone. The bar is a top App Store app.",
+  "- Wrap the entire app in the Screen shell from src/components/ui/mobile.jsx, which also exports ScreenContent (scrollable body), AppBar (sticky top bar), TabBar and TabItem (bottom navigation). Layout: <Screen><AppBar/><ScreenContent>…</ScreenContent><TabBar>…TabItems…</TabBar></Screen>.",
+  "- Primary navigation is a bottom TabBar with 3-5 TabItems (lucide icon + short label); track the active tab with useState (or react-router). Only ScreenContent scrolls; AppBar and TabBar stay fixed.",
+  "- Touch-first: large tap targets (min height h-12), big rounded-2xl cards, generous spacing, bottom-sheet style dialogs that slide up from the bottom, tappable rows. No hover-only interactions.",
+  "- Respect safe areas (the shell primitives already apply pt-safe / pb-safe). Keep everything within the phone width; never build a wide desktop layout.",
+  "- Feel native: a greeting/header, section headers, large numbers or progress rings for key metrics, subtle dividers, momentum scrolling; use the animate-fade-in utility for entering content.",
+  '- Camera/photo features: use <input type="file" accept="image/*" capture="environment" /> (opens the camera on phones) or navigator.mediaDevices.getUserMedia for a live viewfinder; read the photo as a base64 data URL and POST it to the backend for askAIVision (see the AI section).',
+].join("\n");
+
+function indexHtml(platform: Platform, themeHex: string): string {
+  if (platform !== "mobile") {
+    return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+`;
+  }
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="${themeHex}" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <title>App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+`;
+}
+
+function manifestJson(themeHex: string): string {
+  return JSON.stringify(
+    {
+      name: "App",
+      short_name: "App",
+      start_url: "/",
+      scope: "/",
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#ffffff",
+      theme_color: themeHex,
+      icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any maskable" }],
+    },
+    null,
+    2,
+  );
+}
+
+function iconSvg(themeHex: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="${themeHex}" />
+  <circle cx="256" cy="256" r="118" fill="#ffffff" fill-opacity="0.92" />
+  <circle cx="256" cy="256" r="58" fill="${themeHex}" />
+</svg>
+`;
+}
+
 // Files the model MUST NOT touch (toolchain). Everything else here is a starting
 // point the model may override by returning a file at the same path.
-function scaffoldFiles(theme: { primary: string }): ProjectFile[] {
-  return [
+function scaffoldFiles(theme: { primary: string }, platform: Platform): ProjectFile[] {
+  const themeHex = hslToHex(theme.primary);
+  const files: ProjectFile[] = [
     {
       path: "package.json",
       content: JSON.stringify(
@@ -510,22 +719,7 @@ export default defineConfig({
     },
     { path: "tailwind.config.js", content: TAILWIND_CONFIG },
     { path: "postcss.config.js", content: POSTCSS_CONFIG },
-    {
-      path: "index.html",
-      content: `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
-`,
-    },
+    { path: "index.html", content: indexHtml(platform, themeHex) },
     {
       path: "src/main.jsx",
       content: `import React from "react";
@@ -540,7 +734,7 @@ createRoot(document.getElementById("root")).render(
 );
 `,
     },
-    { path: "src/index.css", content: themedIndexCss(theme) },
+    { path: "src/index.css", content: themedIndexCss(theme, platform) },
     { path: "src/lib/utils.js", content: UTILS_JS },
     { path: "src/components/ui/button.jsx", content: BUTTON_JSX },
     { path: "src/components/ui/card.jsx", content: CARD_JSX },
@@ -583,6 +777,15 @@ instance's disk, so data resets on redeploy unless you attach a persistent disk.
 `,
     },
   ];
+
+  if (platform === "mobile") {
+    files.push(
+      { path: "src/components/ui/mobile.jsx", content: MOBILE_JS },
+      { path: "public/manifest.webmanifest", content: manifestJson(themeHex) },
+      { path: "public/icon.svg", content: iconSvg(themeHex) },
+    );
+  }
+  return files;
 }
 
 const SYSTEM = [
@@ -647,16 +850,23 @@ function assemble(scaffold: ProjectFile[], llmFiles: ProjectFile[]): ProjectFile
 /** Generate a runnable, good-looking full-stack project from a prompt. */
 export async function generateFullstackProject(prompt: string): Promise<GeneratedProject> {
   const brief = await planApp(prompt);
+  const system = brief.platform === "mobile" ? `${SYSTEM}\n\n${MOBILE_GUIDE}` : SYSTEM;
 
   const raw = await callLLMJSON<RawGen>({
-    system: SYSTEM,
+    system,
     prompt:
       `Build this app.\n\nUser request: ${prompt}\n\nBuild brief:\n${briefBlock(brief)}\n\n` +
-      "Deliver the full app: a polished src/App.jsx (plus any components under src/), and a complete server/index.js with real endpoints and persistence for the data model above. " +
+      "Deliver the full app: a polished src/App.jsx (plus components under src/), and a complete server/index.js with real endpoints and persistence for the data model above. " +
+      "Build a FOCUSED MVP: the screens and features in the brief, done really well. Split the UI into sensible components (aim for roughly 6-14 source files); do NOT pad with extra screens, settings pages, or features nobody asked for. " +
       'Respond with JSON: {"name": string, "summary": string, "files": [{"path": string, "content": string}]}. ' +
-      "Include at least src/App.jsx and server/index.js; add as many component/route files as the app deserves.",
+      "Include at least src/App.jsx and server/index.js.",
     model: MODELS.agent,
     maxTokens: 32000,
+    // A rich app's single-shot generation can run several minutes — well past
+    // the default 120s request timeout — so allow more time and skip retries
+    // (re-generating a huge response from scratch rarely helps).
+    timeout: 300_000,
+    maxRetries: 1,
   });
 
   const llmFiles = cleanFiles(raw);
@@ -671,7 +881,7 @@ export async function generateFullstackProject(prompt: string): Promise<Generate
   return {
     name: brief.name,
     summary: raw.summary?.trim() || brief.summary,
-    files: assemble(scaffoldFiles(brief.theme), llmFiles),
+    files: assemble(scaffoldFiles(brief.theme, brief.platform), llmFiles),
     installCmd: INSTALL_CMD,
     devCmd: DEV_CMD,
     previewPort: PREVIEW_PORT,
@@ -708,6 +918,8 @@ async function reviseWholeFile(
       'Respond with JSON: {"summary": string (one sentence on what changed), "files": [{"path": string, "content": string}]}. Return only the files you changed or added.',
     model: MODELS.agent,
     maxTokens: 24000,
+    timeout: 240_000,
+    maxRetries: 1,
   });
 
   const changedFiles = cleanFiles(raw).filter((f) => isEditable(f.path));
@@ -753,6 +965,8 @@ async function reviseWithDiffs(currentFiles: ProjectFile[], instruction: string)
       "Respond with the JSON edit object. Prefer small surgical edits; only use newFiles for genuinely new files.",
     model: MODELS.agent,
     maxTokens: 16000,
+    timeout: 240_000,
+    maxRetries: 1,
   });
 }
 
@@ -866,6 +1080,8 @@ export async function repairFullstackProject(
       'Respond with JSON: {"summary": string (what you fixed), "files": [{"path": string, "content": string}]}. Return only the files you changed.',
     model: MODELS.agent,
     maxTokens: 16000,
+    timeout: 240_000,
+    maxRetries: 1,
   });
 
   const changedFiles = cleanFiles(raw).filter((f) => isEditable(f.path));

@@ -21,6 +21,11 @@ import type { ProjectFile } from "../lib/e2b.js";
 const BuildSchema = z.object({ prompt: z.string().min(1).max(4000) });
 const EditSchema = z.object({ instruction: z.string().min(1).max(4000) });
 
+// A generate/edit runs server-side for minutes; it must survive a dropped SSE
+// client (closed tab, network blip) rather than being aborted with it. Only this
+// hard backstop aborts a genuinely runaway build.
+const BUILD_TIMEOUT_MS = 20 * 60_000;
+
 function projectFiles(filesJson: string): ProjectFile[] {
   try {
     return JSON.parse(filesJson) as ProjectFile[];
@@ -60,14 +65,19 @@ export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
     }
     const project = createProjectRow((request as AuthenticatedRequest).userId, parsed.data.prompt);
     const sse = openSSE(request, reply);
+    // NOTE: deliberately NOT aborting on client disconnect — the build keeps
+    // running and the project row records the final status to poll/refresh.
     const ac = new AbortController();
-    sse.onClose(() => ac.abort());
+    const backstop = setTimeout(() => ac.abort(), BUILD_TIMEOUT_MS);
+    backstop.unref?.();
     // Tell the client the id immediately so it can navigate/poll if it wants.
     sse.send({ type: "created", id: project.id });
     try {
       await buildApp(project.id, (request as AuthenticatedRequest).userId, (e: BuildEvent) => sse.send(e), ac.signal);
     } catch (err) {
       sse.send({ type: "error", message: (err as Error).message });
+    } finally {
+      clearTimeout(backstop);
     }
     sse.close();
   });
@@ -84,12 +94,16 @@ export async function fullstackRoutes(app: FastifyInstance): Promise<void> {
       return reply.status(404).send({ success: false, error: "Project not found", code: "not_found" });
     }
     const sse = openSSE(request, reply);
+    // Same as build: survive client disconnect; only the backstop aborts.
     const ac = new AbortController();
-    sse.onClose(() => ac.abort());
+    const backstop = setTimeout(() => ac.abort(), BUILD_TIMEOUT_MS);
+    backstop.unref?.();
     try {
       await editApp(id, userId, parsed.data.instruction, (e: BuildEvent) => sse.send(e), ac.signal);
     } catch (err) {
       sse.send({ type: "error", message: (err as Error).message });
+    } finally {
+      clearTimeout(backstop);
     }
     sse.close();
   });
