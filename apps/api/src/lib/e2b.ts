@@ -27,12 +27,17 @@ export interface SandboxSession {
   /** Run a command to completion; returns exit code + captured output. */
   exec(
     cmd: string,
-    opts?: { cwd?: string; timeoutMs?: number; onLog?: (line: string) => void },
+    opts?: {
+      cwd?: string;
+      timeoutMs?: number;
+      env?: Record<string, string>;
+      onLog?: (line: string) => void;
+    },
   ): Promise<{ exitCode: number; stdout: string; stderr: string }>;
   /** Start a long-running command (dev server) in the background. */
   startBackground(
     cmd: string,
-    opts?: { cwd?: string; onLog?: (line: string) => void },
+    opts?: { cwd?: string; env?: Record<string, string>; onLog?: (line: string) => void },
   ): Promise<void>;
   /** Extend the sandbox's auto-shutdown timeout. */
   keepAlive(ms: number): Promise<void>;
@@ -83,19 +88,35 @@ function wrapSession(sandbox: E2BSandbox): SandboxSession {
       await sandbox.files.write(files.map((f) => ({ path: f.path, data: f.content })));
     },
     async exec(cmd, o = {}) {
-      const res = await sandbox.commands.run(cmd, {
-        cwd: o.cwd,
-        timeoutMs: o.timeoutMs ?? 5 * 60_000,
-        onStdout: o.onLog,
-        onStderr: o.onLog,
-      });
-      return { exitCode: res.exitCode, stdout: res.stdout, stderr: res.stderr };
+      try {
+        const res = await sandbox.commands.run(cmd, {
+          cwd: o.cwd,
+          timeoutMs: o.timeoutMs ?? 5 * 60_000,
+          envs: o.env,
+          onStdout: o.onLog,
+          onStderr: o.onLog,
+        });
+        return { exitCode: res.exitCode, stdout: res.stdout, stderr: res.stderr };
+      } catch (err) {
+        // E2B throws CommandExitError on a non-zero exit — normalize it to a
+        // result so callers can inspect exitCode/stderr (e.g. the build+repair
+        // loop) instead of every non-zero command becoming a thrown failure.
+        // Real failures (timeout, lost connection) have no exitCode: rethrow.
+        const e = err as { exitCode?: number; stdout?: string; stderr?: string; error?: string; message?: string };
+        if (typeof e?.exitCode === "number") {
+          return { exitCode: e.exitCode, stdout: e.stdout ?? "", stderr: e.stderr ?? e.error ?? e.message ?? "" };
+        }
+        throw err;
+      }
     },
     async startBackground(cmd, o = {}) {
       // background:true returns immediately with a handle; we don't await it.
+      // envs here are inherited by the child processes concurrently spawns
+      // (the Express server), so the generated app can read them at runtime.
       await sandbox.commands.run(cmd, {
         cwd: o.cwd,
         background: true,
+        envs: o.env,
         onStdout: o.onLog,
         onStderr: o.onLog,
       });
