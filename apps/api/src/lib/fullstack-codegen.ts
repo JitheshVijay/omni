@@ -9,7 +9,7 @@
 // Pipeline: planApp() writes a short design+build brief (name, color theme,
 // screens, data model, features) -> generateFullstackProject() renders the app
 // against that brief -> repairFullstackProject() fixes build errors in a loop.
-import { callLLMJSON, MODELS, logger } from "@omni/sdk";
+import { callLLMJSON, MODELS, logger, streamLLM } from "@omni/sdk";
 import type { ProjectFile } from "./e2b.js";
 
 function normPath(p: string): string {
@@ -847,45 +847,138 @@ function assemble(scaffold: ProjectFile[], llmFiles: ProjectFile[]): ProjectFile
   return [...byPath.values()];
 }
 
-/** Generate a runnable, good-looking full-stack project from a prompt. */
-export async function generateFullstackProject(prompt: string): Promise<GeneratedProject> {
-  const brief = await planApp(prompt);
-  const system = brief.platform === "mobile" ? `${SYSTEM}\n\n${MOBILE_GUIDE}` : SYSTEM;
+function buildInstruction(prompt: string, brief: Brief): string {
+  return (
+    `Build this app.\n\nUser request: ${prompt}\n\nBuild brief:\n${briefBlock(brief)}\n\n` +
+    "Deliver the full app: a polished src/App.jsx (plus components under src/), and a complete server/index.js with real endpoints and persistence for the data model above. " +
+    "Build a FOCUSED MVP: the screens and features in the brief, done really well. Split the UI into sensible components (aim for roughly 6-14 source files); do NOT pad with extra screens, settings pages, or features nobody asked for."
+  );
+}
 
-  const raw = await callLLMJSON<RawGen>({
+// Streamed output format: a sequence of verbatim file blocks (Bolt-style). Far
+// easier to parse incrementally than JSON, and file content needs no escaping.
+const STREAM_FORMAT = [
+  "",
+  "OUTPUT FORMAT — output ONLY a sequence of file blocks in this EXACT format and NOTHING else (no prose, no JSON, no markdown code fences, no commentary before, between, or after the blocks):",
+  '<omni-file path="server/index.js">',
+  "...the complete file content, verbatim...",
+  "</omni-file>",
+  '<omni-file path="src/App.jsx">',
+  "...",
+  "</omni-file>",
+  "",
+  "Rules: one block per file; path is relative (e.g. src/components/Foo.jsx); put the raw file content between the tags with NO escaping and NO code fences; emit server/index.js and src/App.jsx FIRST, then supporting components; do NOT emit the pre-provided files (package.json, vite.config.js, tailwind.config.js, postcss.config.js, index.html, src/main.jsx, src/lib/utils.js, server/ai.js).",
+].join("\n");
+
+const JSON_FORMAT =
+  '\n\nRespond with JSON: {"name": string, "summary": string, "files": [{"path": string, "content": string}]}. Include at least src/App.jsx and server/index.js.';
+
+const FILE_OPEN = "<omni-file";
+const FILE_CLOSE = "</omni-file>";
+
+// Pull the first complete <omni-file …>…</omni-file> out of a streaming buffer.
+function extractFileBlock(buffer: string): { path: string; content: string; rest: string } | null {
+  const open = buffer.indexOf(FILE_OPEN);
+  if (open === -1) return null;
+  const openEnd = buffer.indexOf(">", open + FILE_OPEN.length);
+  if (openEnd === -1) return null;
+  const close = buffer.indexOf(FILE_CLOSE, openEnd);
+  if (close === -1) return null;
+  const pathMatch = buffer.slice(open, openEnd).match(/path\s*=\s*["']([^"']+)["']/);
+  const content = buffer
+    .slice(openEnd + 1, close)
+    .replace(/^\r?\n/, "")
+    .replace(/\r?\n[ \t]*$/, "");
+  return { path: pathMatch ? pathMatch[1] : "", content, rest: buffer.slice(close + FILE_CLOSE.length) };
+}
+
+// Stream the tag protocol, surfacing each file the moment it completes.
+async function streamGenerate(
+  system: string,
+  instruction: string,
+  onFile?: (f: ProjectFile) => void,
+): Promise<ProjectFile[]> {
+  const files: ProjectFile[] = [];
+  const seen = new Set<string>();
+  let buffer = "";
+  const drain = () => {
+    let block: ReturnType<typeof extractFileBlock>;
+    while ((block = extractFileBlock(buffer)) !== null) {
+      buffer = block.rest;
+      const path = normPath(block.path);
+      if (!path || seen.has(path) || IMMUTABLE_PATHS.has(path)) continue;
+      seen.add(path);
+      const file = { path, content: block.content };
+      files.push(file);
+      onFile?.(file);
+    }
+  };
+  for await (const delta of streamLLM({
     system,
-    prompt:
-      `Build this app.\n\nUser request: ${prompt}\n\nBuild brief:\n${briefBlock(brief)}\n\n` +
-      "Deliver the full app: a polished src/App.jsx (plus components under src/), and a complete server/index.js with real endpoints and persistence for the data model above. " +
-      "Build a FOCUSED MVP: the screens and features in the brief, done really well. Split the UI into sensible components (aim for roughly 6-14 source files); do NOT pad with extra screens, settings pages, or features nobody asked for. " +
-      'Respond with JSON: {"name": string, "summary": string, "files": [{"path": string, "content": string}]}. ' +
-      "Include at least src/App.jsx and server/index.js.",
+    prompt: instruction + STREAM_FORMAT,
     model: MODELS.agent,
     maxTokens: 32000,
-    // A rich app's single-shot generation can run several minutes — well past
-    // the default 120s request timeout — so allow more time and skip retries
-    // (re-generating a huge response from scratch rarely helps).
+    timeout: 300_000,
+    maxRetries: 1,
+  })) {
+    buffer += delta;
+    if (buffer.includes(FILE_CLOSE)) drain();
+  }
+  drain();
+  return files;
+}
+
+/** Generate a runnable, good-looking full-stack project from a prompt. Streams
+ *  the file blocks (calling onFile as each completes); falls back to a single
+ *  non-streaming JSON generation if the stream fails or omits a required file. */
+export async function generateFullstackProject(
+  prompt: string,
+  onFile?: (f: ProjectFile) => void,
+): Promise<GeneratedProject> {
+  const brief = await planApp(prompt);
+  const system = brief.platform === "mobile" ? `${SYSTEM}\n\n${MOBILE_GUIDE}` : SYSTEM;
+  const instruction = buildInstruction(prompt, brief);
+  const scaffold = scaffoldFiles(brief.theme, brief.platform);
+  const complete = (llmFiles: ProjectFile[]) =>
+    llmFiles.some((f) => f.path === "src/App.jsx") && llmFiles.some((f) => f.path === "server/index.js");
+  const done = (llmFiles: ProjectFile[]): GeneratedProject => ({
+    name: brief.name,
+    summary: brief.summary,
+    files: assemble(scaffold, llmFiles),
+    installCmd: INSTALL_CMD,
+    devCmd: DEV_CMD,
+    previewPort: PREVIEW_PORT,
+  });
+
+  // Primary path: streamed tag protocol — files surface incrementally and
+  // content is verbatim (no fragile JSON escaping / truncation-repair).
+  try {
+    const streamed = await streamGenerate(system, instruction, onFile);
+    if (complete(streamed)) return done(streamed);
+    logger.info({ files: streamed.length }, "[fullstack] stream produced incomplete app; falling back to JSON");
+  } catch (err) {
+    logger.info({ err }, "[fullstack] stream codegen failed; falling back to JSON");
+  }
+
+  // Fallback: single non-streaming JSON generation.
+  const raw = await callLLMJSON<RawGen>({
+    system,
+    prompt: instruction + JSON_FORMAT,
+    model: MODELS.agent,
+    maxTokens: 32000,
     timeout: 300_000,
     maxRetries: 1,
   });
-
   const llmFiles = cleanFiles(raw);
-  const hasApp = llmFiles.some((f) => f.path === "src/App.jsx");
-  const hasServer = llmFiles.some((f) => f.path === "server/index.js");
-  if (!hasApp || !hasServer) {
+  if (!complete(llmFiles)) {
+    const hasApp = llmFiles.some((f) => f.path === "src/App.jsx");
+    const hasServer = llmFiles.some((f) => f.path === "server/index.js");
     throw new Error(
       `Codegen incomplete: missing ${!hasApp ? "src/App.jsx" : ""}${!hasApp && !hasServer ? " and " : ""}${!hasServer ? "server/index.js" : ""}.`,
     );
   }
-
-  return {
-    name: brief.name,
-    summary: raw.summary?.trim() || brief.summary,
-    files: assemble(scaffoldFiles(brief.theme, brief.platform), llmFiles),
-    installCmd: INSTALL_CMD,
-    devCmd: DEV_CMD,
-    previewPort: PREVIEW_PORT,
-  };
+  if (onFile) for (const f of llmFiles) onFile(f);
+  return done(llmFiles);
 }
 
 const REVISE_SYSTEM = [

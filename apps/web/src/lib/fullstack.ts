@@ -47,6 +47,7 @@ export type FullstackBuildEvent =
   | { type: "created"; id: string }
   | { type: "status"; label: string }
   | { type: "log"; line: string }
+  | { type: "file"; path: string }
   | { type: "project"; project: FullstackProject }
   | { type: "error"; message: string };
 

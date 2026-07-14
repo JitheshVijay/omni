@@ -120,6 +120,7 @@ function logTail(logBuf: string[]): string {
 export type BuildEvent =
   | { type: "status"; label: string }
   | { type: "log"; line: string }
+  | { type: "file"; path: string }
   | { type: "project"; project: AppProjectSummary }
   | { type: "error"; message: string };
 
@@ -220,7 +221,11 @@ export async function buildApp(
     // 1) Codegen — the part that works without a sandbox.
     emit({ type: "status", label: "Designing the app…" });
     patch(projectId, { status: "generating" });
-    const project = await generateFullstackProject(row.prompt);
+    // Stream each file as it's generated so the client can watch it build.
+    const project = await generateFullstackProject(row.prompt, (f) => {
+      emit({ type: "file", path: f.path });
+      emit({ type: "log", line: `✓ ${f.path}` });
+    });
     if (signal.aborted) throw new Error("aborted");
     patch(projectId, {
       name: project.name,

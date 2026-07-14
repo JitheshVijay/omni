@@ -35,6 +35,7 @@ export default function FullstackStudioPage() {
   const [prompt, setPrompt] = useState("");
   const [building, setBuilding] = useState(false);
   const [statuses, setStatuses] = useState<string[]>([]);
+  const [files, setFiles] = useState<string[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [logsOpen, setLogsOpen] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
@@ -59,6 +60,7 @@ export default function FullstackStudioPage() {
     setBuilding(true);
     setBuildError(null);
     setStatuses([]);
+    setFiles([]);
     setLogs([]);
     idRef.current = null;
     const ctrl = new AbortController();
@@ -72,6 +74,8 @@ export default function FullstackStudioPage() {
             idRef.current = e.id;
           } else if (e.type === "status") {
             setStatuses((s) => [...s, e.label]);
+          } else if (e.type === "file") {
+            setFiles((f) => [...f, e.path]);
           } else if (e.type === "log") {
             setLogs((l) => [...l, e.line]);
           } else if (e.type === "project") {
@@ -197,6 +201,22 @@ export default function FullstackStudioPage() {
                 </li>
               )}
             </ol>
+
+            {files.length > 0 && (
+              <div className="mt-4 rounded-lg border border-line bg-surface2 px-3 py-2.5">
+                <div className="mb-1.5 text-[11px] font-medium text-muted">
+                  Writing files <span className="tabular-nums">({files.length})</span>
+                </div>
+                <ul className="flex flex-col gap-1 font-mono text-[11px] text-muted">
+                  {files.slice(-14).map((p, i) => (
+                    <li key={`${p}-${i}`} className="flex items-center gap-1.5">
+                      <Check className="size-3 shrink-0 text-emerald-500" />
+                      <span className="truncate">{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {logs.length > 0 && (
               <div className="mt-4 rounded-lg border border-line bg-surface2">

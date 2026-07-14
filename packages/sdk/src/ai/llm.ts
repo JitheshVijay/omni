@@ -281,6 +281,65 @@ export const callLLM: (req: LLMRequest) => Promise<string> = tracingEnabled
     }) as unknown as typeof callLLMImpl)
   : callLLMImpl;
 
+// ─── streamLLM ──────────────────────────────────────────────────────
+
+/**
+ * Streaming variant of callLLM: yields text deltas as they arrive. Same
+ * caching / provider routing / timeout controls as callLLM, but stream:true so
+ * the caller can parse output incrementally (e.g. file-by-file codegen) and the
+ * connection keeps producing tokens on long generations. Usage is recorded when
+ * the stream ends. Not traced through LangSmith (streaming spans add little).
+ */
+export async function* streamLLM(req: LLMRequest): AsyncGenerator<string, void, unknown> {
+  const {
+    system,
+    prompt,
+    model = DEFAULT_MODEL,
+    maxTokens = 4096,
+    cachedContext,
+    timeout,
+    maxRetries,
+  } = req;
+
+  const messages: OpenAI.ChatCompletionMessageParam[] = [];
+  if (system) {
+    messages.push({ role: "system", content: wrapSystemForCache(system, model) as unknown as string });
+  }
+  if (cachedContext) {
+    messages.push({ role: "system", content: wrapSystemForCache(cachedContext, model) as unknown as string });
+  }
+  messages.push({ role: "system", content: currentDateBlock() });
+  messages.push({ role: "user", content: prompt });
+
+  const body = {
+    model,
+    max_tokens: maxTokens,
+    messages,
+    reasoning: { enabled: false },
+    stream: true,
+    stream_options: { include_usage: true },
+    ...providerRoutingForCache(model),
+  } as unknown as OpenAI.ChatCompletionCreateParamsStreaming;
+
+  const requestOpts = {
+    ...LLM_REQUEST_OPTS,
+    ...(timeout !== undefined ? { timeout } : {}),
+    ...(maxRetries !== undefined ? { maxRetries } : {}),
+  };
+
+  const stream = (await openai.chat.completions.create(body, requestOpts)) as unknown as AsyncIterable<{
+    choices?: Array<{ delta?: { content?: string | null } }>;
+    usage?: OpenRouterUsage;
+  }>;
+  let usage: OpenRouterUsage | undefined;
+  for await (const chunk of stream) {
+    const delta = chunk.choices?.[0]?.delta?.content;
+    if (typeof delta === "string" && delta.length > 0) yield delta;
+    if (chunk.usage) usage = chunk.usage;
+  }
+  if (usage) recordUsage(model, usage);
+}
+
 // ─── callLLMJSON ────────────────────────────────────────────────────
 
 /**
