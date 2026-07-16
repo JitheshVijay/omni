@@ -13,6 +13,7 @@ import { z } from "zod";
 import { DATA_DIR, all, fromJson, one, run, uuid } from "@omni/sdk";
 import type { AuthenticatedRequest } from "../middleware/auth.js";
 import { openSSE } from "../lib/sse.js";
+import { DOC_THEMES, renderDesignedDoc, themeForDocType } from "../lib/doc-design.js";
 import { getGenerator, getGeneratorForKind } from "../generators/registry.js";
 import {
   toArtifactSummary,
@@ -229,6 +230,53 @@ export async function generateRoutes(app: FastifyInstance) {
       .header("Content-Length", String(size))
       .header("Cache-Control", "private, max-age=3600");
     return reply.send(createReadStream(absPath));
+  });
+
+  // ── GET /api/artifacts/:id/export-html ──
+  // Render a doc artifact as a self-contained, themed, print-ready HTML page.
+  // ?theme=<id> overrides the stored/default theme; ?download=1 forces a file
+  // download (otherwise it renders inline for opening in a tab / print-to-PDF).
+  app.get("/api/artifacts/:id/export-html", async (request, reply) => {
+    const { userId } = request as AuthenticatedRequest;
+    const { id } = request.params as { id: string };
+    const q = request.query as { theme?: string; download?: string };
+    const artifact = loadArtifact(id, userId);
+    if (!artifact) {
+      return reply
+        .status(404)
+        .send({ success: false, error: "Artifact not found", code: "not_found" });
+    }
+    if (artifact.kind !== "doc") {
+      return reply
+        .status(400)
+        .send({ success: false, error: "Not a document artifact", code: "not_doc" });
+    }
+    const content = fromJson<DocContent>(artifact.content);
+    const markdown = content?.markdown;
+    if (!markdown?.trim()) {
+      return reply
+        .status(400)
+        .send({ success: false, error: "Document has no content to export", code: "no_content" });
+    }
+    const meta = fromJson<Record<string, unknown>>(artifact.meta) ?? {};
+    const metaTheme = typeof meta.theme === "string" ? meta.theme : undefined;
+    const metaDocType = typeof meta.doc_type === "string" ? meta.doc_type : undefined;
+    const themeId =
+      (q.theme && DOC_THEMES[q.theme] ? q.theme : undefined) ??
+      (metaTheme && DOC_THEMES[metaTheme] ? metaTheme : undefined) ??
+      themeForDocType(metaDocType);
+    const html = renderDesignedDoc({
+      title: artifact.title,
+      markdown,
+      sources: content?.sources ?? [],
+      themeId,
+    });
+    reply.header("Content-Type", "text/html; charset=utf-8");
+    if (q.download) {
+      const safe = artifact.title.replace(/[^a-z0-9\-_ ]/gi, "").trim().slice(0, 60) || "document";
+      reply.header("Content-Disposition", `attachment; filename="${safe}.html"`);
+    }
+    return reply.send(html);
   });
 
   // ── PATCH /api/artifacts/:id ──

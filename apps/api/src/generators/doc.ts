@@ -18,6 +18,7 @@ import {
   wrapSystemForCache,
 } from "@omni/sdk";
 import { searchHubMemory } from "../lib/hub-memory.js";
+import { themeForDocType } from "../lib/doc-design.js";
 import {
   getArtifact,
   insertArtifact,
@@ -342,6 +343,9 @@ async function runDoc(input: DocInput, ctx: GenCtx): Promise<ArtifactSummary> {
     title,
     content,
     hubId: input.hub_id ?? null,
+    // Record the type + a fitting design theme so the "designed" HTML/PDF
+    // export defaults sensibly (the user can still override the theme).
+    meta: { doc_type: input.doc_type, theme: themeForDocType(input.doc_type) },
   });
   return toArtifactSummary(row);
 }
@@ -392,6 +396,8 @@ async function reviseDoc(
     content,
     hubId: parent.hub_id,
     parentId: parent.id,
+    // Carry the type + theme forward so revisions keep their design.
+    meta: fromJson<Record<string, unknown>>(parent.meta) ?? undefined,
   });
   return toArtifactSummary(row);
 }

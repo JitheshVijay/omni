@@ -24,6 +24,7 @@ import {
   HardDriveUpload,
   Loader2,
   MoreHorizontal,
+  Palette,
   Printer,
   Quote,
   Save,
@@ -31,7 +32,7 @@ import {
   Volume2,
   WandSparkles,
 } from "lucide-react";
-import { authFetch, invalidateApiPrefix } from "@/lib/use-api";
+import { API_BASE, authFetch, invalidateApiPrefix } from "@/lib/use-api";
 import { streamGenerate, streamRevise } from "@/lib/generate";
 import { useReadAloud, MiniPlayer, VOICE_UNCONFIGURED_HINT } from "@/lib/audio-player";
 import {
@@ -63,8 +64,21 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+// Designed-export themes (mirrors the backend doc-design DOC_THEMES).
+const DESIGN_THEMES: { id: string; label: string }[] = [
+  { id: "modern", label: "Modern" },
+  { id: "classic", label: "Classic" },
+  { id: "editorial", label: "Editorial" },
+  { id: "technical", label: "Technical" },
+  { id: "minimal", label: "Minimal" },
+  { id: "slate", label: "Slate" },
+];
 
 type Phase = "generating" | "loading" | "ready" | "error";
 
@@ -325,6 +339,22 @@ export default function DocEditorPage() {
     URL.revokeObjectURL(url);
   }
 
+  // Open the themed, print-ready "designed" HTML of this doc in a new tab (for
+  // print-to-PDF), or download it. Local auth needs no token, so a plain URL
+  // works. Omitting `theme` uses the doc's stored/type-default theme.
+  function openDesigned(theme?: string, download = false) {
+    if (!artifactId) return;
+    const q = new URLSearchParams();
+    if (theme) q.set("theme", theme);
+    if (download) q.set("download", "1");
+    const qs = q.toString();
+    window.open(
+      `${API_BASE}/api/artifacts/${artifactId}/export-html${qs ? `?${qs}` : ""}`,
+      "_blank",
+      "noopener",
+    );
+  }
+
   async function exportToDrive() {
     if (!artifactId) return;
     setActionError(null);
@@ -481,6 +511,31 @@ export default function DocEditorPage() {
               <Download />
               Export .md
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => openDesigned()}
+              disabled={phase !== "ready"}
+            >
+              <Palette />
+              Open designed page
+            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger disabled={phase !== "ready"}>
+                <Palette />
+                Designed page theme
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                {DESIGN_THEMES.map((t) => (
+                  <DropdownMenuItem key={t.id} onSelect={() => openDesigned(t.id)}>
+                    {t.label}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => openDesigned(undefined, true)}>
+                  <Download />
+                  Download HTML
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuItem
               onSelect={() => setTimeout(() => window.print(), 50)}
               disabled={phase !== "ready"}
