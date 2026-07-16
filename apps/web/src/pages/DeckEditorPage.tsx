@@ -18,6 +18,7 @@ import {
   HardDriveUpload,
   Loader2,
   MoreHorizontal,
+  Pencil,
   Presentation,
   Printer,
   Trash2,
@@ -27,6 +28,8 @@ import { authFetch, invalidateApiPrefix } from "@/lib/use-api";
 import { streamRevise } from "@/lib/generate";
 import { exportDeckToPptx } from "@/lib/pptx-export";
 import { DeckViewer } from "@/components/tools/DeckViewer";
+import { FreeformEditor } from "@/components/tools/FreeformEditor";
+import { deckToFree, type FreeDeck } from "@/lib/slide-free";
 import type { Artifact, ArtifactSummary } from "@/lib/types";
 import type { DeckContent, SlideSpec } from "@/lib/slide-types";
 import { SaveAsSkillButton } from "@/components/skills/SaveAsSkillButton";
@@ -98,6 +101,8 @@ export default function DeckEditorPage() {
   const [exporting, setExporting] = useState(false);
   const [exportedToDrive, setExportedToDrive] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [freeDeck, setFreeDeck] = useState<FreeDeck | null>(null);
   const [editPrefill, setEditPrefill] = useState("");
   const savedTitleRef = useRef("");
 
@@ -152,6 +157,26 @@ export default function DeckEditorPage() {
     } catch (err) {
       setActionError(err instanceof Error ? err.message : "Rename failed.");
     }
+  }
+
+  // Open the hands-on canvas editor: convert the (archetype) deck to freeform.
+  function openCanvasEditor() {
+    if (!deck) return;
+    setFreeDeck(deckToFree(deck));
+    setEditing(true);
+  }
+
+  // Persist freeform edits back to the artifact content (FreeSlide ∈ SlideSpec,
+  // so the saved deck stays a valid DeckContent that the viewer/export render).
+  async function saveFreeform(fd: FreeDeck) {
+    if (!artifactId) return;
+    await authFetch(`/api/artifacts/${artifactId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ content: fd }),
+    });
+    setDeck(fd);
+    setFreeDeck(fd);
+    void invalidateApiPrefix("/api/artifacts");
   }
 
   async function exportPptx() {
@@ -259,6 +284,16 @@ export default function DeckEditorPage() {
         <Button
           size="sm"
           variant="secondary"
+          onClick={openCanvasEditor}
+          disabled={phase !== "ready"}
+        >
+          <Pencil />
+          Edit
+        </Button>
+
+        <Button
+          size="sm"
+          variant="secondary"
           onClick={() => openEdit("")}
           disabled={phase !== "ready"}
         >
@@ -326,6 +361,15 @@ export default function DeckEditorPage() {
               <Skeleton key={i} className="h-[84px] w-[148px] shrink-0 rounded-lg" />
             ))}
           </div>
+        </div>
+      ) : editing && freeDeck ? (
+        <div className="min-h-0 flex-1">
+          <FreeformEditor
+            deck={freeDeck}
+            title={title}
+            onSave={saveFreeform}
+            onExit={() => setEditing(false)}
+          />
         </div>
       ) : (
         <DeckViewer deck={deck} onRevise={openEdit} className="flex-1" />

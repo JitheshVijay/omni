@@ -7,6 +7,7 @@
 // renderer and export are self-contained. They read deck.theme directly and
 // never need a theme registry. THEME_PRESETS below is display-only, powering
 // the theme picker on the generation form.
+import type { FreeSlide } from "./slide-free";
 
 export interface Theme {
   id: string;
@@ -33,7 +34,8 @@ export type Archetype =
   | "two-col"
   | "image+text"
   | "quote"
-  | "chart";
+  | "chart"
+  | "free";
 
 interface SlideBase {
   notes?: string;
@@ -110,7 +112,8 @@ export type SlideSpec =
   | TwoColSlide
   | ImageTextSlide
   | QuoteSlide
-  | ChartSlide;
+  | ChartSlide
+  | FreeSlide;
 
 export interface DeckContent {
   theme: Theme;
@@ -145,4 +148,5 @@ export const ARCHETYPE_LABEL: Record<Archetype, string> = {
   "image+text": "Image + text",
   quote: "Quote",
   chart: "Chart",
+  free: "Free",
 };

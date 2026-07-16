@@ -493,6 +493,43 @@ function buildChart(
   }
 }
 
+// Freeform slides: map each positioned element to a pptx text/shape/image at
+// the same 1280x720 coordinates.
+function buildFree(
+  slide: Slide,
+  spec: Extract<SlideSpec, { archetype: "free" }>,
+  artById: Map<string, string | null>,
+) {
+  slide.background = { color: hx(spec.background) };
+  for (const el of [...spec.elements].sort((a, b) => a.z - b.z)) {
+    const box = { x: IN(el.x), y: IN(el.y), w: IN(el.w), h: IN(el.h) };
+    if (el.type === "text") {
+      slide.addText(el.text, {
+        ...box,
+        fontSize: PT(el.fontSize),
+        bold: el.fontWeight >= 600,
+        italic: el.italic ?? false,
+        color: hx(el.color),
+        fontFace: el.fontFamily,
+        align: el.align,
+        valign: "top",
+      });
+    } else if (el.type === "shape") {
+      slide.addShape(el.shape === "ellipse" ? "ellipse" : "rect", {
+        ...box,
+        fill: { color: hx(el.fill) },
+      });
+    } else {
+      const data = el.artifactId ? artById.get(el.artifactId) : el.src;
+      if (data) {
+        slide.addImage({ ...box, data, sizing: { type: el.fit, w: box.w, h: box.h } });
+      } else {
+        slide.addShape("rect", { ...box, fill: { color: hx("#e5e7eb") } });
+      }
+    }
+  }
+}
+
 // ─── Public API ─────────────────────────────────────────────────────
 
 /**
@@ -518,6 +555,21 @@ export async function exportDeckToPptx(deck: DeckContent, title: string): Promis
   );
   const artById = new Map<string, string | null>();
   for (const e of artEntries) if (e) artById.set(e[0], e[1]);
+
+  // Also pre-fetch images referenced by freeform slides.
+  const freeImgIds = new Set<string>();
+  for (const s of deck.slides) {
+    if (s.archetype === "free") {
+      for (const el of s.elements) {
+        if (el.type === "image" && el.artifactId) freeImgIds.add(el.artifactId);
+      }
+    }
+  }
+  await Promise.all(
+    [...freeImgIds]
+      .filter((id) => !artById.has(id))
+      .map(async (id) => artById.set(id, await imageDataUrl(id))),
+  );
 
   for (const spec of deck.slides) {
     const slide = pres.addSlide();
@@ -548,6 +600,9 @@ export async function exportDeckToPptx(deck: DeckContent, title: string): Promis
         break;
       case "chart":
         buildChart(slide, theme, spec);
+        break;
+      case "free":
+        buildFree(slide, spec, artById);
         break;
     }
     if ("notes" in spec && spec.notes) slide.addNotes(spec.notes);

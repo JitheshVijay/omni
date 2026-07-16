@@ -20,6 +20,7 @@ import {
   type SlideSpec,
   type Theme,
 } from "@/lib/slide-types";
+import { FreeSlideView } from "./FreeSlideView";
 
 const PAD = 88;
 
@@ -96,6 +97,10 @@ function AccentGlow({ theme }: { theme: Theme }) {
 }
 
 export function SlideRenderer({ slide, theme }: { slide: SlideSpec; theme: Theme }) {
+  // Freeform slides carry their own absolute layout + background.
+  if (slide.archetype === "free") {
+    return <FreeSlideView slide={slide} />;
+  }
   return (
     <div style={frameStyle(theme)}>
       <AccentGlow theme={theme} />
