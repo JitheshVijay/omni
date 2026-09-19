@@ -12,6 +12,30 @@ the filesystem. No cloud backend, no account, single user.
 
 ---
 
+## Screenshots
+
+**Chat** — every model on OpenRouter behind one interface, with your Hubs, Drive and every
+generator one keystroke away.
+
+![Omni chat home, with the prompt composer, suggestion chips and the generator row](docs/screenshots/chat.png)
+
+**Super Agent** — give it a goal and a budget; it plans, acts across tools, and reports back
+live, staging any write to the outside world for confirmation first.
+
+![Omni Super Agent, with goal input, hub grounding, budget cap and agent presets](docs/screenshots/super-agent.png)
+
+**Generators** — one service layer behind AI Docs, Slides (real `.pptx`), Sheets (`.xlsx`),
+Image Studio, AI Developer, the Full-Stack App Builder, Design Studio and Read Aloud.
+
+![Omni generators gallery: Image Studio, AI Docs, AI Developer, Full-Stack App Builder, Design Studio and Read Aloud](docs/screenshots/generators.png)
+
+**Connectors** — an MCP host plus an app store; every connected app's actions become agent
+tools automatically.
+
+![Omni connectors app store with Slack, Discord, Gmail, Notion, Google Docs and Google Drive](docs/screenshots/connectors.png)
+
+---
+
 ## Highlights
 
 - **Multi-model chat** — every model on [OpenRouter](https://openrouter.ai) behind one
